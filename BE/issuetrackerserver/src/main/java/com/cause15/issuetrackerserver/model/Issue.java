@@ -20,6 +20,9 @@ public class Issue {
     private Developer fixer;
     private Comment[] comments;
 
+    // For test (dummy data)
+    public Issue() {}
+
     // If IssueType is given, set it as given value
     public Issue(
             String title,

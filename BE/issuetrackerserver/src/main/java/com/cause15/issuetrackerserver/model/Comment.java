@@ -14,6 +14,9 @@ public class Comment {
     private User author;
     private LocalDateTime date;
 
+    // For test (dummy data)
+    public Comment() {}
+
     public Comment(String text, User author) {
         this.date = LocalDateTime.now();
         this.text = text.trim();

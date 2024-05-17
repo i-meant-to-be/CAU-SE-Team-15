@@ -12,6 +12,9 @@ public class User {
     private String name;
     private String password;
 
+    // For test (dummy data)
+    public User() {}
+
     // For actual use
     public User(String name, String password) {
         this.id = UUID.randomUUID();
