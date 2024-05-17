@@ -11,11 +11,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
-import com.cause15.issuetrackerserver.model.Person;
+import com.cause15.issuetrackerserver.model.User;
 
 @Tag(name = "사용자", description = "사용자 관련 API")
 @RestController
-public class PersonController {
+public class UserController {
     @Operation(
             summary = "사용자 조회",
             description = "모든 사용자의 정보를 반환",
@@ -27,12 +27,12 @@ public class PersonController {
             }
     )
     @RequestMapping(value = "/user/getUser/{id}", method = RequestMethod.GET)
-    public Person getUser(
+    public User getUser(
             @Parameter(description = "조회할 사용자의 UUID")
             @PathVariable(name = "id")
             UUID id
     ) {
         // TODO: DB에서 가져오는 코드로 수정 필요
-        return new Person(id, "John");
+        return new User(id, "John", "");
     }
 }
