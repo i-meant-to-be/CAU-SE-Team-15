@@ -4,10 +4,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class IssuetrackerserverApplication {
-
+public class IssueTrackerServerApplication {
     public static void main(String[] args) {
-        SpringApplication.run(IssuetrackerserverApplication.class, args);
+        SpringApplication.run(IssueTrackerServerApplication.class, args);
     }
-
 }

@@ -1,0 +1,95 @@
+package com.cause15.issuetrackerserver.service;
+
+import com.cause15.issuetrackerserver.model.User;
+import com.cause15.issuetrackerserver.repository.UserRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import java.util.Optional;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+class UserServiceTest {
+
+    @Mock
+    private UserRepository userRepository;
+
+    @InjectMocks
+    private UserService userService;
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+    }
+
+    @Test
+    void testGetAllUsers() {
+        userService.getAllUsers();
+        verify(userRepository, times(1)).findAll();
+    }
+
+    @Test
+    void testGetUserById() {
+        String userId = "123e4567-e89b-12d3-a456-12345678901";
+        User user = new User();
+        user.setId(UUID.fromString(userId));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+
+        User foundUser = userService.getUserById(userId);
+        assertNotNull(foundUser);
+        assertEquals(UUID.fromString(userId), foundUser.getId());
+    }
+
+    @Test
+    void testCreateUser() {
+        User user = new User();
+        user.setName("John Doe");
+        when(userRepository.save(user)).thenReturn(user);
+
+        User createdUser = userService.createUser(user);
+        assertNotNull(createdUser);
+        assertEquals("John Doe", createdUser.getName());
+    }
+
+    @Test
+    void testUpdateUser() {
+        String userId = "123e4567-e89b-12d3-a456-12345678901";
+        User user = new User();
+        user.setId(UUID.fromString(userId));
+        user.setName("John Doe Updated");
+
+        when(userRepository.existsById(userId)).thenReturn(true);
+        when(userRepository.save(user)).thenReturn(user);
+
+        User updatedUser = userService.updateUser(userId, user);
+        assertNotNull(updatedUser);
+        assertEquals("John Doe Updated", updatedUser.getName());
+    }
+
+    @Test
+    void testDeleteUser() {
+        String userId = "123e4567-e89b-12d3-a456-12345678901";
+
+        when(userRepository.existsById(userId)).thenReturn(true);
+
+        boolean result = userService.deleteUser(userId);
+        assertTrue(result);
+        verify(userRepository, times(1)).deleteById(userId);
+    }
+
+    @Test
+    void testDeleteUserNotFound() {
+        String userId = "123e4567-e89b-12d3-a456-12345678901";
+
+        when(userRepository.existsById(userId)).thenReturn(false);
+
+        boolean result = userService.deleteUser(userId);
+        assertFalse(result);
+        verify(userRepository, never()).deleteById(userId);
+    }
+}

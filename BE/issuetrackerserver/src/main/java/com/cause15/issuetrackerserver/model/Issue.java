@@ -2,12 +2,14 @@ package com.cause15.issuetrackerserver.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
 @Setter
+@Document(collection = "issue")  // users 컬렉션에 저장됨
 public class Issue {
     private UUID id;
     private String title;
@@ -19,6 +21,9 @@ public class Issue {
     private Developer assignee;
     private Developer fixer;
     private Comment[] comments;
+
+    // For test (dummy data)
+    public Issue() {}
 
     // If IssueType is given, set it as given value
     public Issue(
