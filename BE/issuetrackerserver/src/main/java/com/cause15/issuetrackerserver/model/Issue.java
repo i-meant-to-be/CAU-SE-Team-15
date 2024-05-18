@@ -38,6 +38,7 @@ public class Issue {
         this.type = type;
         this.reporter = reporter;
         this.reportedDate = LocalDateTime.now();
+        this.state=IssueState.NEW;
     }
 
     // If IssueType isn't given, set it as a default value (MAJOR)
@@ -52,5 +53,6 @@ public class Issue {
         this.type = IssueType.MAJOR;
         this.reporter = reporter;
         this.reportedDate = LocalDateTime.now();
+        this.state=IssueState.NEW;
     }
 }
