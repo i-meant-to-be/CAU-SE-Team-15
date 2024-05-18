@@ -23,7 +23,6 @@ public class IssueService {
     }
 
     public Issue createIssue(Issue issue) {
-        issue.setId(UUID.randomUUID());
         return issueRepository.save(issue);
     }
 
