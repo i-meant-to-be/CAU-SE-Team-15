@@ -10,16 +10,16 @@ import java.util.UUID;
 @Setter
 public class Comment {
     private UUID id;
-    private String text;
+    private String body;
     private User author;
     private LocalDateTime date;
 
     // For test (dummy data)
     public Comment() {}
 
-    public Comment(String text, User author) {
+    public Comment(String body, User author) {
         this.date = LocalDateTime.now();
-        this.text = text.trim();
+        this.body = body.trim();
         this.author = author;
     }
 }
