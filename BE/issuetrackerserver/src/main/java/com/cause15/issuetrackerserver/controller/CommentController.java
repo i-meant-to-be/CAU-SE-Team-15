@@ -3,7 +3,6 @@ package com.cause15.issuetrackerserver.controller;
 import com.cause15.issuetrackerserver.model.Comment;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +13,7 @@ import java.util.UUID;
 
 @Tag(name = "Comment Controller", description = "댓글 관련 API")
 @RestController
+@RequestMapping("/api")
 public class CommentController {
     @Operation(
             summary = "특정 댓글의 데이터 조회",

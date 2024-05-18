@@ -1,17 +1,23 @@
 package com.cause15.issuetrackerserver.controller;
 
 import com.cause15.issuetrackerserver.model.*;
+import com.cause15.issuetrackerserver.service.IssueService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
 @Tag(name = "Issue Controller", description = "이슈 관련 API")
 @RestController
+@RequestMapping("/api")
 public class IssueController {
+
+    @Autowired
+    private IssueService issueService;
+
     @Operation(
             summary = "새로운 이슈 추가",
             description = "새로운 이슈를 DB에 추가합니다."
@@ -109,4 +115,6 @@ public class IssueController {
         // TODO: DB에서 가져오는 코드로 수정 필요
         return new Issue().getComments();
     }
+
+
 }

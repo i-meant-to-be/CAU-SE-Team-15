@@ -1,18 +1,16 @@
 package com.cause15.issuetrackerserver.controller;
 
+import com.cause15.issuetrackerserver.model.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
 import java.util.UUID;
-
-import com.cause15.issuetrackerserver.model.User;
 
 @Tag(name = "User Controller", description = "사용자 관련 API")
 @RestController
+@RequestMapping("/api")
 public class UserController {
     @Operation(
             summary = "새로운 사용자 추가",
