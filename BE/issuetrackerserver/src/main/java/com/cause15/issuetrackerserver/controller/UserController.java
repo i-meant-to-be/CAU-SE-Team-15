@@ -1,28 +1,37 @@
 package com.cause15.issuetrackerserver.controller;
 
+import com.cause15.issuetrackerserver.dto.UserRequest;
 import com.cause15.issuetrackerserver.model.User;
+import com.cause15.issuetrackerserver.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @Tag(name = "User Controller", description = "사용자 관련 API")
 @RestController
 @RequestMapping("/api")
 public class UserController {
+
+    @Autowired
+    private UserService userService;
+
     @Operation(
             summary = "새로운 사용자 추가",
             description = "새로운 사용자를 DB에 추가합니다."
     )
     @RequestMapping(value = "/user", method = RequestMethod.POST)
     public User createUser(
-        @RequestParam String name,
-        @RequestParam String password
-    ) {
-        // TODO: DB에서 가져오는 코드로 수정 필요
-        return new User(name, password);
+            @RequestBody UserRequest request
+            ) {
+
+
+        User newuser = new User(request.getName(), request.getPassword());
+        return userService.createUser(newuser);
     }
 
     @Operation(
@@ -58,9 +67,8 @@ public class UserController {
             description = "특정 사용자의 데이터를 반환합니다."
     )
     @RequestMapping(value = "/user", method = RequestMethod.GET)
-    public User[] getAllUsers() {
-        // TODO: DB에서 가져오는 코드로 수정 필요
-        return new User[10];
+    public List<User> getAllUsers() {
+       return userService.getAllUsers();
     }
 
     @Operation(

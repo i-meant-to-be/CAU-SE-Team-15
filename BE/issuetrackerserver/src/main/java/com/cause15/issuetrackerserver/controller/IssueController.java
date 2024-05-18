@@ -1,6 +1,9 @@
 package com.cause15.issuetrackerserver.controller;
 
-import com.cause15.issuetrackerserver.model.*;
+import com.cause15.issuetrackerserver.dto.IssueRequest;
+import com.cause15.issuetrackerserver.model.Comment;
+import com.cause15.issuetrackerserver.model.Issue;
+import com.cause15.issuetrackerserver.model.User;
 import com.cause15.issuetrackerserver.service.IssueService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -8,6 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @Tag(name = "Issue Controller", description = "이슈 관련 API")
@@ -24,14 +28,15 @@ public class IssueController {
     )
     @RequestMapping(value = "/issue", method = RequestMethod.POST)
     public Issue createIssue(
-            @RequestParam String title,
-            @RequestParam String description,
-            @RequestParam UUID reporterId,
-            @RequestParam(required = false) IssueType type
-    ) {
-        // TODO: DB에서 가져오는 코드로 수정 필요
-        Tester reporter = new Tester(reporterId, "Reporter", "pwd");
-        return new Issue(title, description, type, reporter);
+            @RequestBody IssueRequest request
+            ) {
+        Issue nissue = new Issue(
+                request.getTitle(),
+                request.getDescription(),
+                request.getType(),
+                request.getReporter()
+        );
+        return issueService.createIssue(nissue);
     }
 
     @Operation(
@@ -68,9 +73,8 @@ public class IssueController {
             description = "특정한 이슈의 데이터를 반환합니다."
     )
     @RequestMapping(value = "/issue", method = RequestMethod.GET)
-    public Issue[] getAllIssues() {
-        // TODO: DB에서 가져오는 코드로 수정 필요
-        return new Issue[10];
+    public List<Issue> getAllIssues() {
+        return issueService.getAllIssues();
     }
 
     @Operation(
