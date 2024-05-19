@@ -1,6 +1,7 @@
 package com.cause15.issuetrackerserver.service;
 
 import com.cause15.issuetrackerserver.model.Issue;
+import com.cause15.issuetrackerserver.model.IssueState;
 import com.cause15.issuetrackerserver.repository.IssueRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,5 +43,22 @@ public class IssueService {
         return false;
     }
 
+    //CustomCrud api
+    public List<Issue> getIssueByTitle(String title) {
+        if (issueRepository.existsByTitle(title)) {
+            return issueRepository.findAllByTitle(title);
+        }
+        return null;
+    }
 
+    public List<Issue> getIssueByState(IssueState state){
+        if(issueRepository.existsByState(state)){
+            return issueRepository.findAllByState(state);
+        }
+        return null;
+    }
+
+    public List<Issue> getIssueByTitleAndState(String title,IssueState state) {
+        return issueRepository.findAllByTitleAndState(title, state);
+    }
 }

@@ -3,6 +3,7 @@ package com.cause15.issuetrackerserver.controller;
 import com.cause15.issuetrackerserver.dto.IssueRequest;
 import com.cause15.issuetrackerserver.model.Comment;
 import com.cause15.issuetrackerserver.model.Issue;
+import com.cause15.issuetrackerserver.model.IssueState;
 import com.cause15.issuetrackerserver.model.User;
 import com.cause15.issuetrackerserver.service.IssueService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -69,13 +70,22 @@ public class IssueController {
 
 
     @Operation(
-            summary = "이슈 1건의 데이터 조회",
-            description = "특정한 이슈의 데이터를 반환합니다."
+            summary = "이슈 데이터 조회",
+            description = "특정한 이슈의 데이터를 반환합니다. title parameter로 검색가능"
     )
-    @RequestMapping(value = "/issue", method = RequestMethod.GET)
-    public List<Issue> getAllIssues() {
-        return issueService.getAllIssues();
+    @GetMapping("/issue")
+    public List<Issue> getAllIssuesBy(@RequestParam(required = false) String title,
+                                      @RequestParam(required = false) IssueState state) {
+
+        if (title == null && state == null) {
+            return issueService.getAllIssues();
+        }
+        if (title != null && state != null) {
+            return issueService.getIssueByTitleAndState(title, state);
+        }
+        return (title != null) ? issueService.getIssueByTitle(title) : issueService.getIssueByState(state);
     }
+
 
     @Operation(
             summary = "이슈 1건 삭제",
