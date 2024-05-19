@@ -3,7 +3,7 @@ server:
 spring:
   data:
     mongodb:
-      uri: mongodb://localhost:27017/datadb
+      uri: mongodb+srv://causeteam15:causeteam15@cluster0.q4th0s9.mongodb.net/datadb
 springdoc:
   default-consumes-media-type: application/json;charset=UTF-8
   default-produces-media-type: application/json;charset=UTF-8
