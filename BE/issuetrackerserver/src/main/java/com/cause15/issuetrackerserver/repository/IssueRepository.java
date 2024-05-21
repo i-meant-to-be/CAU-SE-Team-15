@@ -14,5 +14,5 @@ public interface IssueRepository extends MongoRepository<Issue, UUID> {
     List<Issue> findAllByTitle(String title);
     boolean existsByState(IssueState state);
     List<Issue> findAllByState(IssueState state);
-    List<Issue> findAllByTitleAndState(String title,IssueState state);
+    List<Issue> findAllByTitleAndState(String title, IssueState state);
 }
