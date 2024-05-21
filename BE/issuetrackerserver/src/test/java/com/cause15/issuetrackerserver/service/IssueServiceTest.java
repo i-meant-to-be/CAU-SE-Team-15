@@ -1,7 +1,9 @@
 package com.cause15.issuetrackerserver.service;
 
 import com.cause15.issuetrackerserver.model.Issue;
+import com.cause15.issuetrackerserver.model.Tester;
 import com.cause15.issuetrackerserver.repository.IssueRepository;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -95,5 +97,22 @@ class IssueServiceTest {
         boolean result = issueService.deleteIssue(issueId);
         assertFalse(result);
         verify(issueRepository, never()).deleteById(issueId);
+    }
+    @Test
+    void testSaveIssueWithSameReporter() {
+        // Given
+        Tester reporter = new Tester("test1","123");
+        reporter.setId(UUID.randomUUID());
+        reporter.setName("Test Reporter");
+
+        Issue issue1 = new Issue("Issue 1", "Description 1",reporter);
+        Issue issue2 = new Issue("Issue 2", "Description 2", reporter);
+
+        // When
+        issueRepository.save(issue1);
+        issueRepository.save(issue2);
+
+        // Then
+        Assertions.assertThat(issueRepository.findAll()).hasSize(2);
     }
 }

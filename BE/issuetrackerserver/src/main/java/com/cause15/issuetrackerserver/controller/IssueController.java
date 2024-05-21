@@ -1,7 +1,10 @@
 package com.cause15.issuetrackerserver.controller;
 
 import com.cause15.issuetrackerserver.dto.IssueRequest;
-import com.cause15.issuetrackerserver.model.*;
+import com.cause15.issuetrackerserver.model.Comment;
+import com.cause15.issuetrackerserver.model.Issue;
+import com.cause15.issuetrackerserver.model.IssueState;
+import com.cause15.issuetrackerserver.model.User;
 import com.cause15.issuetrackerserver.service.IssueService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -30,7 +33,8 @@ public class IssueController {
         Issue newIssue = new Issue(
                 issueRequest.getTitle(),
                 issueRequest.getDescription(),
-                issueRequest.getType()
+                issueRequest.getType(),
+                issueRequest.getReporter()
         );
         return issueService.createIssue(newIssue);
     }

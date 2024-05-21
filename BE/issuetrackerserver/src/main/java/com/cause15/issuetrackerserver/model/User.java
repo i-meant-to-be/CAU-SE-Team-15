@@ -19,6 +19,7 @@ public class User {
     private String name;
 
     private String password;
+
     // private UserType type;
 
     // For test (dummy data)

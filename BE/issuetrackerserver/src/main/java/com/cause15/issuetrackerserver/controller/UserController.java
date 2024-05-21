@@ -6,7 +6,6 @@ import com.cause15.issuetrackerserver.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,6 +25,7 @@ public class UserController {
             summary = "새로운 사용자 추가",
             description = "새로운 사용자를 DB에 추가합니다."
     )
+
     @RequestMapping(value = "/user", method = RequestMethod.POST)
     public User createUser(@RequestBody UserRequest userRequest) {
         User newUser = new User(

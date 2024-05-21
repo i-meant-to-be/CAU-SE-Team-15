@@ -2,6 +2,7 @@ package com.cause15.issuetrackerserver.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
@@ -11,7 +12,9 @@ import java.util.UUID;
 @Setter
 @Document(collection = "issue")  // users 컬렉션에 저장됨
 public class Issue {
+    @Id
     private UUID id;
+
     private String title;
     private String description;
     private IssueType type;
@@ -23,7 +26,8 @@ public class Issue {
     private Comment[] comments;
 
     // For test (dummy data)
-    public Issue() {}
+    public Issue() {
+    }
 
     // If IssueType is given, set it as given value
     public Issue(
@@ -38,7 +42,10 @@ public class Issue {
         this.type = type;
         this.reporter = reporter;
         this.reportedDate = LocalDateTime.now();
-        this.state=IssueState.NEW;
+        this.state = IssueState.NEW;
+        this.assignee = null;
+        this.fixer = null;
+        this.comments = null;
     }
 
     // If IssueType isn't given, set it as a default value (MAJOR)
@@ -53,6 +60,9 @@ public class Issue {
         this.type = IssueType.MAJOR;
         this.reporter = reporter;
         this.reportedDate = LocalDateTime.now();
-        this.state=IssueState.NEW;
+        this.state = IssueState.NEW;
+        this.assignee = null;
+        this.fixer = null;
+        this.comments = null;
     }
 }

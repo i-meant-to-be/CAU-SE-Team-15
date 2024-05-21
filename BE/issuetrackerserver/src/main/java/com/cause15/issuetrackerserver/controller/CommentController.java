@@ -1,7 +1,6 @@
 package com.cause15.issuetrackerserver.controller;
 
 import com.cause15.issuetrackerserver.model.Comment;
-import com.cause15.issuetrackerserver.repository.CommentRepository;
 import com.cause15.issuetrackerserver.service.CommentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -20,7 +19,7 @@ import java.util.UUID;
 public class CommentController {
     private final CommentService commentService;
 
-    public CommentController(CommentService commentService) {
+    public CommentController(CommentService commentService){
         this.commentService = commentService;
     }
 

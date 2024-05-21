@@ -3,7 +3,6 @@ package com.cause15.issuetrackerserver.service;
 import com.cause15.issuetrackerserver.model.Issue;
 import com.cause15.issuetrackerserver.model.IssueState;
 import com.cause15.issuetrackerserver.repository.IssueRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
