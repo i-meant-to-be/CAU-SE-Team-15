@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/CAU-SE-Team-15.iml" filepath="$PROJECT_DIR$/.idea/CAU-SE-Team-15.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/issuetrackerserver.iml" filepath="$PROJECT_DIR$/.idea/modules/issuetrackerserver.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/issuetrackerserver.main.iml" filepath="$PROJECT_DIR$/.idea/modules/issuetrackerserver.main.iml" />
     </modules>
   </component>

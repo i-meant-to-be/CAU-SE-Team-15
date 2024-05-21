@@ -2,6 +2,8 @@ package com.cause15.issuetrackerserver.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import nonapi.io.github.classgraph.json.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.UUID;
@@ -10,8 +12,13 @@ import java.util.UUID;
 @Setter
 @Document(collection = "user")  // users 컬렉션에 저장됨
 public class User {
+
+    @Id
     private UUID id;
+
+    @Indexed(unique = true)
     private String name;
+
     private String password;
 
     // For test (dummy data)
