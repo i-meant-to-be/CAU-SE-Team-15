@@ -1,15 +1,11 @@
 package com.cause15.issuetrackerserver.controller;
 
 import com.cause15.issuetrackerserver.dto.IssueRequest;
-import com.cause15.issuetrackerserver.model.Comment;
-import com.cause15.issuetrackerserver.model.Issue;
-import com.cause15.issuetrackerserver.model.IssueState;
-import com.cause15.issuetrackerserver.model.User;
+import com.cause15.issuetrackerserver.model.*;
 import com.cause15.issuetrackerserver.service.IssueService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,16 +26,13 @@ public class IssueController {
             description = "새로운 이슈를 DB에 추가합니다."
     )
     @RequestMapping(value = "/issue", method = RequestMethod.POST)
-    public Issue createIssue(
-            @RequestBody IssueRequest request
-            ) {
-        Issue nissue = new Issue(
-                request.getTitle(),
-                request.getDescription(),
-                request.getType(),
-                request.getReporter()
+    public Issue createIssue(@RequestBody IssueRequest issueRequest) {
+        Issue newIssue = new Issue(
+                issueRequest.getTitle(),
+                issueRequest.getDescription(),
+                issueRequest.getType()
         );
-        return issueService.createIssue(nissue);
+        return issueService.createIssue(newIssue);
     }
 
     @Operation(

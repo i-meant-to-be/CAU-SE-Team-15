@@ -27,11 +27,11 @@ public class UserController {
             description = "새로운 사용자를 DB에 추가합니다."
     )
     @RequestMapping(value = "/user", method = RequestMethod.POST)
-    public User createUser(
-            @RequestParam String name,
-            @RequestParam String password
-    ) {
-        User newUser = new User(name, password);
+    public User createUser(@RequestBody UserRequest userRequest) {
+        User newUser = new User(
+                userRequest.getName(),
+                userRequest.getPassword()
+        );
         return userService.createUser(newUser);
     }
 

@@ -4,7 +4,6 @@ spring:
   data:
     mongodb:
       uri: mongodb+srv://causeteam15:causeteam15@cluster0.q4th0s9.mongodb.net/datadb
-      auto-index-creation: true
 springdoc:
   default-consumes-media-type: application/json;charset=UTF-8
   default-produces-media-type: application/json;charset=UTF-8

@@ -12,7 +12,6 @@ import java.util.UUID;
 @Setter
 @Document(collection = "user")  // users 컬렉션에 저장됨
 public class User {
-
     @Id
     private UUID id;
 
@@ -20,6 +19,7 @@ public class User {
     private String name;
 
     private String password;
+    // private UserType type;
 
     // For test (dummy data)
     public User() {}
