@@ -46,9 +46,7 @@ public class CommentController {
         // TODO: DB에서 가져오는 코드로 수정 필요
         return new Comment();
     }
-
-
-
+    
     @Operation(
             summary = "댓글 1개 삭제",
             description = "특정 댓글을 DB에서 삭제합니다."

@@ -15,7 +15,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class UserServiceTest {
-
     @Mock
     private UserRepository userRepository;
 
@@ -35,14 +34,15 @@ class UserServiceTest {
 
     @Test
     void testGetUserById() {
-        String userId = "123e4567-e89b-12d3-a456-12345678901";
+        UUID userId = UUID.fromString("5cc7a063-7c5d-41f1-b7a2-bd8313919c15");
+
         User user = new User();
-        user.setId(UUID.fromString(userId));
+        user.setId(userId);
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
         User foundUser = userService.getUserById(userId);
         assertNotNull(foundUser);
-        assertEquals(UUID.fromString(userId), foundUser.getId());
+        assertEquals(userId, foundUser.getId());
     }
 
     @Test
@@ -58,9 +58,9 @@ class UserServiceTest {
 
     @Test
     void testUpdateUser() {
-        String userId = "123e4567-e89b-12d3-a456-12345678901";
+        UUID userId = UUID.fromString("5cc7a063-7c5d-41f1-b7a2-bd8313919c15");
         User user = new User();
-        user.setId(UUID.fromString(userId));
+        user.setId(userId);
         user.setName("John Doe Updated");
 
         when(userRepository.existsById(userId)).thenReturn(true);
@@ -73,7 +73,7 @@ class UserServiceTest {
 
     @Test
     void testDeleteUser() {
-        String userId = "123e4567-e89b-12d3-a456-12345678901";
+        UUID userId = UUID.fromString("5cc7a063-7c5d-41f1-b7a2-bd8313919c15");
 
         when(userRepository.existsById(userId)).thenReturn(true);
 
@@ -84,7 +84,7 @@ class UserServiceTest {
 
     @Test
     void testDeleteUserNotFound() {
-        String userId = "123e4567-e89b-12d3-a456-12345678901";
+        UUID userId = UUID.fromString("5cc7a063-7c5d-41f1-b7a2-bd8313919c15");
 
         when(userRepository.existsById(userId)).thenReturn(false);
 

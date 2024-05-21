@@ -11,12 +11,14 @@ import java.util.UUID;
 
 @Service
 public class IssueService {
+    // Dependency injection
     private final IssueRepository issueRepository;
 
     public IssueService(IssueRepository issueRepository) {
         this.issueRepository = issueRepository;
     }
 
+    // Methods
     public List<Issue> getAllIssues() {
         return issueRepository.findAll();
     }

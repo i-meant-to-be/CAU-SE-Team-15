@@ -9,12 +9,14 @@ import java.util.List;
 
 @Service
 public class CommentService {
+    // Dependency injection
     private final CommentRepository commentRepository;
 
     public CommentService(CommentRepository commentRepository) {
         this.commentRepository = commentRepository;
     }
 
+    // Methods
     public List<Comment> getAllComments() {
         return commentRepository.findAll();
     }

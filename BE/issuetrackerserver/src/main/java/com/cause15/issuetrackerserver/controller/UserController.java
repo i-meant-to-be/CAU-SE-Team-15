@@ -46,7 +46,7 @@ public class UserController {
             UUID id
     ) {
         // TODO: DB에서 가져오는 코드로 수정 필요
-        return new User();
+        return userService.getUserById(id);
     }
 
     @Operation(

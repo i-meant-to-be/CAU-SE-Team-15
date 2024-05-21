@@ -10,17 +10,19 @@ import java.util.UUID;
 
 @Service
 public class UserService {
+    // Dependency injection
     private final UserRepository userRepository;
 
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
+    // Methods
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
-    public User getUserById(String id) {
+    public User getUserById(UUID id) {
         return userRepository.findById(id).orElse(null);
     }
 
@@ -28,15 +30,15 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public User updateUser(String id, User user) {
+    public User updateUser(UUID id, User user) {
         if (userRepository.existsById(id)) {
-            user.setId(UUID.fromString(id));
+            user.setId(id);
             return userRepository.save(user);
         }
         return null;
     }
 
-    public boolean deleteUser(String id) {
+    public boolean deleteUser(UUID id) {
         if (userRepository.existsById(id)) {
             userRepository.deleteById(id);
             return true;
