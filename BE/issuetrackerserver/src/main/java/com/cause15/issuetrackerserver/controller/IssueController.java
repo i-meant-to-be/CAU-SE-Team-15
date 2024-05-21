@@ -19,9 +19,11 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api")
 public class IssueController {
+    private final IssueService issueService;
 
-    @Autowired
-    private IssueService issueService;
+    public IssueController(IssueService issueService) {
+        this.issueService = issueService;
+    }
 
     @Operation(
             summary = "새로운 이슈 추가",

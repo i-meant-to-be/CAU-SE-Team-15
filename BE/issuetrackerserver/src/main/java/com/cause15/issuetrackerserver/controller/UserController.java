@@ -16,9 +16,11 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api")
 public class UserController {
+    private final UserService userService;
 
-    @Autowired
-    private UserService userService;
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @Operation(
             summary = "새로운 사용자 추가",
@@ -26,12 +28,11 @@ public class UserController {
     )
     @RequestMapping(value = "/user", method = RequestMethod.POST)
     public User createUser(
-            @RequestBody UserRequest request
-            ) {
-
-
-        User newuser = new User(request.getName(), request.getPassword());
-        return userService.createUser(newuser);
+            @RequestParam String name,
+            @RequestParam String password
+    ) {
+        User newUser = new User(name, password);
+        return userService.createUser(newUser);
     }
 
     @Operation(

@@ -1,6 +1,8 @@
 package com.cause15.issuetrackerserver.controller;
 
 import com.cause15.issuetrackerserver.model.Comment;
+import com.cause15.issuetrackerserver.repository.CommentRepository;
+import com.cause15.issuetrackerserver.service.CommentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -9,15 +11,31 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.UUID;
 
 @Tag(name = "Comment Controller", description = "댓글 관련 API")
 @RestController
 @RequestMapping("/api")
 public class CommentController {
+    private final CommentService commentService;
+
+    public CommentController(CommentService commentService) {
+        this.commentService = commentService;
+    }
+
     @Operation(
-            summary = "특정 댓글의 데이터 조회",
-            description = "특정 댓글의 데이터를 반환"
+            summary = "전체 댓글 조회",
+            description = "전체 댓글의 데이터를 반환합니다."
+    )
+    @RequestMapping(value = "/comment", method = RequestMethod.GET)
+    public List<Comment> getAllComments() {
+        return commentService.getAllComments();
+    }
+
+    @Operation(
+            summary = "특정 댓글 조회",
+            description = "특정 댓글의 데이터를 반환합니다."
     )
     @RequestMapping(value = "/comment/{id}", method = RequestMethod.GET)
     public Comment getComment(
