@@ -6,6 +6,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -20,49 +22,48 @@ public class Issue {
     private IssueType type;
     private IssueState state;
     private LocalDateTime reportedDate;
-    private Tester reporter;
-    private Developer assignee;
-    private Developer fixer;
-    private Comment[] comments;
+    private List<UUID> commentIds;
+    private UUID reporterId;
+    private UUID fixerId;
+    private UUID assigneeId;
 
     // For test (dummy data)
-    public Issue() {
-    }
+    public Issue() {}
 
     // If IssueType is given, set it as given value
     public Issue(
             String title,
             String description,
             IssueType type,
-            Tester reporter
+            UUID reporterId
     ) {
         this.id = UUID.randomUUID();
         this.title = title;
         this.description = description;
         this.type = type;
-        this.reporter = reporter;
+        this.reporterId = reporterId;
         this.reportedDate = LocalDateTime.now();
         this.state = IssueState.NEW;
-        this.assignee = null;
-        this.fixer = null;
-        this.comments = null;
+        this.assigneeId = null;
+        this.fixerId = null;
+        this.commentIds = new ArrayList<>();
     }
 
     // If IssueType isn't given, set it as a default value (MAJOR)
     public Issue(
             String title,
             String description,
-            Tester reporter
+            UUID reporterId
     ) {
         this.id = UUID.randomUUID();
         this.title = title;
         this.description = description;
         this.type = IssueType.MAJOR;
-        this.reporter = reporter;
+        this.reporterId = reporterId;
         this.reportedDate = LocalDateTime.now();
         this.state = IssueState.NEW;
-        this.assignee = null;
-        this.fixer = null;
-        this.comments = null;
+        this.assigneeId = null;
+        this.fixerId = null;
+        this.commentIds = new ArrayList<>();
     }
 }

@@ -11,7 +11,7 @@ import java.util.UUID;
 public class Comment {
     private UUID id;
     private String body;
-    private User author;
+    private UUID authorId;
     private LocalDateTime date;
 
     // For test (dummy data)
@@ -20,6 +20,6 @@ public class Comment {
     public Comment(String body, User author) {
         this.date = LocalDateTime.now();
         this.body = body.trim();
-        this.author = author;
+        this.authorId = author.getId();
     }
 }

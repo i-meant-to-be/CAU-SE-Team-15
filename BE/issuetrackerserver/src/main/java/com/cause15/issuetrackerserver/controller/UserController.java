@@ -30,7 +30,8 @@ public class UserController {
     public User createUser(@RequestBody UserRequest userRequest) {
         User newUser = new User(
                 userRequest.getName(),
-                userRequest.getPassword()
+                userRequest.getPassword(),
+                userRequest.getType()
         );
         return userService.createUser(newUser);
     }
