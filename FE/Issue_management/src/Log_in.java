@@ -12,7 +12,6 @@ public class Log_in extends JFrame {
     private JPasswordField input_PW = new JPasswordField(20);
     MainFrame MF;
 
-
     Log_in(MainFrame MF){
         super("Log in");
         this.MF = MF;
@@ -25,7 +24,6 @@ public class Log_in extends JFrame {
         labels.setLayout(new GridLayout(2, 1, 20,20));
         labels.add(new JLabel("ID"));
         labels.add(new JLabel("PW"));
-
 
         input_PW.setEchoChar('*');
         JPanel areas = new JPanel();
@@ -63,18 +61,22 @@ public class Log_in extends JFrame {
         add(new JPanel());
         add(pane);
         add(new JPanel());
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setVisible(true);
     }
-
+    //어드민 로그인 + 유저타입 어드민으로 설정
     class Button_login_Listener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             String pw = new String(input_PW.getPassword());
             if(input_ID.getText().equals(MF.getID()) && pw.equals(MF.getPW())){
+                MF.user.setUser(input_ID.getText(), pw, ClassDef.UserType.Admin);
                 MF.loggedIn = true;
                 dispose();
             }
         }
     }
+
+    //서버를 통해 아이디 비밀번호 확인 후 로그인 + 유저정보 설정
 
 }
