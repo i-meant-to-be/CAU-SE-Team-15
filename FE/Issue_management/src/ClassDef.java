@@ -1,4 +1,6 @@
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class ClassDef {
@@ -18,8 +20,7 @@ public class ClassDef {
         private String password;
         UserType type;
 
-        User()
-        {
+        User() {
             this.username = "Anonymous";
         }
 
@@ -39,9 +40,9 @@ public class ClassDef {
             return password;
         }
     }
+
     public class Issue {
         private UUID id;
-
         String title;
         String reporter_id;
         LocalDateTime reported_date;
@@ -51,11 +52,39 @@ public class ClassDef {
         IssueState state;
         UUID[] comments;
     }
+
     public class Comment {
         private UUID id;
-
         LocalDateTime created_date;
         UUID created_user;
         String body;
+    }
+
+    public class Project {
+        private UUID id;
+        private String name;
+        private List<Issue> issues;
+
+        Project(String name) {
+            this.id = UUID.randomUUID();
+            this.name = name;
+            this.issues = new ArrayList<>();
+        }
+
+        public UUID getId() {
+            return id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public List<Issue> getIssues() {
+            return issues;
+        }
+
+        public void addIssue(Issue issue) {
+            issues.add(issue);
+        }
     }
 }
