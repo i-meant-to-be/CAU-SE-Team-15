@@ -110,7 +110,7 @@ public class MainFrame extends JFrame {
             listModel.addElement(project);
         }
 
-        projectList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        projectList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); //하나의 프로젝트만 선택 가능
         projectList.setVisibleRowCount(10);
         projectList.addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {

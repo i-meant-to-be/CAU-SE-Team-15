@@ -82,7 +82,10 @@ public class ClassDef {
         public List<Issue> getIssues() {
             return issues;
         }
-
+        @Override
+        public String toString() {
+            return name;
+        }
         public void addIssue(Issue issue) {
             issues.add(issue);
         }
