@@ -1,5 +1,6 @@
 package com.cause15.issuetrackerserver.dto;
 
+import com.cause15.issuetrackerserver.model.UserType;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,4 +9,5 @@ import lombok.Setter;
 public class UserRequest {
     private String name;
     private String password;
+    private UserType type;
 }

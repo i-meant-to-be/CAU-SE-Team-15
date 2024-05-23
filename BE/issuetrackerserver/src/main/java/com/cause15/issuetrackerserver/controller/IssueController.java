@@ -34,7 +34,7 @@ public class IssueController {
                 issueRequest.getTitle(),
                 issueRequest.getDescription(),
                 issueRequest.getType(),
-                issueRequest.getReporter()
+                issueRequest.getReporterId()
         );
         return issueService.createIssue(newIssue);
     }
@@ -73,9 +73,10 @@ public class IssueController {
             description = "특정한 이슈의 데이터를 반환합니다. title parameter로 검색가능"
     )
     @GetMapping("/issue")
-    public List<Issue> getAllIssuesBy(@RequestParam(required = false) String title,
-                                      @RequestParam(required = false) IssueState state) {
-
+    public List<Issue> getAllIssuesBy(
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) IssueState state
+    ) {
         if (title == null && state == null) {
             return issueService.getAllIssues();
         }
@@ -99,35 +100,4 @@ public class IssueController {
         // TODO: DB에서 가져오는 코드로 수정 필요
         return true;
     }
-
-    @Operation(
-            summary = "특정 이슈의 모든 댓글 조회",
-            description = "특정 이슈와 관련하여 작성된 모든 댓글을 반환합니다."
-    )
-    @RequestMapping(value = "/issue/{id}/comment", method = RequestMethod.POST)
-    public Comment addCommentToIssue(
-            @Parameter(description = "댓글을 확인할 이슈의 ID", example = "123e4567-e89b-12d3-a456-12345678901", allowEmptyValue = false)
-            @RequestParam String body,
-            @RequestParam UUID userId
-    ) {
-        // TODO: DB에서 가져오는 코드로 수정 필요
-        User author = new User(userId, "User", "pwd");
-        return new Comment(body, author);
-    }
-
-    @Operation(
-            summary = "특정 이슈에 댓글 1개 추가",
-            description = "특정 이슈에 새로운 댓글을 추가합니다."
-    )
-    @RequestMapping(value = "/issue/{id}/comment", method = RequestMethod.GET)
-    public Comment[] getAllComments(
-            @Parameter(description = "댓글을 확인할 이슈의 ID", example = "123e4567-e89b-12d3-a456-12345678901", allowEmptyValue = false)
-            @PathVariable(name = "id")
-            UUID id
-    ) {
-        // TODO: DB에서 가져오는 코드로 수정 필요
-        return new Issue().getComments();
-    }
-
-
 }

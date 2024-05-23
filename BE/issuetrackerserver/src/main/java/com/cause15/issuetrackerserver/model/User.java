@@ -19,23 +19,24 @@ public class User {
     private String name;
 
     private String password;
-
-    // private UserType type;
+    private UserType type;
 
     // For test (dummy data)
     public User() {}
 
     // For actual use
-    public User(String name, String password) {
+    public User(String name, String password, UserType type) {
         this.id = UUID.randomUUID();
         this.name = name;
         this.password = password;
+        this.type = type;
     }
 
     // For test, because normally id is set by random value, so we don't have to give a specific value
-    public User(UUID id, String name, String password) {
+    public User(UUID id, String name, String password, UserType type) {
         this.id = id;
         this.name = name;
         this.password = password;
+        this.type = type;
     }
 }
