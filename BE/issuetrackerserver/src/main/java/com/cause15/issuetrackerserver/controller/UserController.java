@@ -1,6 +1,6 @@
 package com.cause15.issuetrackerserver.controller;
 
-import com.cause15.issuetrackerserver.dto.UserRequest;
+import com.cause15.issuetrackerserver.dto.CreateUserRequest;
 import com.cause15.issuetrackerserver.model.User;
 import com.cause15.issuetrackerserver.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,7 +27,7 @@ public class UserController {
     )
 
     @RequestMapping(value = "/user", method = RequestMethod.POST)
-    public User createUser(@RequestBody UserRequest userRequest) {
+    public User createUser(@RequestBody CreateUserRequest userRequest) {
         User newUser = new User(
                 userRequest.getName(),
                 userRequest.getPassword(),

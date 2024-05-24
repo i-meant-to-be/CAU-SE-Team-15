@@ -7,7 +7,7 @@ import java.util.UUID;
 
 @Getter
 @Setter
-public class CommentRequest {
+public class CreateCommentRequest {
     private String body;
     private UUID authorId;
 }

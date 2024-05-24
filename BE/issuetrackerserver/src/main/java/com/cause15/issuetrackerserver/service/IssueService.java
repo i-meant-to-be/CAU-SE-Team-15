@@ -30,7 +30,7 @@ public class IssueService {
         return issueRepository.save(issue);
     }
 
-    public Issue updateIssue(UUID id, Issue issue) {
+    public Issue patchIssue(UUID id, Issue issue) {
         if (issueRepository.existsById(id)) {
             issue.setId(id);
             return issueRepository.save(issue);
@@ -63,5 +63,13 @@ public class IssueService {
 
     public List<Issue> getIssueByTitleAndState(String title,IssueState state) {
         return issueRepository.findAllByTitleAndState(title, state);
+    }
+
+    public List<Issue> getIssueForTester(UUID testerId) {
+        return issueRepository.findAllByReporterId(testerId);
+    }
+
+    public List<Issue> getIssueForDeveloper(UUID developerId) {
+        return issueRepository.findAllByAssigneeIdOrFixerId(developerId, developerId);
     }
 }

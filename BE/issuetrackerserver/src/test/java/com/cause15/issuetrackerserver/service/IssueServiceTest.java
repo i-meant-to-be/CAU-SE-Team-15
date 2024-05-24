@@ -70,7 +70,7 @@ class IssueServiceTest {
         when(issueRepository.existsById(issueId)).thenReturn(true);
         when(issueRepository.save(issue)).thenReturn(issue);
 
-        Issue updatedIssue = issueService.updateIssue(issueId, issue);
+        Issue updatedIssue = issueService.patchIssue(issueId, issue);
         assertNotNull(updatedIssue);
         assertEquals("Updated Issue", updatedIssue.getTitle());
         assertEquals("Updated Description", updatedIssue.getDescription());
