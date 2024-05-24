@@ -26,11 +26,16 @@ public class CommentService {
         return commentRepository.findById(id).orElse(null);
 
     }
+
     public boolean deleteComment(UUID id) {
         if (commentRepository.existsById(id)) {
             commentRepository.deleteById(id);
             return true;
         }
         return false;
+    }
+
+    public Comment createComment(Comment comment) {
+        return commentRepository.save(comment);
     }
 }

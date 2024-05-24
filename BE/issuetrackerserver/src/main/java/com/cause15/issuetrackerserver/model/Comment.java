@@ -17,9 +17,31 @@ public class Comment {
     // For test (dummy data)
     public Comment() {}
 
-    public Comment(String body, User author) {
+    public Comment(String body, UUID authorId) {
+        this.id = UUID.randomUUID();
         this.date = LocalDateTime.now();
         this.body = body.trim();
-        this.authorId = author.getId();
+        this.authorId = authorId;
+    }
+
+    public Comment(UUID id, String body, UUID authorId, LocalDateTime date) {
+        this.id = id;
+        this.body = body.trim();
+        this.authorId = authorId;
+        this.date = date;
+    }
+
+    public Comment copy(
+            UUID id,
+            String body,
+            UUID authorId,
+            LocalDateTime date
+    ) {
+        return new Comment(
+                id != null ? id : this.id,
+                body != null ? body : this.body,
+                authorId != null ? authorId : this.authorId,
+                date != null ? date : this.date
+        );
     }
 }

@@ -48,12 +48,12 @@ class UserServiceTest {
     @Test
     void testCreateUser() {
         User user = new User();
-        user.setUsername("John Doe");
+        user.setName("John Doe");
         when(userRepository.save(user)).thenReturn(user);
 
         User createdUser = userService.createUser(user);
         assertNotNull(createdUser);
-        assertEquals("John Doe", createdUser.getUsername());
+        assertEquals("John Doe", createdUser.getName());
     }
 
     @Test
@@ -61,14 +61,14 @@ class UserServiceTest {
         UUID userId = UUID.fromString("5cc7a063-7c5d-41f1-b7a2-bd8313919c15");
         User user = new User();
         user.setId(userId);
-        user.setUsername("John Doe Updated");
+        user.setName("John Doe Updated");
 
         when(userRepository.existsById(userId)).thenReturn(true);
         when(userRepository.save(user)).thenReturn(user);
 
         User updatedUser = userService.updateUser(userId, user);
         assertNotNull(updatedUser);
-        assertEquals("John Doe Updated", updatedUser.getUsername());
+        assertEquals("John Doe Updated", updatedUser.getName());
     }
 
     @Test

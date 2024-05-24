@@ -38,13 +38,15 @@ public class IssueController {
     @ApiResponse(responseCode = "200 OK", description = "성공적으로 새 이슈를 추가한 경우 반환")
     @RequestMapping(value = "/issue", method = RequestMethod.POST)
     public ResponseEntity<Issue> createIssue(@RequestBody CreateIssueRequest createIssueRequest) {
-        Issue newIssue = new Issue(
-                createIssueRequest.getTitle(),
-                createIssueRequest.getDescription(),
-                createIssueRequest.getType(),
-                createIssueRequest.getReporterId()
+
+        Issue body = issueService.createIssue(
+                new Issue(
+                        createIssueRequest.getTitle(),
+                        createIssueRequest.getDescription(),
+                        createIssueRequest.getType(),
+                        createIssueRequest.getReporterId()
+                )
         );
-        Issue body = issueService.createIssue(newIssue);
         return ResponseEntity.ok(body);
     }
 
@@ -78,6 +80,7 @@ public class IssueController {
             UUID id
     ) {
         Issue targetIssue = issueService.getIssueById(id);
+        Issue body;
 
         if (targetIssue != null) {
             if (patchIssueRequest.getTitle() != null) targetIssue.setTitle(patchIssueRequest.getTitle());
@@ -87,8 +90,9 @@ public class IssueController {
             if (patchIssueRequest.getFixerId() != null) targetIssue.setFixerId(patchIssueRequest.getFixerId());
             if (patchIssueRequest.getState() != null) targetIssue.setState(patchIssueRequest.getState());
             if (patchIssueRequest.getAssigneeId() != null) targetIssue.setAssigneeId(patchIssueRequest.getAssigneeId());
+            body = issueService.updateIssue(id, targetIssue);
 
-            return ResponseEntity.ok(targetIssue);
+            return body != null ? ResponseEntity.ok(body) : ResponseEntity.internalServerError().build();
         }
         else return ResponseEntity.notFound().build();
     }
@@ -108,17 +112,17 @@ public class IssueController {
     ) {
         if (title == null && state == null) {
             List<Issue> body = issueService.getAllIssues();
-            return !body.isEmpty() ?
+            return body != null && !body.isEmpty() ?
                     ResponseEntity.ok(body) : ResponseEntity.noContent().build();
         }
         else if (title != null && state != null) {
             List<Issue> body = issueService.getIssueByTitleAndState(title, state);
-            return !body.isEmpty() ?
+            return body != null && !body.isEmpty() ?
                     ResponseEntity.ok(body) : ResponseEntity.noContent().build();
         }
         else {
             List<Issue> body = (title != null) ? issueService.getIssueByTitle(title) : issueService.getIssueByState(state);
-            return !body.isEmpty() ?
+            return body != null && !body.isEmpty() ?
                     ResponseEntity.ok(body) : ResponseEntity.noContent().build();
         }
     }

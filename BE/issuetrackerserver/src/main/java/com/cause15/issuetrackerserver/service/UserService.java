@@ -2,8 +2,6 @@ package com.cause15.issuetrackerserver.service;
 
 import com.cause15.issuetrackerserver.model.User;
 import com.cause15.issuetrackerserver.repository.UserRepository;
-import com.mongodb.client.MongoClient;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -17,12 +15,10 @@ public class UserService {
     // Dependency injection
     private final UserRepository userRepository;
     private final MongoOperations mongoOperations;
-    private final MongoClient mongo;
 
-    public UserService(UserRepository userRepository, MongoOperations mongoOperations, MongoClient mongo) {
+    public UserService(UserRepository userRepository, MongoOperations mongoOperations) {
         this.userRepository = userRepository;
         this.mongoOperations = mongoOperations;
-        this.mongo = mongo;
     }
 
     // Methods
@@ -54,9 +50,9 @@ public class UserService {
         return false;
     }
 
-    public User getUserByUsername(String username) {
+    public User getUserByName(String name) {
         return mongoOperations.findOne(
-                Query.query(Criteria.where("username").is(username)),
+                Query.query(Criteria.where("name").is(name)),
                 User.class
         );
     }

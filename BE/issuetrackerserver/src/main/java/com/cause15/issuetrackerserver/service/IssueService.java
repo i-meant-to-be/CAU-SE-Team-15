@@ -30,7 +30,7 @@ public class IssueService {
         return issueRepository.save(issue);
     }
 
-    public Issue patchIssue(UUID id, Issue issue) {
+    public Issue updateIssue(UUID id, Issue issue) {
         if (issueRepository.existsById(id)) {
             issue.setId(id);
             return issueRepository.save(issue);

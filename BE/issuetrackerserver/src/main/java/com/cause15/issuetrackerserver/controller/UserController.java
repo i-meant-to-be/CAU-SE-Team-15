@@ -34,12 +34,13 @@ public class UserController {
     @ApiResponse(responseCode = "200 OK", description = "성공적으로 새 사용자를 추가한 경우 반환")
     @RequestMapping(value = "/user", method = RequestMethod.POST)
     public ResponseEntity<User> createUser(@RequestBody CreateUserRequest createUserRequest) {
-        User newUser = new User(
-                createUserRequest.getName(),
-                createUserRequest.getPassword(),
-                createUserRequest.getType()
+        User body = userService.createUser(
+                new User(
+                        createUserRequest.getName(),
+                        createUserRequest.getPassword(),
+                        createUserRequest.getType()
+                )
         );
-        User body = userService.createUser(newUser);
         return ResponseEntity.ok(body);
     }
 
@@ -73,12 +74,14 @@ public class UserController {
             UUID id
     ) {
         User targetUser = userService.getUserById(id);
+        User body;
 
         if (targetUser != null) {
             if (patchUserRequest.getPassword() != null) targetUser.setPassword(patchUserRequest.getPassword());
-            if (patchUserRequest.getUsername() != null) targetUser.setUsername(patchUserRequest.getUsername());
+            if (patchUserRequest.getUsername() != null) targetUser.setName(patchUserRequest.getUsername());
+            body = userService.updateUser(id, targetUser);
 
-            return ResponseEntity.ok(targetUser);
+            return body != null ? ResponseEntity.ok(body) : ResponseEntity.internalServerError().build();
         }
         else return ResponseEntity.notFound().build();
     }
@@ -123,7 +126,7 @@ public class UserController {
     @ApiResponse(responseCode = "200 OK", description = "성공적으로 로그인한 경우 반환")
     @RequestMapping(value = "/user/login", method = RequestMethod.POST)
     public ResponseEntity<User> login(@RequestBody LoginRequest loginRequest) {
-        User targetUser = userService.getUserByUsername(loginRequest.getUsername());
+        User targetUser = userService.getUserByName(loginRequest.getUsername());
 
         if (targetUser != null) {
             if (loginRequest.getPassword().equals(targetUser.getPassword())) {

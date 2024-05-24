@@ -1,5 +1,6 @@
 package com.cause15.issuetrackerserver.controller;
 
+import com.cause15.issuetrackerserver.dto.CreateCommentRequest;
 import com.cause15.issuetrackerserver.dto.PatchCommentRequest;
 import com.cause15.issuetrackerserver.dto.PatchIssueRequest;
 import com.cause15.issuetrackerserver.model.Comment;
@@ -37,6 +38,42 @@ public class CommentController {
 
     // APIs
     @Operation(
+            summary = "새로운 댓글 추가",
+            description = "새로운 댓글을 DB에 추가합니다."
+    )
+    @ApiResponse(responseCode = "200 OK", description = "성공적으로 새 댓글을 추가한 경우 반환")
+    @RequestMapping(value = "/issue/{id}/comment", method = RequestMethod.POST)
+    public ResponseEntity<Comment> createComment(
+            @RequestBody CreateCommentRequest createCommentRequest,
+            @Parameter(description = "댓글을 추가할 이슈의 ID")
+            @PathVariable(name = "id")
+            UUID commentId
+    ) {
+        Issue targetIssue = issueService.getIssueById(commentId);
+
+        if (targetIssue != null) {
+            Comment body = commentService.createComment(
+                    new Comment(
+                            createCommentRequest.getBody(),
+                            createCommentRequest.getAuthorId()
+                    )
+            );
+
+            if (targetIssue.getCommentIds().add(body.getId())) {
+                Issue newIssue = issueService.updateIssue(
+                        targetIssue.getId(),
+                        targetIssue.copy(null, null, null, null, null, null, targetIssue.getCommentIds(), null, null, null)
+                );
+
+                if (newIssue != null) return ResponseEntity.ok(body);
+                else return ResponseEntity.internalServerError().build();
+            }
+            else return ResponseEntity.internalServerError().build();
+        }
+        else return ResponseEntity.notFound().build();
+    }
+
+    @Operation(
             summary = "전체 댓글 조회",
             description = "전체 댓글의 데이터를 반환합니다."
     )
@@ -55,7 +92,7 @@ public class CommentController {
     @ApiResponse(responseCode = "200 OK", description = "주어진 ID에 대응하는 댓글이 있을 경우 반환")
     @RequestMapping(value = "/comment/{id}", method = RequestMethod.GET)
     public ResponseEntity<Comment> getComment(
-            @Parameter(description = "조회할 댓글의 UUID", example = "123e4567-e89b-12d3-a456-12345678901", allowEmptyValue = false)
+            @Parameter(description = "조회할 댓글의 UUID")
             @PathVariable(name = "id")
             UUID id
     ) {

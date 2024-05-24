@@ -66,4 +66,54 @@ public class Issue {
         this.fixerId = null;
         this.commentIds = new ArrayList<>();
     }
+
+    public Issue(
+            UUID id,
+            String title,
+            String description,
+            IssueType type,
+            IssueState state,
+            LocalDateTime reportedDate,
+            List<UUID> commentIds,
+            UUID reporterId,
+            UUID fixerId,
+            UUID assigneeId
+    ) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.type = type;
+        this.state = state;
+        this.reportedDate = reportedDate;
+        this.commentIds = commentIds;
+        this.reporterId = reporterId;
+        this.fixerId = fixerId;
+        this.assigneeId = assigneeId;
+    }
+
+    public Issue copy(
+            UUID id,
+            String title,
+            String description,
+            IssueType type,
+            IssueState state,
+            LocalDateTime reportedDate,
+            List<UUID> commentIds,
+            UUID reporterId,
+            UUID fixerId,
+            UUID assigneeId
+    ) {
+        return new Issue(
+                id != null ? id : this.id,
+                title != null ? title : this.title,
+                description != null ? description : this.description,
+                type != null ? type : this.type,
+                state != null ? state : this.state,
+                reportedDate != null ? reportedDate : this.reportedDate,
+                commentIds != null ? commentIds : this.commentIds,
+                reporterId != null ? reporterId : this.reporterId,
+                fixerId != null ? fixerId : this.fixerId,
+                assigneeId != null ? assigneeId : this.assigneeId
+        );
+    }
 }
