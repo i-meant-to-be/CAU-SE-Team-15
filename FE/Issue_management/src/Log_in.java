@@ -1,3 +1,4 @@
+import Data.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -11,10 +12,12 @@ public class Log_in extends JFrame {
     private JTextField input_ID = new JTextField(20);
     private JPasswordField input_PW = new JPasswordField(20);
     MainFrame MF;
+    private User user;
 
     Log_in(MainFrame MF){
         super("Log in");
         this.MF = MF;
+        user = MF.get_user();
 
         JPanel pane = new JPanel();
         pane.setLayout(new BorderLayout(50, 20));
@@ -70,7 +73,7 @@ public class Log_in extends JFrame {
         public void actionPerformed(ActionEvent e) {
             String pw = new String(input_PW.getPassword());
             if(input_ID.getText().equals(MF.getID()) && pw.equals(MF.getPW())){
-                MF.user.setUser(input_ID.getText(), pw, ClassDef.UserType.Admin);
+                user.setUser(input_ID.getText(), pw, UserType.Admin);
                 MF.loggedIn = true;
                 dispose();
             }
