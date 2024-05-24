@@ -16,7 +16,7 @@ public class User {
     private UUID id;
 
     @Indexed(unique = true)
-    private String name;
+    private String username;
 
     private String password;
     private UserType type;
@@ -25,17 +25,17 @@ public class User {
     public User() {}
 
     // For actual use
-    public User(String name, String password, UserType type) {
+    public User(String username, String password, UserType type) {
         this.id = UUID.randomUUID();
-        this.name = name;
+        this.username = username;
         this.password = password;
         this.type = type;
     }
 
     // For test, because normally id is set by random value, so we don't have to give a specific value
-    public User(UUID id, String name, String password, UserType type) {
+    public User(UUID id, String username, String password, UserType type) {
         this.id = id;
-        this.name = name;
+        this.username = username;
         this.password = password;
         this.type = type;
     }

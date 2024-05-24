@@ -2,7 +2,11 @@ package com.cause15.issuetrackerserver.service;
 
 import com.cause15.issuetrackerserver.model.User;
 import com.cause15.issuetrackerserver.repository.UserRepository;
+import com.mongodb.client.MongoClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,9 +16,13 @@ import java.util.UUID;
 public class UserService {
     // Dependency injection
     private final UserRepository userRepository;
+    private final MongoOperations mongoOperations;
+    private final MongoClient mongo;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, MongoOperations mongoOperations, MongoClient mongo) {
         this.userRepository = userRepository;
+        this.mongoOperations = mongoOperations;
+        this.mongo = mongo;
     }
 
     // Methods
@@ -44,5 +52,12 @@ public class UserService {
             return true;
         }
         return false;
+    }
+
+    public User getUserByUsername(String username) {
+        return mongoOperations.findOne(
+                Query.query(Criteria.where("username").is(username)),
+                User.class
+        );
     }
 }

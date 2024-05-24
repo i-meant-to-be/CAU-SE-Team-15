@@ -35,33 +35,24 @@ public class IssueController {
             summary = "새로운 이슈 추가",
             description = "새로운 이슈를 DB에 추가합니다."
     )
-    @ApiResponses(
-            value = {
-                    @ApiResponse(responseCode = "200 OK", description = "성공적으로 새 이슈를 추가한 경우 반환")
-            }
-    )
+    @ApiResponse(responseCode = "200 OK", description = "성공적으로 새 이슈를 추가한 경우 반환")
     @RequestMapping(value = "/issue", method = RequestMethod.POST)
-    public ResponseEntity<Issue> createIssue(@RequestBody CreateIssueRequest issueRequest) {
+    public ResponseEntity<Issue> createIssue(@RequestBody CreateIssueRequest createIssueRequest) {
         Issue newIssue = new Issue(
-                issueRequest.getTitle(),
-                issueRequest.getDescription(),
-                issueRequest.getType(),
-                issueRequest.getReporterId()
+                createIssueRequest.getTitle(),
+                createIssueRequest.getDescription(),
+                createIssueRequest.getType(),
+                createIssueRequest.getReporterId()
         );
         Issue body = issueService.createIssue(newIssue);
-        return ResponseEntity.status(HttpStatus.OK).body(body);
+        return ResponseEntity.ok(body);
     }
 
     @Operation(
             summary = "이슈 1건의 데이터 조회",
             description = "특정한 이슈의 데이터를 반환합니다."
     )
-    @ApiResponses(
-            value = {
-                    @ApiResponse(responseCode = "200 OK", description = "주어진 ID에 대응하는 이슈가 있을 경우 반환"),
-                    @ApiResponse(responseCode = "404 NOT FOUND", description = "주어진 ID에 대응하는 이슈가 없을 반환")
-            }
-    )
+    @ApiResponse(responseCode = "200 OK", description = "주어진 ID에 대응하는 이슈가 있을 경우 반환")
     @RequestMapping(value = "/issue/{id}", method = RequestMethod.GET)
     public ResponseEntity<Issue> getIssue(
         @Parameter(description = "조회할 이슈의 UUID")
@@ -70,24 +61,21 @@ public class IssueController {
     ) {
         Issue body = issueService.getIssueById(id);
 
-        if (body != null) return ResponseEntity.status(HttpStatus.OK).body(body);
-        else return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        if (body != null) return ResponseEntity.ok(body);
+        else return ResponseEntity.notFound().build();
     }
 
     @Operation(
             summary = "이슈 1건의 데이터 수정",
             description = "특정한 이슈의 데이터를 수정합니다."
     )
-    @ApiResponses(
-            value = {
-                    @ApiResponse(responseCode = "200 OK", description = "성공적으로 이슈를 수정했을 경우 반환"),
-                    @ApiResponse(responseCode = "404 NOT FOUND", description = "주어진 ID에 대응하는 이슈가 없을 반환")
-            }
-    )
+    @ApiResponse(responseCode = "200 OK", description = "성공적으로 이슈를 수정했을 경우 반환")
     @RequestMapping(value = "/issue/{id}", method = RequestMethod.PATCH)
     public ResponseEntity<Issue> patchIssue(
             @RequestBody PatchIssueRequest patchIssueRequest,
-            @PathVariable(name = "id") UUID id
+            @Parameter(description = "수정할 이슈의 UUID")
+            @PathVariable(name = "id")
+            UUID id
     ) {
         Issue targetIssue = issueService.getIssueById(id);
 
@@ -100,10 +88,9 @@ public class IssueController {
             if (patchIssueRequest.getState() != null) targetIssue.setState(patchIssueRequest.getState());
             if (patchIssueRequest.getAssigneeId() != null) targetIssue.setAssigneeId(patchIssueRequest.getAssigneeId());
 
-            return ResponseEntity.status(HttpStatus.OK).body(targetIssue);
+            return ResponseEntity.ok(targetIssue);
         }
-
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        else return ResponseEntity.notFound().build();
     }
 
 
@@ -113,12 +100,7 @@ public class IssueController {
                     '이름(title)' 또는 '상태(state)'를 키워드로 하여, 이슈를 검색합니다.
                     매개변수가 비어 있을 경우, 전체 이슈를 반환합니다."""
     )
-    @ApiResponses(
-            value = {
-                    @ApiResponse(responseCode = "200 OK", description = "이슈 검색 결과가 있을 경우 경우 반환"),
-                    @ApiResponse(responseCode = "404 NOT FOUND", description = "이슈 검색 결과가 없을 경우 반환")
-            }
-    )
+    @ApiResponse(responseCode = "200 OK", description = "이슈 검색 결과가 있을 경우 경우 반환")
     @RequestMapping(value = "/issue", method = RequestMethod.GET)
     public ResponseEntity<List<Issue>> findIssueByTitleOrState(
             @RequestParam(required = false) String title,
@@ -127,17 +109,17 @@ public class IssueController {
         if (title == null && state == null) {
             List<Issue> body = issueService.getAllIssues();
             return !body.isEmpty() ?
-                    ResponseEntity.status(HttpStatus.OK).body(body) : ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+                    ResponseEntity.ok(body) : ResponseEntity.noContent().build();
         }
         else if (title != null && state != null) {
             List<Issue> body = issueService.getIssueByTitleAndState(title, state);
             return !body.isEmpty() ?
-                    ResponseEntity.status(HttpStatus.OK).body(body) : ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+                    ResponseEntity.ok(body) : ResponseEntity.noContent().build();
         }
         else {
             List<Issue> body = (title != null) ? issueService.getIssueByTitle(title) : issueService.getIssueByState(state);
             return !body.isEmpty() ?
-                    ResponseEntity.status(HttpStatus.OK).body(body) : ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+                    ResponseEntity.ok(body) : ResponseEntity.noContent().build();
         }
     }
 
@@ -149,42 +131,36 @@ public class IssueController {
                     Developer인 경우, fixer 또는 assignee 필드가 해당 Developer인 이슈를 반환합니다.
                     그 외의 경우, 아무 이슈도 반환하지 않습니다."""
     )
-    @ApiResponses(
-            value = {
-                    @ApiResponse(responseCode = "200 OK", description = "주어진 사용자 ID와 관련된 이슈가 있을 경우 반환"),
-                    @ApiResponse(responseCode = "404 NOT FOUND", description = "사용자가 존재하지 않거나, 주어진 사용자 ID와 관련된 이슈가 없을 경우 반환")
-            }
-    )
+    @ApiResponse(responseCode = "200 OK", description = "주어진 사용자 ID와 관련된 이슈가 있을 경우 반환")
     @RequestMapping(value = "/user/{id}/issue", method = RequestMethod.GET)
-    public ResponseEntity<List<Issue>> findIssueByUserId(@PathVariable(name = "id") UUID userId) {
+    public ResponseEntity<List<Issue>> findIssueByUserId(
+            @Parameter(description = "이슈를 검색할 사용자의 UUID")
+            @PathVariable(name = "id")
+            UUID userId
+    ) {
         User targetUser = userService.getUserById(userId);
 
         if (targetUser != null) {
             if (targetUser.getType() == UserType.TESTER) {
                 List<Issue> body = issueService.getIssueForTester(targetUser.getId());
                 return !body.isEmpty() ?
-                        ResponseEntity.status(HttpStatus.OK).body(body) : ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+                        ResponseEntity.ok(body) : ResponseEntity.noContent().build();
             }
             else if (targetUser.getType() == UserType.DEVELOPER) {
                 List<Issue> body = issueService.getIssueForDeveloper(targetUser.getId());
                 return !body.isEmpty() ?
-                        ResponseEntity.status(HttpStatus.OK).body(body) : ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+                        ResponseEntity.ok(body) : ResponseEntity.noContent().build();
             }
         }
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        return ResponseEntity.notFound().build();
     }
 
     @Operation(
             summary = "이슈 1건 삭제",
             description = "특정 이슈를 DB에서 삭제합니다."
     )
-    @ApiResponses(
-            value = {
-                    @ApiResponse(responseCode = "200 OK", description = "성공적으로 이슈를 삭제했을 경우 반환"),
-                    @ApiResponse(responseCode = "404 NOT FOUND", description = "주어진 ID에 대응하는 이슈가 없을 반환")
-            }
-    )
+    @ApiResponse(responseCode = "200 OK", description = "성공적으로 이슈를 삭제했을 경우 반환")
     @RequestMapping(value = "/issue/{id}", method = RequestMethod.DELETE)
     public ResponseEntity<Boolean> deleteIssue(
             @Parameter(description = "삭제할 이슈의 UUID")
@@ -194,11 +170,9 @@ public class IssueController {
         Issue targetIssue = issueService.getIssueById(id);
 
         if (targetIssue != null) {
-            return issueService.deleteIssue(targetIssue.getId()) ?
-                ResponseEntity.status(HttpStatus.OK).body(Boolean.TRUE) : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Boolean.FALSE);
+            return issueService.deleteIssue(id) ?
+                ResponseEntity.ok(Boolean.TRUE) : ResponseEntity.internalServerError().build();
         }
-        else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Boolean.FALSE);
-        }
+        else return ResponseEntity.notFound().build();
     }
 }
