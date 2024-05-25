@@ -1,7 +1,6 @@
 package Button;
 
 import Data.*;
-
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
@@ -18,14 +17,15 @@ public class ProjectDetailFrame extends JFrame {
         JPanel pane = new JPanel();
         pane.setLayout(new BorderLayout(10, 10));
 
-        JLabel projectNameLabel = new JLabel("Project Name: " + project.getName()); //프로젝트 이름 표시
+        JLabel projectNameLabel = new JLabel("Project Name: " + project.getName()); // 프로젝트 이름 표시
         pane.add(projectNameLabel, BorderLayout.NORTH);
 
         JPanel issuePanel = new JPanel(new GridLayout(project.getIssues().size(), 1));
 
         for (Issue issue : project.getIssues()) {
-            JLabel issueLabel = new JLabel("Title: " + issue.getTitle() + ", Type: " + issue.getType(), JLabel.CENTER);
-            issuePanel.add(issueLabel);
+            JButton issueButton = new JButton("Title: " + issue.getTitle() + ", Type: " + issue.getType());
+            issueButton.addActionListener(e -> showIssueDetails(issue)); // 버튼을 클릭하면 해당 이슈에 대한 세부 정보를 보여주는 메서드 호출
+            issuePanel.add(issueButton);
         }
 
         JScrollPane issueScrollPane = new JScrollPane(issuePanel);
@@ -33,5 +33,11 @@ public class ProjectDetailFrame extends JFrame {
 
         add(pane);
         setVisible(true);
+    }
+
+    // 이슈에 대한 세부 정보를 보여주는 메서드
+    private void showIssueDetails(Issue issue) {
+        IssueDetailFrame detailFrame = new IssueDetailFrame(issue);
+        detailFrame.setVisible(true);
     }
 }
