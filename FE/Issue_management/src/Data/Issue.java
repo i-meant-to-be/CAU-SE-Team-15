@@ -25,9 +25,41 @@ public class Issue {
         this.state = state;
         this.comments = comments;
     }
+
+    // Getter 메소드들
+    public UUID getId() {
+        return id;
+    }
+
     public String getTitle() {
         return title;
     }
 
+    public String getReporterId() {
+        return reporter_id;
+    }
 
+    public LocalDateTime getReportedDate() {
+        return reported_date;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public UUID getAssigneeId() {
+        return assignee_id;
+    }
+
+    public IssueType getType() {
+        return type;
+    }
+
+    public IssueState getState() {
+        return state;
+    }
+
+    public UUID[] getComments() {
+        return comments;
+    }
 }

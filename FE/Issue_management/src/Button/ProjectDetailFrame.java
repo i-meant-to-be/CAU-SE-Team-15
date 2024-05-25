@@ -1,8 +1,10 @@
 package Button;
 
 import Data.*;
+
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 
 public class ProjectDetailFrame extends JFrame {
     private Project project;
@@ -19,12 +21,14 @@ public class ProjectDetailFrame extends JFrame {
         JLabel projectNameLabel = new JLabel("Project Name: " + project.getName()); //프로젝트 이름 표시
         pane.add(projectNameLabel, BorderLayout.NORTH);
 
-        JTextArea issueListTextArea = new JTextArea();
-        issueListTextArea.setEditable(false); //수정 불가
+        JPanel issuePanel = new JPanel(new GridLayout(project.getIssues().size(), 1));
+
         for (Issue issue : project.getIssues()) {
-            issueListTextArea.append(issue.getTitle() + "\n");
+            JLabel issueLabel = new JLabel("Title: " + issue.getTitle() + ", Type: " + issue.getType(), JLabel.CENTER);
+            issuePanel.add(issueLabel);
         }
-        JScrollPane issueScrollPane = new JScrollPane(issueListTextArea); //텍스트 영역에 스크롤 추가
+
+        JScrollPane issueScrollPane = new JScrollPane(issuePanel);
         pane.add(issueScrollPane, BorderLayout.CENTER);
 
         add(pane);
