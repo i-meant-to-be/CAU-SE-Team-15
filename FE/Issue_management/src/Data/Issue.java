@@ -14,5 +14,20 @@ public class Issue {
     private IssueState state;
     private UUID[] comments;
 
-    public String getTitle(){return title;}
+    public Issue(String title, String reporter_id, LocalDateTime reported_date, String description, UUID assignee_id, IssueType type, IssueState state, UUID[] comments) {
+        this.id = UUID.randomUUID();
+        this.title = title;
+        this.reporter_id = reporter_id;
+        this.reported_date = reported_date;
+        this.description = description;
+        this.assignee_id = assignee_id;
+        this.type = type;
+        this.state = state;
+        this.comments = comments;
+    }
+    public String getTitle() {
+        return title;
+    }
+
+
 }

@@ -7,7 +7,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class MainFrame extends JFrame {
     boolean loggedIn = false;
@@ -54,13 +56,17 @@ public class MainFrame extends JFrame {
         });
 
         JButton create_issue = new JButton("Create Issue");
-        JButton browse = new JButton("Browse");
+        create_issue.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                createIssue();
+            }
+        });
+
         JButton search = new JButton("Search");
 
         user_func.add(user_info);
         user_func.add(projectButton);
         user_func.add(create_issue);
-        user_func.add(browse);
         user_func.add(search);
 
         JPanel issue_panel = new JPanel();
@@ -75,8 +81,7 @@ public class MainFrame extends JFrame {
         }
         login.addWindowListener(new WindowAdapter() {
             public void windowClosed(WindowEvent e) {
-                if(loggedIn)
-                {
+                if(loggedIn) {
                     user_name.setText(user.getUsername());
                     System.out.println(user_name.getText());
                     repaint();
@@ -94,9 +99,29 @@ public class MainFrame extends JFrame {
         return ADMIN_PW;
     }
 
-
-
-    public User get_user(){
+    public User get_user() {
         return user;
     }
+
+    private void createIssue() {
+        if (projects.isEmpty()) { //프로젝트 리스트가 비어 있는지 확인
+            JOptionPane.showMessageDialog(this, "No projects available. Please create a project first.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        String[] projectNames = projects.stream().map(Project::getName).toArray(String[]::new);
+        String selectedProjectName = (String) JOptionPane.showInputDialog(this, "Select a project to add the issue:", "Select Project",
+                JOptionPane.PLAIN_MESSAGE, null, projectNames, projectNames[0]);
+
+        if (selectedProjectName != null) { //사용자가 프로젝트 클릭한 경우
+            for (Project project : projects) {
+                if (project.getName().equals(selectedProjectName)) {
+                    IssueCreator issueCreator = new IssueCreator();
+                    issueCreator.addIssueToProject(project, user);
+                    break;
+                }
+            }
+        }
+    }
+
 }
