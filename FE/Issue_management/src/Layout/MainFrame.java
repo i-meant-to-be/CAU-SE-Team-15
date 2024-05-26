@@ -1,3 +1,5 @@
+package Layout;
+
 import Data.*;
 import Button.*;
 
@@ -7,9 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.UUID;
 
 public class MainFrame extends JFrame {
     boolean loggedIn = false;
@@ -21,7 +21,7 @@ public class MainFrame extends JFrame {
     private ArrayList<Project> projects = new ArrayList<>();
     private JLabel user_name;
 
-    MainFrame() {
+    public MainFrame() {
         super("Main page");
         setSize(800, 600);
         JPanel pane = new JPanel();
@@ -49,6 +49,13 @@ public class MainFrame extends JFrame {
             }
         });
 
+        JButton registerButton = new JButton("Register");
+        registerButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                new RegisterButton();
+            }
+        });
+
         JButton projectButton = new JButton("Project");
         projectButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -56,18 +63,17 @@ public class MainFrame extends JFrame {
             }
         });
 
-        JButton create_issue = new JButton("Create Issue");
-        create_issue.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                createIssue();
-            }
+        JButton issueButton = new JButton("Issue");
+        issueButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) { new IssueButton(MainFrame.this, projects); }
         });
 
         JButton search = new JButton("Search");
 
         user_func.add(user_info);
+        user_func.add(registerButton);
         user_func.add(projectButton);
-        user_func.add(create_issue);
+        user_func.add(issueButton);
         user_func.add(search);
 
         JPanel issue_panel = new JPanel();
@@ -103,24 +109,12 @@ public class MainFrame extends JFrame {
 
     public JLabel getuserlabel(){return user_name;}
 
-    private void createIssue() {
-        if (projects.isEmpty()) { //프로젝트 리스트가 비어 있는지 확인
-            JOptionPane.showMessageDialog(this, "No projects available. Please create a project first.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
 
-        String[] projectNames = projects.stream().map(Project::getName).toArray(String[]::new);
-        String selectedProjectName = (String) JOptionPane.showInputDialog(this, "Select a project to add the issue:", "Select Project",
-                JOptionPane.PLAIN_MESSAGE, null, projectNames, projectNames[0]);
-
-        if (selectedProjectName != null) { //사용자가 프로젝트 클릭한 경우
-            for (Project project : projects) {
-                if (project.getName().equals(selectedProjectName)) {
-                    IssueCreator issueCreator = new IssueCreator();
-                    issueCreator.addIssueToProject(project, user);
-                    break;
-                }
-            }
+    public void setPanelEnabled(JPanel panel, boolean isEnabled) {
+        panel.setEnabled(isEnabled);
+        Component[] components = panel.getComponents();
+        for (Component component : components) {
+            component.setEnabled(isEnabled);
         }
     }
 
