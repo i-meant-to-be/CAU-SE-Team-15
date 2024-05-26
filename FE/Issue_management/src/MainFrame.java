@@ -19,6 +19,7 @@ public class MainFrame extends JFrame {
     private User user = new User();
     private Log_in login;
     private ArrayList<Project> projects = new ArrayList<>();
+    private JLabel user_name;
 
     MainFrame() {
         super("Main page");
@@ -33,12 +34,12 @@ public class MainFrame extends JFrame {
         user_info.setBorder(BorderFactory.createLineBorder(Color.black, 3));
         user_info.setLayout(new GridLayout(3, 1));
         user_info.add(new JLabel("Welcome!", JLabel.CENTER));
-        JLabel user_name = new JLabel(user.getUsername(), JLabel.CENTER);
+        user_name = new JLabel(user.getUsername(), JLabel.CENTER);
         user_name.setFont(new Font("Serif", Font.BOLD, 15));
         user_info.add(user_name);
-        JButton logout = new JButton("Log out");
+        JButton logout = new JButton("Logout");
         user_info.add(logout);
-        logout.addActionListener(new ActionListener() {
+        logout.addActionListener(new ActionListener() {     //로그아웃 -> anonymous
             public void actionPerformed(ActionEvent e) {
                 user = new User();
                 user_name.setText(user.getUsername());
@@ -83,7 +84,6 @@ public class MainFrame extends JFrame {
             public void windowClosed(WindowEvent e) {
                 if(loggedIn) {
                     user_name.setText(user.getUsername());
-                    System.out.println(user_name.getText());
                     repaint();
                 }
             }
@@ -99,9 +99,9 @@ public class MainFrame extends JFrame {
         return ADMIN_PW;
     }
 
-    public User get_user() {
-        return user;
-    }
+    public User get_user() {return user;}
+
+    public JLabel getuserlabel(){return user_name;}
 
     private void createIssue() {
         if (projects.isEmpty()) { //프로젝트 리스트가 비어 있는지 확인

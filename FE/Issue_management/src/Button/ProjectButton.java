@@ -53,7 +53,6 @@ public class ProjectButton {
         if (projectName != null && !projectName.trim().isEmpty()) {
             Project newProject = new Project(projectName);
             projects.add(newProject);
-            System.out.println("hg");
             JOptionPane.showMessageDialog(null, "Project created successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
         } else {
             JOptionPane.showMessageDialog(null, "Project name cannot be empty.", "Error", JOptionPane.ERROR_MESSAGE);

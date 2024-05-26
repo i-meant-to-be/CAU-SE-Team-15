@@ -3,8 +3,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 
 
 public class Log_in extends JFrame {
@@ -39,7 +37,7 @@ public class Log_in extends JFrame {
         log_info.add(labels, BorderLayout.WEST);
         log_info.add(areas, BorderLayout.CENTER);
 
-        JButton Ok = new JButton("Log in");
+        JButton Ok = new JButton("Login");
         Button_login_Listener loginListener = new Button_login_Listener();
         Ok.addActionListener(loginListener);
         input_ID.addActionListener(new ActionListener() {
@@ -68,18 +66,29 @@ public class Log_in extends JFrame {
         setLocationRelativeTo(null);
         setVisible(true);
     }
-    //어드민 로그인 + 유저타입 어드민으로 설정
+
     class Button_login_Listener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             String pw = new String(input_PW.getPassword());
+            //어드민 로그인 + 유저타입 어드민으로 설정
             if(input_ID.getText().equals(MF.getID()) && pw.equals(MF.getPW())){
                 user.setUser(input_ID.getText(), pw, UserType.Admin);
+                MF.getuserlabel().setText(MF.get_user().getUsername());
+                MF.repaint();
                 MF.loggedIn = true;
                 dispose();
             }
+            //서버 통신으로 정보 받아와서 로그인
+            else if (input_ID.getText().equals("서버아이디") && pw.equals("서버 비번")){
+                //user.setUser("서버아이디 비번 타입 ");
+                MF.getuserlabel().setText(MF.get_user().getUsername());
+                MF.repaint();
+                MF.loggedIn = true;
+                dispose();
+            }
+            else {
+                JOptionPane.showMessageDialog(null, "Login failed", "Login failed", JOptionPane.WARNING_MESSAGE);
+            }
         }
     }
-
-    //서버를 통해 아이디 비밀번호 확인 후 로그인 + 유저정보 설정
-
 }
