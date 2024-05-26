@@ -2,20 +2,23 @@ package com.cause15.issuetrackerserver.controller;
 
 import com.cause15.issuetrackerserver.dto.CreateIssueRequest;
 import com.cause15.issuetrackerserver.dto.PatchIssueRequest;
-import com.cause15.issuetrackerserver.model.*;
+import com.cause15.issuetrackerserver.model.Issue;
+import com.cause15.issuetrackerserver.model.IssueState;
+import com.cause15.issuetrackerserver.model.User;
+import com.cause15.issuetrackerserver.model.UserType;
 import com.cause15.issuetrackerserver.service.IssueService;
+import com.cause15.issuetrackerserver.service.OktService;
 import com.cause15.issuetrackerserver.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 @Tag(name = "Issue Controller", description = "이슈 관련 API")
 @RestController
@@ -24,10 +27,12 @@ public class IssueController {
     // Dependency injection
     private final IssueService issueService;
     private final UserService userService;
+    private final OktService oktService;
 
-    public IssueController(IssueService issueService, UserService userService) {
+    public IssueController(IssueService issueService, UserService userService,OktService oktService) {
         this.issueService = issueService;
         this.userService = userService;
+        this.oktService= oktService;
     }
 
     // APIs
@@ -39,12 +44,18 @@ public class IssueController {
     @RequestMapping(value = "/issue", method = RequestMethod.POST)
     public ResponseEntity<Issue> createIssue(@RequestBody CreateIssueRequest createIssueRequest) {
 
+        //새로운 Issue가 생성되면 Title,Description에서 토큰화한 테그들을 저장합니다.
+        List<String>newTagsfromTitle=oktService.ExtractKoreanTokens(createIssueRequest.getTitle());
+        List<String>newTagsfromDescription=oktService.ExtractKoreanTokens(createIssueRequest.getDescription());
+        List<String> Tags = Stream.concat(newTagsfromTitle.stream(), newTagsfromDescription.stream()).distinct()
+                .toList();
         Issue body = issueService.createIssue(
                 new Issue(
                         createIssueRequest.getTitle(),
                         createIssueRequest.getDescription(),
                         createIssueRequest.getType(),
-                        createIssueRequest.getReporterId()
+                        createIssueRequest.getReporterId(),
+                        Tags
                 )
         );
         return ResponseEntity.ok(body);
@@ -88,10 +99,18 @@ public class IssueController {
             if (patchIssueRequest.getType() != null) targetIssue.setType(patchIssueRequest.getType());
             if (patchIssueRequest.getReporterId() != null) targetIssue.setReporterId(patchIssueRequest.getReporterId());
             if (patchIssueRequest.getFixerId() != null) targetIssue.setFixerId(patchIssueRequest.getFixerId());
-            if (patchIssueRequest.getState() != null) targetIssue.setState(patchIssueRequest.getState());
+            if (patchIssueRequest.getState() != null){
+                targetIssue.setState(patchIssueRequest.getState());
+            }
             if (patchIssueRequest.getAssigneeId() != null) targetIssue.setAssigneeId(patchIssueRequest.getAssigneeId());
             body = issueService.updateIssue(id, targetIssue);
 
+            //만약 이번 패치로 issueState가 RESOLVED 되면, 해당 fixer의 tag필드를 수정합니다.
+            if(patchIssueRequest.getState()==IssueState.RESOLVED){
+                User dev=userService.getUserById(targetIssue.getFixerId());
+                dev.updateTag(targetIssue.getTags());
+                userService.updateUser(targetIssue.getFixerId(),dev);
+            }
             return body != null ? ResponseEntity.ok(body) : ResponseEntity.internalServerError().build();
         }
         else return ResponseEntity.notFound().build();
@@ -178,5 +197,32 @@ public class IssueController {
                 ResponseEntity.ok(Boolean.TRUE) : ResponseEntity.internalServerError().build();
         }
         else return ResponseEntity.notFound().build();
+    }
+
+    @Operation(
+            summary = "Developer의 추천 issue 검색",
+            description = """
+                    'Developer ID'를 키워드로 하여, 이슈를 검색합니다. """
+    )
+    @GetMapping(value="/Jaccard/{id}")
+    public ResponseEntity<List<Issue>>findRecommendedIssueById(
+            @Parameter(description = "Developer UUID")
+            @PathVariable(name="id")
+            UUID userId
+    ){
+        User developer = userService.getUserById(userId);
+        if (developer.getType() != UserType.DEVELOPER) {
+            return ResponseEntity.badRequest().build();
+        }
+        //List<Issue> body = issueService.getAllIssues();
+        List<Issue> body = issueService.getIssueByState(IssueState.NEW);
+        if(body.isEmpty())
+            return ResponseEntity.noContent().build();
+        body.sort((issue1,issue2)->{
+            float jac1 = developer.calculateJaccard(issue1);
+            float jac2 = developer.calculateJaccard(issue2);
+            return Float.compare(jac2, jac1);
+        });
+        return ResponseEntity.ok(body);
     }
 }

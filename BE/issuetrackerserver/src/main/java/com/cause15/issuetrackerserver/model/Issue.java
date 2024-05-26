@@ -26,6 +26,7 @@ public class Issue {
     private UUID reporterId;
     private UUID fixerId;
     private UUID assigneeId;
+    private List<String> tags;
 
     // For test (dummy data)
     public Issue() {}
@@ -35,7 +36,8 @@ public class Issue {
             String title,
             String description,
             IssueType type,
-            UUID reporterId
+            UUID reporterId,
+            List<String>tags
     ) {
         this.id = UUID.randomUUID();
         this.title = title;
@@ -47,6 +49,7 @@ public class Issue {
         this.assigneeId = null;
         this.fixerId = null;
         this.commentIds = new ArrayList<>();
+        this.tags = tags;
     }
 
     // If IssueType isn't given, set it as a default value (MAJOR)
