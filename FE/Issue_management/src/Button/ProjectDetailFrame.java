@@ -1,9 +1,10 @@
 package Button;
 
-import Data.*;
+import Data.Issue;
+import Data.Project;
+
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
 
 public class ProjectDetailFrame extends JFrame {
     private Project project;
@@ -33,6 +34,11 @@ public class ProjectDetailFrame extends JFrame {
 
         add(pane);
         setVisible(true);
+
+        setAlwaysOnTop(true);
+        setVisible(true);
+        toFront();
+        setAlwaysOnTop(false);
     }
 
     // 이슈에 대한 세부 정보를 보여주는 메서드

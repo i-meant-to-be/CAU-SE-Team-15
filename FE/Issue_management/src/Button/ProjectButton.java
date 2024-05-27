@@ -5,8 +5,6 @@ import Layout.MainFrame;
 import Layout.ProjectCreator;
 
 import javax.swing.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 
 public class ProjectButton {
@@ -46,35 +44,33 @@ public class ProjectButton {
 
         projectList.setVisibleRowCount(10);
 
-        projectList.addListSelectionListener(e -> {
-            if (!e.getValueIsAdjusting()) {
-                //Load selected Project's name
-                String selectedProjectName = projectList.getSelectedValue();
-
-                Project selectedProject = null;
-                for (Project project : projects) {
-                    if (project.getName().equals(selectedProjectName)) {
-                        selectedProject = project;
-                        break;
-                    }
-                }
-
-                if (selectedProject != null) {
-                    new ProjectDetailFrame(selectedProject);
-                }
-            }
-        });
-
         JScrollPane listScrollPane = new JScrollPane(projectList);
 
-        JOptionPane.showMessageDialog(null, listScrollPane, "All Projects", JOptionPane.INFORMATION_MESSAGE);
-    }
+        int option = JOptionPane.showConfirmDialog(null, listScrollPane, "All Projects", JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE);
 
+        if (option == JOptionPane.OK_OPTION) {
+            String selectedProjectName = projectList.getSelectedValue();
+
+            Project selectedProject = null;
+            for (Project project : projects) {
+                if (project.getName().equals(selectedProjectName)) {
+                    selectedProject = project;
+                    break;
+                }
+            }
+
+            if (selectedProject != null) {
+                ProjectDetailFrame detailFrame = new ProjectDetailFrame(selectedProject);
+                detailFrame.toFront();
+            }
+        }
+    }
 
     private void createNewProject() {
         ProjectCreator projectCreator = new ProjectCreator(ProjectButton.this);
     }
 
-    public ArrayList<Project> getProjects(){return projects;}
-
+    public ArrayList<Project> getProjects() {
+        return projects;
+    }
 }
