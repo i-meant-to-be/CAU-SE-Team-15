@@ -99,4 +99,8 @@ public class Log_in extends JFrame {
             }
         }
     }
+
+    public User getUser(){
+        return user;
+    }
 }

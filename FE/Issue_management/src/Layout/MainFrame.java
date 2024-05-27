@@ -52,7 +52,13 @@ public class MainFrame extends JFrame {
         JButton registerButton = new JButton("Register");
         registerButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                new RegisterButton();
+               if(login.getUser().getType().equals(UserType.ADMIN)) {new RegisterButton();}
+               else{
+                   JOptionPane.showMessageDialog(MainFrame.this,
+                           "You don't have permission to register.",
+                           "Warning",
+                           JOptionPane.WARNING_MESSAGE);
+               }
             }
         });
 
