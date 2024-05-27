@@ -1,6 +1,9 @@
 package Layout;
 
 import Data.*;
+import ServerConnection.Server_Log_in;
+import ServerConnection.UserData;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -72,17 +75,20 @@ public class Log_in extends JFrame {
     class Button_login_Listener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             String pw = new String(input_PW.getPassword());
+            Server_Log_in serverLogIn = new Server_Log_in();
             //어드민 로그인 + 유저타입 어드민으로 설정
             if(input_ID.getText().equals(MF.getID()) && pw.equals(MF.getPW())){
-                user.setUser(input_ID.getText(), pw, UserType.Admin);
+                user.setUser(input_ID.getText(), pw, UserType.ADMIN);
                 MF.getuserlabel().setText(MF.get_user().getUsername());
                 MF.repaint();
                 MF.loggedIn = true;
                 dispose();
             }
             //서버 통신으로 정보 받아와서 로그인
-            else if (input_ID.getText().equals("서버아이디") && pw.equals("서버 비번")){
-                //user.setUser("서버아이디 비번 타입 ");
+            else if (serverLogIn.login_success(input_ID.getText(),pw)){
+                UserData userData = new UserData();
+                User user1 = userData.getUser(input_ID.getText());
+                user.setUser(user1.getUsername(),user1.getPassword(),user1.getType());
                 MF.getuserlabel().setText(MF.get_user().getUsername());
                 MF.repaint();
                 MF.loggedIn = true;

@@ -1,5 +1,5 @@
 package Data;
 
 public enum UserType {
-    Admin, Manager, Tester, Dev
+    ADMIN, MANAGER, TESTER, DEVELOPER
 }

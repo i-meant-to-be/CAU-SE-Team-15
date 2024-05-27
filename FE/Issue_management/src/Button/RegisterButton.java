@@ -2,7 +2,6 @@ package Button;
 
 import Data.User;
 import Data.UserType;
-import Layout.Log_in;
 
 import javax.swing.*;
 import java.awt.*;
@@ -89,7 +88,7 @@ public class RegisterButton extends JFrame {
                         JOptionPane.WARNING_MESSAGE);
             }
             //Registering to an Admin is blocked
-            else if(selected_position == UserType.Admin){
+            else if(selected_position == UserType.ADMIN){
                 JOptionPane.showMessageDialog(RegisterButton.this,
                         "You can't register to an Admin",
                         "Warning",

@@ -37,23 +37,23 @@ public class ProjectCreator extends JFrame {
         //this is example
         User tempUser1 = new User();
         tempUser1.setUUID(UUID.randomUUID());
-        tempUser1.setUser("hi", "1234",UserType.Dev);
+        tempUser1.setUser("hi", "1234",UserType.DEVELOPER);
         User tempUser2 = new User();
         tempUser2.setUUID(UUID.randomUUID());
-        tempUser2.setUser("hello", "1234",UserType.Tester);
-        if(tempUser1.getType() == UserType.Dev){
+        tempUser2.setUser("hello", "1234",UserType.TESTER);
+        if(tempUser1.getType() == UserType.DEVELOPER){
             devUsers.add(tempUser1);
-        } else if(tempUser1.getType() == UserType.Tester){
+        } else if(tempUser1.getType() == UserType.TESTER){
             testUsers.add(tempUser1);
-        } else if(tempUser1.getType() == UserType.Manager){
+        } else if(tempUser1.getType() == UserType.MANAGER){
             manageUsers.add(tempUser1);
         }
 
-        if(tempUser2.getType() == UserType.Dev){
+        if(tempUser2.getType() == UserType.DEVELOPER){
             devUsers.add(tempUser2);
-        } else if(tempUser2.getType() == UserType.Tester){
+        } else if(tempUser2.getType() == UserType.TESTER){
             testUsers.add(tempUser2);
-        } else if(tempUser2.getType() == UserType.Manager){
+        } else if(tempUser2.getType() == UserType.MANAGER){
             manageUsers.add(tempUser2);
         }
 
@@ -135,17 +135,17 @@ public class ProjectCreator extends JFrame {
             userComboBox.removeAllItems();
             selectedUserType = (UserType) userTypeComboBox.getSelectedItem();
             switch (selectedUserType) {
-                case Dev:
+                case DEVELOPER:
                     for (User u : devUsers) {
                         userComboBox.addItem(u.getUsername());
                     }
                     break;
-                case Tester:
+                case TESTER:
                     for (User u : testUsers) {
                         userComboBox.addItem(u.getUsername());
                     }
                     break;
-                case Manager:
+                case MANAGER:
                     for (User u : manageUsers) {
                         userComboBox.addItem(u.getUsername());
                     }
@@ -158,7 +158,7 @@ public class ProjectCreator extends JFrame {
         public void actionPerformed(ActionEvent e) {
             String selected = (String) userComboBox.getSelectedItem();
             switch (selectedUserType) {
-                case Dev:
+                case DEVELOPER:
                     for (User u : devUsers) {
                         if (selected.equals(u.getUsername())) {
                             selectedUser = u;
@@ -166,7 +166,7 @@ public class ProjectCreator extends JFrame {
                         }
                     }
                     break;
-                case Tester:
+                case TESTER:
                     for (User u : testUsers) {
                         if (selected.equals(u.getUsername())) {
                             selectedUser = u;
@@ -174,7 +174,7 @@ public class ProjectCreator extends JFrame {
                         }
                     }
                     break;
-                case Manager:
+                case MANAGER:
                     for (User u : manageUsers) {
                         if (selected.equals(u.getUsername())) {
                             selectedUser = u;
