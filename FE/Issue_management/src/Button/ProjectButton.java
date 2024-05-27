@@ -3,6 +3,7 @@ package Button;
 import Data.Project;
 import Layout.MainFrame;
 import Layout.ProjectCreator;
+import Layout.ProjectDetailFrame;
 
 import javax.swing.*;
 import java.util.ArrayList;
