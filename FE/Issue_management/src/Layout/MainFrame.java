@@ -18,8 +18,8 @@ public class MainFrame extends JFrame {
     private String ADMIN_PW = "1234";
     private User user = new User();
     private Log_in login;
-    private ArrayList<Project> projects = new ArrayList<>();
     private JLabel user_name;
+    private ArrayList<Project> projects = new ArrayList<>();
 
     public MainFrame() {
         super("Main page");
@@ -65,7 +65,7 @@ public class MainFrame extends JFrame {
         JButton projectButton = new JButton("Project");
         projectButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                new ProjectButton(projects);
+                new ProjectButton(MainFrame.this);
             }
         });
 
@@ -112,6 +112,12 @@ public class MainFrame extends JFrame {
     }
 
     public User get_user() {return user;}
+
+    public ArrayList<Project> get_projects() {return projects;}
+
+    public void addProject(Project project) {
+        projects.add(project);
+    }
 
     public JLabel getuserlabel(){return user_name;}
 

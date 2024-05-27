@@ -16,10 +16,13 @@ public class Project {
     private LocalDateTime creationDate;
     private String description;
 
-    public Project(String name) {
+    public Project(String name, String description, List<UUID> users) {
+        this.creationDate = LocalDateTime.now();
         this.id = UUID.randomUUID();
         this.name = name;
         this.issues = new ArrayList<>();
+        this.users = users;
+        this.description = description;
     }
 
     public UUID getId() {
@@ -38,6 +41,14 @@ public class Project {
         return users;
     }
 
+    public void addUser(UUID user) {
+        users.add(user);
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public void setUsers(List<UUID> users) {
         this.users = users;
     }
@@ -49,10 +60,5 @@ public class Project {
 
     public void addIssue(Issue issue) {
         issues.add(issue);
-    }
-
-    @Override
-    public String toString() { //이거 지우면 프로젝트 리스트에서 프로젝트 이름 정상적으로 안나오니 지우지 마세요!
-        return name;
     }
 }

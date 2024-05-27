@@ -20,14 +20,10 @@ public class ProjectDetailFrame extends JFrame {
         JLabel projectNameLabel = new JLabel("Project Name: " + project.getName()); // 프로젝트 이름 표시
         pane.add(projectNameLabel, BorderLayout.NORTH);
 
-        JPanel issuePanel = new JPanel(new GridLayout(0, 1)); // 0 rows and 1 column
-        Dimension buttonSize = new Dimension(200, 30); // 버튼 크기 설정
+        JPanel issuePanel = new JPanel(new GridLayout(project.getIssues().size(), 1));
 
         for (Issue issue : project.getIssues()) {
             JButton issueButton = new JButton("Title: " + issue.getTitle() + ", Type: " + issue.getType());
-            issueButton.setPreferredSize(buttonSize); // 버튼 크기 고정
-            issueButton.setMaximumSize(buttonSize); // 최대 크기 설정
-            issueButton.setMinimumSize(buttonSize); // 최소 크기 설정
             issueButton.addActionListener(e -> showIssueDetails(issue)); // 버튼을 클릭하면 해당 이슈에 대한 세부 정보를 보여주는 메서드 호출
             issuePanel.add(issueButton);
         }
@@ -44,4 +40,5 @@ public class ProjectDetailFrame extends JFrame {
         IssueDetailFrame detailFrame = new IssueDetailFrame(issue);
         detailFrame.setVisible(true);
     }
+
 }

@@ -1,16 +1,22 @@
 package Button;
 
 import Data.Project;
+import Layout.MainFrame;
 import Layout.ProjectCreator;
 
 import javax.swing.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 
 public class ProjectButton {
+
+    private MainFrame MF;
     private ArrayList<Project> projects;
 
-    public ProjectButton(ArrayList<Project> projects) {
-        this.projects = projects;
+    public ProjectButton(MainFrame MF) {
+        this.MF = MF;
+        projects = MF.get_projects();
         showProjectOptions();
     }
 
@@ -27,17 +33,32 @@ public class ProjectButton {
     }
 
     private void showAllProjects() {
-        JList<Project> projectList = new JList<>(new DefaultListModel<>());
-        DefaultListModel<Project> listModel = (DefaultListModel<Project>) projectList.getModel();
+        //Create Project List
+        JList<String> projectList = new JList<>(new DefaultListModel<>());
+        DefaultListModel<String> listModel = (DefaultListModel<String>) projectList.getModel();
+
+        //Add Project Name
         for (Project project : projects) {
-            listModel.addElement(project);
+            listModel.addElement(project.getName()); // Add only Project name
         }
 
-        projectList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); //하나의 프로젝트만 선택 가능
+        projectList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); // 하나의 프로젝트만 선택 가능
+
         projectList.setVisibleRowCount(10);
+
         projectList.addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
-                Project selectedProject = projectList.getSelectedValue();
+                //Load selected Project's name
+                String selectedProjectName = projectList.getSelectedValue();
+
+                Project selectedProject = null;
+                for (Project project : projects) {
+                    if (project.getName().equals(selectedProjectName)) {
+                        selectedProject = project;
+                        break;
+                    }
+                }
+
                 if (selectedProject != null) {
                     new ProjectDetailFrame(selectedProject);
                 }
@@ -45,10 +66,15 @@ public class ProjectButton {
         });
 
         JScrollPane listScrollPane = new JScrollPane(projectList);
+
         JOptionPane.showMessageDialog(null, listScrollPane, "All Projects", JOptionPane.INFORMATION_MESSAGE);
     }
 
+
     private void createNewProject() {
-        new ProjectCreator(projects); // ProjectCreator 클래스를 호출하여 새로운 프로젝트 생성
+        ProjectCreator projectCreator = new ProjectCreator(ProjectButton.this);
     }
+
+    public ArrayList<Project> getProjects(){return projects;}
+
 }
