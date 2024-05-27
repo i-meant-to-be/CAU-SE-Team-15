@@ -2,6 +2,7 @@ package Button;
 
 import Data.User;
 import Data.UserType;
+import ServerConnection.UserData;
 
 import javax.swing.*;
 import java.awt.*;
@@ -76,12 +77,19 @@ public class RegisterButton extends JFrame {
     //Register User
     class Button_register_Listener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
+
             //check ID duplicate
-
             //if there's no such id information then Register User
-
+            UserData userData = new UserData();
+            System.out.println(userData.checkDup(input_ID.getText()));
+            if(userData.checkDup(input_ID.getText())){
+                JOptionPane.showMessageDialog(RegisterButton.this,
+                        "ID already exists. Enter another ID!",
+                        "Warning",
+                        JOptionPane.WARNING_MESSAGE);
+            }
             //Warning part
-            if(input_ID.getText().isEmpty() || input_PW.getText().isEmpty()||selected_position == null){
+            else if(input_ID.getText().isEmpty() || input_PW.getText().isEmpty()||selected_position == null){
                 JOptionPane.showMessageDialog(RegisterButton.this,
                         "fill every input fields",
                         "Warning",
@@ -97,6 +105,11 @@ public class RegisterButton extends JFrame {
             else {
                 //Register this user to server
                 user = new User(input_ID.getText(), input_PW.getText(), selected_position);
+                userData.addUser(user);
+                JOptionPane.showMessageDialog(RegisterButton.this,
+                        "Successfully registered!",
+                        "Success",
+                        JOptionPane.PLAIN_MESSAGE);
             }
         }
     }

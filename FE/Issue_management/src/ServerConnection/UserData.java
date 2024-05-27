@@ -111,4 +111,14 @@ public class UserData {
         }
     }
 
+    public boolean checkDup(String id){
+        this.getAllUser();
+        for (User user : sd_user) {
+            if (user.getUsername().equals(id)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }
