@@ -48,14 +48,10 @@ public class ProjectCreator extends JFrame {
         this.projectButton = projectButton;
         this.projects = projectButton.getProjects();
 
-        setPreferredSize(new Dimension(600, 600));
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        JScrollPane scrollPane = new JScrollPane();
+        setPreferredSize(new Dimension(750, 600));
 
         pane = new JPanel();
         pane.setLayout(new BorderLayout(10, 10));
-        pane.add(scrollPane);
 
         // Example User data
         User tempUser1 = new User();
@@ -88,8 +84,7 @@ public class ProjectCreator extends JFrame {
         projectMemberPanel.setLayout(new GridLayout(1, 2, 10, 10));
         JPanel memberPanel = new JPanel(new GridLayout(2, 1));
         JLabel projectMemberLabel = new JLabel("Project Member");
-        memberscrollpane = new JScrollPane(projectMemberPanel2_1);
-        memberscrollpane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        memberscrollpane = new JScrollPane();
         Button_add_Listener addListener = new Button_add_Listener();
         addUserButton.addActionListener(addListener);
         buttonX.add(addUserButton);
@@ -111,6 +106,7 @@ public class ProjectCreator extends JFrame {
 
         projectMemberPanel2.add(projectMemberPanel2_1, BorderLayout.CENTER);
         projectMemberPanel2.add(memberscrollpane, BorderLayout.EAST);
+        memberscrollpane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 
         projectMemberPanel.add(projectMemberPanel1);
         projectMemberPanel.add(projectMemberPanel2);
@@ -294,6 +290,7 @@ public class ProjectCreator extends JFrame {
 
             projectMemberPanel2_1.add(newPanel);
             memberscrollpane.setViewportView(projectMemberPanel2_1);
+
             pane.updateUI();
         }
     }
@@ -316,7 +313,6 @@ public class ProjectCreator extends JFrame {
                     projectMemberPanel2_1.setLayout(new GridLayout(panels.size(), 1));
                 else
                     projectMemberPanel2_1.setLayout(new GridLayout(10, 1));
-                memberscrollpane.setViewportView(projectMemberPanel2_1);
                 pane.updateUI();
             }
         }
@@ -324,10 +320,14 @@ public class ProjectCreator extends JFrame {
 
     class Button_create_Listener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            Project project = new Project(projectNameField.getText(), projectDescription.getText(), users);
-            projects.add(project);
-            JOptionPane.showMessageDialog(null, "Project Created", "Success", JOptionPane.PLAIN_MESSAGE);
-            dispose();
+            if(projectNameField.getText().isEmpty())
+                JOptionPane.showMessageDialog(projectMemberPanel2_1, "Please enter the project name!");
+            else {
+                Project project = new Project(projectNameField.getText(), projectDescription.getText(), users);
+                projects.add(project);
+                JOptionPane.showMessageDialog(null, "Project Created", "Success", JOptionPane.PLAIN_MESSAGE);
+                dispose();
+            }
         }
     }
 

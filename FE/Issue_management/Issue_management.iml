@@ -7,10 +7,10 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module-library" exported="">
+    <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../../../프로그래밍/java/json-20190722.jar!/" />
+          <root url="jar://$MODULE_DIR$/../json-20190722.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

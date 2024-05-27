@@ -6,12 +6,15 @@ import Layout.ProjectCreator;
 import Layout.ProjectDetailFrame;
 
 import javax.swing.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 
 public class ProjectButton {
 
     private MainFrame MF;
     private ArrayList<Project> projects;
+    private Project selected_project;
 
     public ProjectButton(MainFrame MF) {
         this.MF = MF;
@@ -61,8 +64,16 @@ public class ProjectButton {
             }
 
             if (selectedProject != null) {
-                ProjectDetailFrame detailFrame = new ProjectDetailFrame(selectedProject);
+                ProjectDetailFrame detailFrame = new ProjectDetailFrame(MF, this, selectedProject);
                 detailFrame.toFront();
+                detailFrame.addWindowListener(new WindowAdapter() {
+                    public void windowClosed(WindowEvent e) {
+                        if (selected_project != null) {
+                            MF.setProject(selected_project);
+                            MF.showIssues();
+                        }
+                    }
+                });
             }
         }
     }
@@ -73,5 +84,9 @@ public class ProjectButton {
 
     public ArrayList<Project> getProjects() {
         return projects;
+    }
+
+    public void setProject (Project selectedProject) {
+        this.selected_project = selectedProject;
     }
 }

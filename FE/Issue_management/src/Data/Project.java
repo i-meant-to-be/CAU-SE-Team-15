@@ -11,7 +11,7 @@ import java.util.UUID;
 public class Project {
     private UUID id;
     private String name;
-    private List<Issue> issues;
+    private ArrayList<Issue> issues;
     private List<UUID> users;
     private LocalDateTime creationDate;
     private String description;
@@ -41,6 +41,10 @@ public class Project {
         return users;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
     public void addUser(UUID user) {
         users.add(user);
     }
@@ -54,7 +58,7 @@ public class Project {
     }
 
 
-    public List<Issue> getIssues() {
+    public ArrayList<Issue> getIssues() {
         return issues;
     }
 

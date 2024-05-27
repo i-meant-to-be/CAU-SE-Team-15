@@ -2,49 +2,81 @@ package Layout;
 
 import Data.Issue;
 import Data.Project;
+import Data.User;
+import Data.UserType;
+import Button.ProjectButton;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.UUID;
 
 public class ProjectDetailFrame extends JFrame {
     private Project project;
 
-    public ProjectDetailFrame(Project project) {
-        super("Project Details - " + project.getName());
+    public ProjectDetailFrame(MainFrame MF, ProjectButton pb, Project project) {
+        super("Project view");
+        setSize(500, 500);
+
         this.project = project;
-        setSize(800, 300);
-        setLocationRelativeTo(null);
-
+        setPreferredSize(new Dimension(600, 600));
         JPanel pane = new JPanel();
-        pane.setLayout(new BorderLayout(10, 10));
 
-        JLabel projectNameLabel = new JLabel("Project Name: " + project.getName()); // 프로젝트 이름 표시
-        pane.add(projectNameLabel, BorderLayout.NORTH);
+        pane.setLayout(new BoxLayout(pane, BoxLayout.Y_AXIS));
 
-        JPanel issuePanel = new JPanel(new GridLayout(project.getIssues().size(), 1));
+        JPanel name = new JPanel();
+        name.setLayout(new BoxLayout(name, BoxLayout.X_AXIS));
+        name.add(new JLabel("Project Name:"));
+        name.add(new JLabel(project.getName()));
 
-        for (Issue issue : project.getIssues()) {
-            JButton issueButton = new JButton("Title: " + issue.getTitle() + ", Type: " + issue.getType());
-            issueButton.addActionListener(e -> showIssueDetails(issue)); // 버튼을 클릭하면 해당 이슈에 대한 세부 정보를 보여주는 메서드 호출
-            issuePanel.add(issueButton);
-        }
+        JPanel ID = new JPanel();
+        ID.setLayout(new BoxLayout(ID, BoxLayout.X_AXIS));
+        ID.add(new JLabel("Project ID:"));
+        ID.add(new JLabel(project.getId().toString()));
 
-        JScrollPane issueScrollPane = new JScrollPane(issuePanel);
-        pane.add(issueScrollPane, BorderLayout.CENTER);
+        JPanel description = new JPanel();
+        description.setLayout(new BorderLayout(10, 10));
+        JLabel descriptionLabel = new JLabel("Description:");
+        description.add(descriptionLabel, BorderLayout.NORTH);
+        descriptionLabel.setHorizontalAlignment(JLabel.CENTER);
+        JTextArea descriptionText = new JTextArea(project.getDescription());
+        descriptionText.setEditable(false);
+        description.add(descriptionText, BorderLayout.CENTER);
+
+        JPanel buttons = new JPanel();
+        buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
+
+        JButton OK = new JButton("OK");
+        OK.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                pb.setProject(project);
+                JOptionPane.showMessageDialog(ProjectDetailFrame.this, "Project selected.");
+                dispose();
+            }
+        });
+        JButton cancel = new JButton("Cancel");
+        cancel.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+            }
+        });
+        buttons.add(new JPanel());
+        buttons.add(OK);
+        buttons.add(new JPanel());
+        buttons.add(cancel);
+        buttons.add(new JPanel());
+
+        pane.add(name);
+        pane.add(ID);
+        pane.add(description);
+        pane.add(buttons);
 
         add(pane);
         setVisible(true);
-
-        setAlwaysOnTop(true);
-        setVisible(true);
-        toFront();
-        setAlwaysOnTop(false);
-    }
-
-    // 이슈에 대한 세부 정보를 보여주는 메서드
-    private void showIssueDetails(Issue issue) {
-        IssueDetailFrame detailFrame = new IssueDetailFrame(issue);
-        detailFrame.setVisible(true);
+        setLocationRelativeTo(null);
     }
 
 }
