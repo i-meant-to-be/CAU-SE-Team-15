@@ -3,10 +3,9 @@ package Button;
 import Data.Project;
 import Layout.MainFrame;
 import Layout.ProjectCreator;
+import Layout.ProjectDetailFrame;
 
 import javax.swing.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 
 public class ProjectButton {

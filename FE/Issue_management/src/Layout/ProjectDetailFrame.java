@@ -1,9 +1,8 @@
-package Button;
+package Layout;
 
 import Data.*;
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
 
 public class ProjectDetailFrame extends JFrame {
     private Project project;
