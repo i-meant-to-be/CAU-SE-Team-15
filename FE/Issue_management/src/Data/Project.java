@@ -50,4 +50,9 @@ public class Project {
     public void addIssue(Issue issue) {
         issues.add(issue);
     }
+
+    @Override
+    public String toString() { //이거 지우면 프로젝트 리스트에서 프로젝트 이름 정상적으로 안나오니 지우지 마세요!
+        return name;
+    }
 }

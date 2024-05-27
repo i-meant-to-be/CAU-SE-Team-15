@@ -1,4 +1,6 @@
 package Layout;
+
+import Data.Project;
 import Data.User;
 import Data.UserType;
 
@@ -6,8 +8,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -15,14 +15,16 @@ public class ProjectCreator extends JFrame {
     private JTextField projectNameField = new JTextField(20);
     private ArrayList<User> devUsers = new ArrayList<>();
     private ArrayList<User> testUsers = new ArrayList<>();
-    private ArrayList<User> ManageUsers = new ArrayList<>();
+    private ArrayList<User> manageUsers = new ArrayList<>();
     private JComboBox<UserType> userTypeComboBox;
     private JComboBox<String> userComboBox;
     private UserType selectedUserType;
     private User selectedUser;
+    private ArrayList<Project> projects;
 
-    public ProjectCreator() {
+    public ProjectCreator(ArrayList<Project> projects) {
         super("Project Creator");
+        this.projects = projects;
         setPreferredSize(new Dimension(600, 600));
 
         JScrollPane scrollPane = new JScrollPane();
@@ -39,24 +41,20 @@ public class ProjectCreator extends JFrame {
         User tempUser2 = new User();
         tempUser2.setUUID(UUID.randomUUID());
         tempUser2.setUser("hello", "1234",UserType.Tester);
-        if(tempUser1.getType()==UserType.Dev){
+        if(tempUser1.getType() == UserType.Dev){
             devUsers.add(tempUser1);
-        }
-        else if(tempUser1.getType()==UserType.Tester){
+        } else if(tempUser1.getType() == UserType.Tester){
             testUsers.add(tempUser1);
-        }
-        else if(tempUser1.getType()==UserType.Manager){
-            ManageUsers.add(tempUser1);
+        } else if(tempUser1.getType() == UserType.Manager){
+            manageUsers.add(tempUser1);
         }
 
-        if(tempUser2.getType()==UserType.Dev){
+        if(tempUser2.getType() == UserType.Dev){
             devUsers.add(tempUser2);
-        }
-        else if(tempUser2.getType()==UserType.Tester){
+        } else if(tempUser2.getType() == UserType.Tester){
             testUsers.add(tempUser2);
-        }
-        else if(tempUser2.getType()==UserType.Manager){
-            ManageUsers.add(tempUser2);
+        } else if(tempUser2.getType() == UserType.Manager){
+            manageUsers.add(tempUser2);
         }
 
         //Project Name panel
@@ -77,8 +75,6 @@ public class ProjectCreator extends JFrame {
         userTypeComboBox.setSelectedItem(null);
         userComboBox = new JComboBox<>();
         userComboBox.setSelectedItem(null);
-
-
 
         JButton addUserButton = new JButton("Add User");
         projectMemberPanel.setLayout(new GridLayout(1, 2, 10, 10));
@@ -112,17 +108,17 @@ public class ProjectCreator extends JFrame {
 
         //Button Panel
         JButton create = new JButton("Create");
-        JButton Cancel = new JButton("Cancel");
+        JButton cancel = new JButton("Cancel");
         //Create, Cancel button action definition
         Button_create_Listener createListener = new Button_create_Listener();
         create.addActionListener(createListener);
         Button_cancel_Listener cancelListener = new Button_cancel_Listener();
-        Cancel.addActionListener(cancelListener);
+        cancel.addActionListener(cancelListener);
 
         JPanel btns = new JPanel();
         btns.setLayout(new GridLayout(1,2));
         btns.add(create);
-        btns.add(Cancel);
+        btns.add(cancel);
 
         pane.add(projectNamePanel, BorderLayout.NORTH);
         pane.add(memberPanel, BorderLayout.CENTER);
@@ -150,14 +146,13 @@ public class ProjectCreator extends JFrame {
                     }
                     break;
                 case Manager:
-                    for (User u : ManageUsers) {
+                    for (User u : manageUsers) {
                         userComboBox.addItem(u.getUsername());
                     }
                     break;
             }
         }
     }
-
 
     class Combobox_user_Listener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
@@ -180,7 +175,7 @@ public class ProjectCreator extends JFrame {
                     }
                     break;
                 case Manager:
-                    for (User u : ManageUsers) {
+                    for (User u : manageUsers) {
                         if (selected.equals(u.getUsername())) {
                             selectedUser = u;
                             break;
@@ -191,22 +186,33 @@ public class ProjectCreator extends JFrame {
         }
     }
 
-
     class Button_add_Listener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-
+            if (selectedUser != null) {
+                JOptionPane.showMessageDialog(null, "User " + selectedUser.getUsername() + " added.");
+            } else {
+                JOptionPane.showMessageDialog(null, "No user selected.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
+
     class Button_create_Listener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-
+            String projectName = projectNameField.getText().trim();
+            if (!projectName.isEmpty()) {
+                Project newProject = new Project(projectName);
+                projects.add(newProject);
+                JOptionPane.showMessageDialog(null, "Project created successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+                dispose(); // Close the ProjectCreator window
+            } else {
+                JOptionPane.showMessageDialog(null, "Project name cannot be empty.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 
     class Button_cancel_Listener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            dispose();
+            dispose(); // Close the ProjectCreator window
         }
     }
-
 }

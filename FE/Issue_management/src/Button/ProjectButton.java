@@ -1,12 +1,12 @@
 package Button;
 
 import Data.Project;
+import Layout.ProjectCreator;
 
 import javax.swing.*;
 import java.util.ArrayList;
 
 public class ProjectButton {
-
     private ArrayList<Project> projects;
 
     public ProjectButton(ArrayList<Project> projects) {
@@ -49,13 +49,6 @@ public class ProjectButton {
     }
 
     private void createNewProject() {
-        String projectName = JOptionPane.showInputDialog(null, "Enter project name:");
-        if (projectName != null && !projectName.trim().isEmpty()) {
-            Project newProject = new Project(projectName);
-            projects.add(newProject);
-            JOptionPane.showMessageDialog(null, "Project created successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
-        } else {
-            JOptionPane.showMessageDialog(null, "Project name cannot be empty.", "Error", JOptionPane.ERROR_MESSAGE);
-        }
+        new ProjectCreator(projects); // ProjectCreator 클래스를 호출하여 새로운 프로젝트 생성
     }
 }
