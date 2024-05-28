@@ -11,23 +11,30 @@ import java.util.UUID;
 public class IssueButton {
 
     public IssueButton(MainFrame MF, ArrayList<Project> projects) {
-        if (projects.isEmpty()) { //프로젝트 리스트가 비어 있는지 확인
+        User user = MF.get_user();
+        if(user.getType().equals(UserType.TESTER)) {
+            if (projects.isEmpty()) { //프로젝트 리스트가 비어 있는지 확인
             JOptionPane.showMessageDialog(null, "No projects available. Please create a project first.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
-        }
+            }
 
-        String[] projectNames = projects.stream().map(Project::getName).toArray(String[]::new);
-        String selectedProjectName = (String) JOptionPane.showInputDialog(null, "Select a project to add the issue:", "Select Project",
-                JOptionPane.PLAIN_MESSAGE, null, projectNames, projectNames[0]);
+            String[] projectNames = projects.stream().map(Project::getName).toArray(String[]::new);
+            String selectedProjectName = (String) JOptionPane.showInputDialog(null, "Select a project to add the issue:", "Select Project",
+                    JOptionPane.PLAIN_MESSAGE, null, projectNames, projectNames[0]); //프로젝트 선택 창 표시
 
-        if (selectedProjectName != null) { //사용자가 프로젝트 클릭한 경우
-            for (Project project : projects) {
-                if (project.getName().equals(selectedProjectName)) {
-                    addIssueToProject(project, MF.get_user());
-                    break;
+            if (selectedProjectName != null) { //사용자가 프로젝트 클릭한 경우
+                for (Project project : projects) {
+                    if (project.getName().equals(selectedProjectName)) {
+                        addIssueToProject(project, MF.get_user());
+                        break;
+                    }
                 }
             }
         }
+        else {
+            JOptionPane.showMessageDialog(null, "Only TESTER can create a new issue");
+        }
+
     }
 
     public void addIssueToProject(Project project, User user) {

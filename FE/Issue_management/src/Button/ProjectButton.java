@@ -1,6 +1,8 @@
 package Button;
 
 import Data.Project;
+import Data.User;
+import Data.UserType;
 import Layout.MainFrame;
 import Layout.ProjectCreator;
 import Layout.ProjectDetailFrame;
@@ -30,7 +32,13 @@ public class ProjectButton {
         if (choice == 0) {
             showAllProjects();
         } else if (choice == 1) {
-            createNewProject();
+            User user = MF.get_user();
+            if (user.getType().equals(UserType.ADMIN)){
+                createNewProject();
+            }
+            else {
+                JOptionPane.showMessageDialog(null, "Only ADMIN can create a new project.", "Access Denied", JOptionPane.WARNING_MESSAGE);
+            }
         }
     }
 
