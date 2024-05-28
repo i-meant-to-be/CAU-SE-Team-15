@@ -32,7 +32,7 @@ public class IssueButton {
             }
         }
         else {
-            JOptionPane.showMessageDialog(null, "Only TESTER can create a new issue");
+            JOptionPane.showMessageDialog(null, "Only TESTER can create a new issue","Access Denied", JOptionPane.WARNING_MESSAGE);
         }
 
     }
