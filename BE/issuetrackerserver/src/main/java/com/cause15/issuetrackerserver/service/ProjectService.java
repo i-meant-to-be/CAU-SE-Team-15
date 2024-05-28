@@ -2,7 +2,6 @@ package com.cause15.issuetrackerserver.service;
 
 import com.cause15.issuetrackerserver.model.Project;
 import com.cause15.issuetrackerserver.repository.ProjectRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,11 +10,14 @@ import java.util.UUID;
 
 @Service
 public class ProjectService {
+    // Dependency injection
+    private final ProjectRepository projectRepository;
+    public ProjectService(ProjectRepository projectRepository) {
+        this.projectRepository = projectRepository;
+    }
 
-    @Autowired
-    private ProjectRepository projectRepository;
-
-
+    // Methods
+    // Create a project
     public Project createProject(Project project) {
         return projectRepository.save(project);
     }
@@ -36,7 +38,7 @@ public class ProjectService {
 
         if (existingProjectOpt.isPresent()) {
             Project existingProject = existingProjectOpt.get();
-            existingProject.setName(updatedProject.getName());
+            existingProject.setTitle(updatedProject.getTitle());
             existingProject.setIssueIds(updatedProject.getIssueIds());
             existingProject.setUserIds(updatedProject.getUserIds());
 
@@ -47,7 +49,11 @@ public class ProjectService {
     }
 
     // Delete a project by ID
-    public void deleteProject(UUID id) {
-        projectRepository.deleteById(id);
+    public boolean deleteProject(UUID id) {
+        if (projectRepository.existsById(id)) {
+            projectRepository.deleteById(id);
+            return true;
+        }
+        else return false;
     }
 }

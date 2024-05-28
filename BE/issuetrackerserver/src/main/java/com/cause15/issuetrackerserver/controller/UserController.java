@@ -95,7 +95,7 @@ public class UserController {
     public ResponseEntity<List<User>> getAllUsers() {
         List<User> body = userService.getAllUsers();
 
-        if (body != null) return ResponseEntity.ok(body);
+        if (body != null && !body.isEmpty()) return ResponseEntity.ok(body);
         else return ResponseEntity.noContent().build();
     }
 

@@ -15,15 +15,15 @@ public class Project {
     private UUID id;
     private List<UUID> issueIds;
     private List<UUID> userIds;
-    private String name;
+    private String title;
+    private String description;
     private LocalDateTime createdDate;
 
-    public Project(
-            String name
-    ){
-        this.name=name;
-        this.id=UUID.randomUUID();
-        this.createdDate=LocalDateTime.now();
+    public Project(String title, String description) {
+        this.title = title;
+        this.description = description;
+        this.id = UUID.randomUUID();
+        this.createdDate = LocalDateTime.now();
     }
 
 }

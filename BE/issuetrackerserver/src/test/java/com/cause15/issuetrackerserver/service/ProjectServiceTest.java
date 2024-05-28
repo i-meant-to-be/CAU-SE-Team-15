@@ -22,7 +22,7 @@ public class ProjectServiceTest {
 
     @Test
     void testGetAllProjects(){
-        Project project = new Project("test");
+        Project project = new Project("test", "asd");
         projectService.getAllProjects();
     }
 

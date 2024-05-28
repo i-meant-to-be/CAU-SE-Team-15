@@ -47,7 +47,7 @@ public class UserService {
             userRepository.deleteById(id);
             return true;
         }
-        return false;
+        else return false;
     }
 
     public User getUserByName(String name) {

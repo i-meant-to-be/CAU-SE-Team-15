@@ -2,12 +2,10 @@ package com.cause15.issuetrackerserver.controller;
 
 import com.cause15.issuetrackerserver.dto.CreateIssueRequest;
 import com.cause15.issuetrackerserver.dto.PatchIssueRequest;
-import com.cause15.issuetrackerserver.model.Issue;
-import com.cause15.issuetrackerserver.model.IssueState;
-import com.cause15.issuetrackerserver.model.User;
-import com.cause15.issuetrackerserver.model.UserType;
+import com.cause15.issuetrackerserver.model.*;
 import com.cause15.issuetrackerserver.service.IssueService;
 import com.cause15.issuetrackerserver.service.OktService;
+import com.cause15.issuetrackerserver.service.ProjectService;
 import com.cause15.issuetrackerserver.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -16,7 +14,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -28,11 +28,18 @@ public class IssueController {
     private final IssueService issueService;
     private final UserService userService;
     private final OktService oktService;
+    private final ProjectService projectService;
 
-    public IssueController(IssueService issueService, UserService userService,OktService oktService) {
+    public IssueController(
+            IssueService issueService,
+            UserService userService,
+            OktService oktService,
+            ProjectService projectService
+    ) {
         this.issueService = issueService;
         this.userService = userService;
         this.oktService= oktService;
+        this.projectService = projectService;
     }
 
     // APIs
@@ -200,17 +207,17 @@ public class IssueController {
     }
 
     @Operation(
-            summary = "Developer의 추천 issue 검색",
-            description = """
-                    'Developer ID'를 키워드로 하여, 이슈를 검색합니다. """
+            summary = "Developer의 추천 이슈 검색",
+            description = "'Developer ID'를 키워드로 하여, 이슈를 검색합니다."
     )
-    @GetMapping(value="/Jaccard/{id}")
-    public ResponseEntity<List<Issue>>findRecommendedIssueById(
+    @RequestMapping(value = "/Jaccard/{id}", method = RequestMethod.GET)
+    public ResponseEntity<List<Issue>> findRecommendedIssueById(
             @Parameter(description = "Developer UUID")
-            @PathVariable(name="id")
+            @PathVariable(name = "id")
             UUID userId
     ){
         User developer = userService.getUserById(userId);
+
         if (developer.getType() != UserType.DEVELOPER) {
             return ResponseEntity.badRequest().build();
         }
@@ -223,6 +230,34 @@ public class IssueController {
             float jac2 = developer.calculateJaccard(issue2);
             return Float.compare(jac2, jac1);
         });
+
         return ResponseEntity.ok(body);
+    }
+
+    @Operation(
+            summary = "특정 프로젝트에 포함된 모든 이슈 조회",
+            description = "특정 프로젝트 1건에 포함된 모든 이슈의 데이터를 조회합니다."
+    )
+    @RequestMapping("/project/{id}/issue")
+    public ResponseEntity<List<Issue>> getAllIssueIncludedInProject(
+            @Parameter(description = "이슈를 조회할 프로젝트의 UUID")
+            @PathVariable(name = "id")
+            UUID id
+    ){
+        Optional<Project> targetProject = projectService.getProjectById(id);
+        if (targetProject.isPresent()) {
+            List<UUID> issueIds = targetProject.get().getIssueIds();
+
+            if (!issueIds.isEmpty()) {
+                List<Issue> body = new ArrayList<>();
+                issueIds.forEach((UUID issueId) -> {
+                    body.add(issueService.getIssueById(issueId));
+                });
+
+                return ResponseEntity.ok(body);
+            }
+            else return ResponseEntity.noContent().build();
+        }
+        else return ResponseEntity.notFound().build();
     }
 }
