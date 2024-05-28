@@ -60,13 +60,13 @@ public class MainFrame extends JFrame {
         JButton registerButton = new JButton("Register");
         registerButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-               if(login.getUser().getType().equals(UserType.ADMIN)) {new RegisterButton();}
-               else{
-                   JOptionPane.showMessageDialog(MainFrame.this,
-                           "You don't have permission to register.",
-                           "Warning",
-                           JOptionPane.WARNING_MESSAGE);
-               }
+                if(login.getUser().getType().equals(UserType.ADMIN)) {new RegisterButton();}
+                else{
+                    JOptionPane.showMessageDialog(MainFrame.this,
+                            "You don't have permission to register.",
+                            "Warning",
+                            JOptionPane.WARNING_MESSAGE);
+                }
             }
         });
 
@@ -138,7 +138,7 @@ public class MainFrame extends JFrame {
         issue_panel.setLayout(new BorderLayout(10, 10));
 
         JPanel detail_panel = new JPanel();
-        detail_panel.setLayout(new GridLayout(1, 6));
+        detail_panel.setLayout(new GridLayout(1, 7));
         JLabel issue_title = new JLabel("Issue_title", JLabel.CENTER);
         issue_title.setBorder(border);
         JLabel issue_reporter = new JLabel("Issue_reporter", JLabel.CENTER);
@@ -151,12 +151,17 @@ public class MainFrame extends JFrame {
         issue_assignee.setBorder(border);
         JLabel issue_state = new JLabel("Issue_state", JLabel.CENTER);
         issue_state.setBorder(border);
+        JLabel issue_detail = new JLabel("Issue_detail", JLabel.CENTER);
+        issue_detail.setBorder(border);
+
         detail_panel.add(issue_title);
         detail_panel.add(issue_reporter);
         detail_panel.add(issue_date);
         detail_panel.add(issue_type);
         detail_panel.add(issue_assignee);
         detail_panel.add(issue_state);
+        detail_panel.add(issue_detail);
+
 
         //panel은 이슈 목록
         JPanel panel = new JPanel();
@@ -177,6 +182,20 @@ public class MainFrame extends JFrame {
                 new_Panel.add(new JLabel(issue.getAssigneeId().toString(), JLabel.CENTER));
             }
             new_Panel.add(new JLabel(issue.getState().toString(), JLabel.CENTER));
+            issue_panels.add(new_Panel);
+            // "Detail" 버튼 추가
+            JButton detailButton = new JButton("Detail");
+            detailButton.setMinimumSize(new Dimension(30, 30));
+            detailButton.setMaximumSize(new Dimension(30, 30));
+            detailButton.setPreferredSize(new Dimension(30, 30));
+            detailButton.setSize(new Dimension(30, 30));
+            detailButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    new IssueDetailFrame(issue);
+                }
+            });
+            new_Panel.add(detailButton);
             issue_panels.add(new_Panel);
         }
         for(int i = 0; i < issue_panels.size(); i++){
