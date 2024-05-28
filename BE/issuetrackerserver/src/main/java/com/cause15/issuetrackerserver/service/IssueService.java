@@ -6,6 +6,7 @@ import com.cause15.issuetrackerserver.repository.IssueRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -22,8 +23,8 @@ public class IssueService {
         return issueRepository.findAll();
     }
 
-    public Issue getIssueById(UUID id) {
-        return issueRepository.findById(id).orElse(null);
+    public Optional<Issue> getIssueById(UUID id) {
+        return issueRepository.findById(id);
     }
 
     public Issue createIssue(Issue issue) {

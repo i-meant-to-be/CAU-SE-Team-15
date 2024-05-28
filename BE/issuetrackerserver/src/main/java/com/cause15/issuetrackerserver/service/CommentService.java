@@ -6,6 +6,7 @@ import com.cause15.issuetrackerserver.repository.CommentRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -22,9 +23,8 @@ public class CommentService {
         return commentRepository.findAll();
     }
 
-    public Comment getCommentById(UUID id) {
-        return commentRepository.findById(id).orElse(null);
-
+    public Optional<Comment> getCommentById(UUID id) {
+        return commentRepository.findById(id);
     }
 
     public boolean deleteComment(UUID id) {

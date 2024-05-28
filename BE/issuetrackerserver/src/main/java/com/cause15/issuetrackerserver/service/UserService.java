@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -26,8 +27,8 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public User getUserById(UUID id) {
-        return userRepository.findById(id).orElse(null);
+    public Optional<User> getUserById(UUID id) {
+        return userRepository.findById(id);
     }
 
     public User createUser(User user) {

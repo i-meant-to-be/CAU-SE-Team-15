@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Tag(name = "Comment Controller", description = "댓글 관련 API")
@@ -38,8 +39,8 @@ public class CommentController {
 
     // APIs
     @Operation(
-            summary = "새로운 댓글 추가",
-            description = "새로운 댓글을 DB에 추가합니다."
+            summary = "이슈에 새 댓글 생성",
+            description = "특정 이슈에 새로운 댓글을 생성 및 추가합니다."
     )
     @ApiResponse(responseCode = "200 OK", description = "성공적으로 새 댓글을 추가한 경우 반환")
     @RequestMapping(value = "/issue/{id}/comment", method = RequestMethod.POST)
@@ -47,27 +48,20 @@ public class CommentController {
             @RequestBody CreateCommentRequest createCommentRequest,
             @Parameter(description = "댓글을 추가할 이슈의 ID")
             @PathVariable(name = "id")
-            UUID commentId
+            UUID issueId
     ) {
-        Issue targetIssue = issueService.getIssueById(commentId);
+        Optional<Issue> targetIssue = issueService.getIssueById(issueId);
 
-        if (targetIssue != null) {
-            Comment body = commentService.createComment(
+        if (targetIssue.isPresent()) {
+            Comment newComment = commentService.createComment(
                     new Comment(
                             createCommentRequest.getBody(),
                             createCommentRequest.getAuthorId()
                     )
             );
+            targetIssue.get().getCommentIds().add(newComment.getId());
 
-            if (targetIssue.getCommentIds().add(body.getId())) {
-                Issue newIssue = issueService.updateIssue(
-                        targetIssue.getId(),
-                        targetIssue.copy(null, null, null, null, null, null, targetIssue.getCommentIds(), null, null, null)
-                );
-
-                if (newIssue != null) return ResponseEntity.ok(body);
-                else return ResponseEntity.internalServerError().build();
-            }
+            if (issueService.updateIssue(issueId, targetIssue.get()) != null) return ResponseEntity.ok(newComment);
             else return ResponseEntity.internalServerError().build();
         }
         else return ResponseEntity.notFound().build();
@@ -96,9 +90,8 @@ public class CommentController {
             @PathVariable(name = "id")
             UUID id
     ) {
-        Comment body = commentService.getCommentById(id);
-        return body != null
-                ? ResponseEntity.ok(body) : ResponseEntity.notFound().build();
+        Optional<Comment> body = commentService.getCommentById(id);
+        return body.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
     
     @Operation(
@@ -112,9 +105,9 @@ public class CommentController {
             @PathVariable(name = "id")
             UUID id
     ) {
-        Comment targetComment = commentService.getCommentById(id);
+        Optional<Comment> targetComment = commentService.getCommentById(id);
 
-        if (targetComment != null) {
+        if (targetComment.isPresent()) {
             return commentService.deleteComment(id) ?
                     ResponseEntity.ok(Boolean.TRUE) : ResponseEntity.notFound().build();
         }
@@ -128,13 +121,14 @@ public class CommentController {
     @ApiResponse(responseCode = "200 OK", description = "주어진 이슈 ID에 달린 댓글이 있을 경우 반환")
     @RequestMapping(value = "/issue/{id}/comment", method = RequestMethod.GET)
     public ResponseEntity<List<Comment>> getCommentByIssueId(@PathVariable(name = "id") UUID issueId) {
-        Issue targetIssue = issueService.getIssueById(issueId);
+        Optional<Issue> targetIssue = issueService.getIssueById(issueId);
         List<Comment> body = new ArrayList<>();
 
-        if (targetIssue != null) {
-            if (!targetIssue.getCommentIds().isEmpty()) {
-                targetIssue.getCommentIds().forEach(commentId -> {
-                    body.add(commentService.getCommentById(commentId));
+        if (targetIssue.isPresent()) {
+            if (!targetIssue.get().getCommentIds().isEmpty()) {
+                targetIssue.get().getCommentIds().forEach(commentId -> {
+                    Optional<Comment> targetComment = commentService.getCommentById(commentId);
+                    targetComment.ifPresent(body::add);
                 });
                 return ResponseEntity.ok(body);
             }
@@ -153,12 +147,12 @@ public class CommentController {
             @RequestBody PatchCommentRequest patchCommentRequest,
             @PathVariable(name = "id") UUID id
     ) {
-        Comment targetComment = commentService.getCommentById(id);
+        Optional<Comment> targetComment = commentService.getCommentById(id);
 
-        if (targetComment != null) {
-            if (patchCommentRequest.getBody() != null) targetComment.setBody(patchCommentRequest.getBody());
+        if (targetComment.isPresent()) {
+            if (patchCommentRequest.getBody() != null) targetComment.get().setBody(patchCommentRequest.getBody());
 
-            return ResponseEntity.ok(targetComment);
+            return ResponseEntity.ok(targetComment.get());
         }
 
         return ResponseEntity.notFound().build();

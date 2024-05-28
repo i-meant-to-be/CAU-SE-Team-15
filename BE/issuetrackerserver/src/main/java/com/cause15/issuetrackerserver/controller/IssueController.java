@@ -44,28 +44,43 @@ public class IssueController {
 
     // APIs
     @Operation(
-            summary = "새로운 이슈 추가",
-            description = "새로운 이슈를 DB에 추가합니다."
+            summary = "프로젝트에 새 이슈 생성",
+            description = "특정 프로젝트에 새로운 이슈를 생성 및 추가합니다."
     )
     @ApiResponse(responseCode = "200 OK", description = "성공적으로 새 이슈를 추가한 경우 반환")
-    @RequestMapping(value = "/issue", method = RequestMethod.POST)
-    public ResponseEntity<Issue> createIssue(@RequestBody CreateIssueRequest createIssueRequest) {
+    @RequestMapping(value = "/project/{id}/issue", method = RequestMethod.POST)
+    public ResponseEntity<Issue> createIssue(
+            @RequestBody CreateIssueRequest createIssueRequest,
+            @Parameter(description = "이슈를 추가할 프로젝트의 ID")
+            @PathVariable(name = "id")
+            UUID projectId
+    ) {
+        Optional<Project> targetProject = projectService.getProjectById(projectId);
 
-        //새로운 Issue가 생성되면 Title,Description에서 토큰화한 테그들을 저장합니다.
-        List<String>newTagsfromTitle=oktService.ExtractKoreanTokens(createIssueRequest.getTitle());
-        List<String>newTagsfromDescription=oktService.ExtractKoreanTokens(createIssueRequest.getDescription());
-        List<String> Tags = Stream.concat(newTagsfromTitle.stream(), newTagsfromDescription.stream()).distinct()
-                .toList();
-        Issue body = issueService.createIssue(
-                new Issue(
-                        createIssueRequest.getTitle(),
-                        createIssueRequest.getDescription(),
-                        createIssueRequest.getType(),
-                        createIssueRequest.getReporterId(),
-                        Tags
-                )
-        );
-        return ResponseEntity.ok(body);
+        if (targetProject.isPresent()) {
+            // 새로운 Issue가 생성되면 Title, Description에서 토큰화한 테그들을 저장합니다.
+            List<String> newTagsFromTitle = oktService.ExtractKoreanTokens(createIssueRequest.getTitle());
+            List<String> newTagsFromDescription = oktService.ExtractKoreanTokens(createIssueRequest.getDescription());
+            List<String> Tags = Stream
+                    .concat(newTagsFromTitle.stream(), newTagsFromDescription.stream())
+                    .distinct()
+                    .toList();
+
+            Issue newIssue = issueService.createIssue(
+                    new Issue(
+                            createIssueRequest.getTitle(),
+                            createIssueRequest.getDescription(),
+                            createIssueRequest.getType(),
+                            createIssueRequest.getReporterId(),
+                            Tags
+                    )
+            );
+            targetProject.get().getIssueIds().add(newIssue.getId());
+
+            if (projectService.updateProject(projectId, targetProject.get()) != null) return ResponseEntity.ok(newIssue);
+            else return ResponseEntity.internalServerError().build();
+        }
+        else return ResponseEntity.notFound().build();
     }
 
     @Operation(
@@ -79,10 +94,8 @@ public class IssueController {
         @PathVariable(name = "id")
         UUID id
     ) {
-        Issue body = issueService.getIssueById(id);
-
-        if (body != null) return ResponseEntity.ok(body);
-        else return ResponseEntity.notFound().build();
+        Optional<Issue> body = issueService.getIssueById(id);
+        return body.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @Operation(
@@ -97,28 +110,30 @@ public class IssueController {
             @PathVariable(name = "id")
             UUID id
     ) {
-        Issue targetIssue = issueService.getIssueById(id);
-        Issue body;
+        Optional<Issue> targetIssue = issueService.getIssueById(id);
 
-        if (targetIssue != null) {
-            if (patchIssueRequest.getTitle() != null) targetIssue.setTitle(patchIssueRequest.getTitle());
-            if (patchIssueRequest.getDescription() != null) targetIssue.setDescription(patchIssueRequest.getDescription());
-            if (patchIssueRequest.getType() != null) targetIssue.setType(patchIssueRequest.getType());
-            if (patchIssueRequest.getReporterId() != null) targetIssue.setReporterId(patchIssueRequest.getReporterId());
-            if (patchIssueRequest.getFixerId() != null) targetIssue.setFixerId(patchIssueRequest.getFixerId());
-            if (patchIssueRequest.getState() != null){
-                targetIssue.setState(patchIssueRequest.getState());
-            }
-            if (patchIssueRequest.getAssigneeId() != null) targetIssue.setAssigneeId(patchIssueRequest.getAssigneeId());
-            body = issueService.updateIssue(id, targetIssue);
+        if (targetIssue.isPresent()) {
+            if (patchIssueRequest.getTitle() != null) targetIssue.get().setTitle(patchIssueRequest.getTitle());
+            if (patchIssueRequest.getDescription() != null) targetIssue.get().setDescription(patchIssueRequest.getDescription());
+            if (patchIssueRequest.getType() != null) targetIssue.get().setType(patchIssueRequest.getType());
+            if (patchIssueRequest.getReporterId() != null) targetIssue.get().setReporterId(patchIssueRequest.getReporterId());
+            if (patchIssueRequest.getFixerId() != null) targetIssue.get().setFixerId(patchIssueRequest.getFixerId());
+            if (patchIssueRequest.getState() != null) targetIssue.get().setState(patchIssueRequest.getState());
+            if (patchIssueRequest.getAssigneeId() != null) targetIssue.get().setAssigneeId(patchIssueRequest.getAssigneeId());
 
-            //만약 이번 패치로 issueState가 RESOLVED 되면, 해당 fixer의 tag필드를 수정합니다.
-            if(patchIssueRequest.getState()==IssueState.RESOLVED){
-                User dev=userService.getUserById(targetIssue.getFixerId());
-                dev.updateTag(targetIssue.getTags());
-                userService.updateUser(targetIssue.getFixerId(),dev);
+            // 만약 이번 패치로 issueState가 RESOLVED 되면, 해당 fixer의 tag필드를 수정합니다.
+            if (patchIssueRequest.getState() == IssueState.RESOLVED){
+                Optional<User> dev = userService.getUserById(targetIssue.get().getFixerId());
+
+                if (dev.isPresent()) {
+                    dev.get().updateTag(targetIssue.get().getTags());
+                    userService.updateUser(dev.get().getId(), dev.get());
+                }
+                else return ResponseEntity.internalServerError().build();
             }
-            return body != null ? ResponseEntity.ok(body) : ResponseEntity.internalServerError().build();
+
+            if (issueService.updateIssue(id, targetIssue.get()) != null) return ResponseEntity.ok(targetIssue.get());
+            else return ResponseEntity.internalServerError().build();
         }
         else return ResponseEntity.notFound().build();
     }
@@ -168,16 +183,16 @@ public class IssueController {
             @PathVariable(name = "id")
             UUID userId
     ) {
-        User targetUser = userService.getUserById(userId);
+        Optional<User> targetUser = userService.getUserById(userId);
 
-        if (targetUser != null) {
-            if (targetUser.getType() == UserType.TESTER) {
-                List<Issue> body = issueService.getIssueForTester(targetUser.getId());
+        if (targetUser.isPresent()) {
+            if (targetUser.get().getType() == UserType.TESTER) {
+                List<Issue> body = issueService.getIssueForTester(targetUser.get().getId());
                 return !body.isEmpty() ?
                         ResponseEntity.ok(body) : ResponseEntity.noContent().build();
             }
-            else if (targetUser.getType() == UserType.DEVELOPER) {
-                List<Issue> body = issueService.getIssueForDeveloper(targetUser.getId());
+            else if (targetUser.get().getType() == UserType.DEVELOPER) {
+                List<Issue> body = issueService.getIssueForDeveloper(targetUser.get().getId());
                 return !body.isEmpty() ?
                         ResponseEntity.ok(body) : ResponseEntity.noContent().build();
             }
@@ -186,6 +201,8 @@ public class IssueController {
         return ResponseEntity.notFound().build();
     }
 
+    // This is deprecated API
+    /*
     @Operation(
             summary = "이슈 1건 삭제",
             description = "특정 이슈를 DB에서 삭제합니다."
@@ -197,61 +214,70 @@ public class IssueController {
             @PathVariable(name = "id")
             UUID id
     ) {
-        Issue targetIssue = issueService.getIssueById(id);
+        Optional<Issue> targetIssue = issueService.getIssueById(id);
 
-        if (targetIssue != null) {
+        if (targetIssue.isPresent()) {
             return issueService.deleteIssue(id) ?
                 ResponseEntity.ok(Boolean.TRUE) : ResponseEntity.internalServerError().build();
         }
         else return ResponseEntity.notFound().build();
     }
+     */
 
     @Operation(
             summary = "Developer의 추천 이슈 검색",
             description = "'Developer ID'를 키워드로 하여, 이슈를 검색합니다."
     )
-    @RequestMapping(value = "/Jaccard/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/user/{id}/recommanded_issue", method = RequestMethod.GET)
     public ResponseEntity<List<Issue>> findRecommendedIssueById(
-            @Parameter(description = "Developer UUID")
+            @Parameter(description = "추천 이슈를 검색할 개발자의 UUID")
             @PathVariable(name = "id")
-            UUID userId
-    ){
-        User developer = userService.getUserById(userId);
+            UUID id
+    ) {
+        Optional<User> targetDev = userService.getUserById(id);
 
-        if (developer.getType() != UserType.DEVELOPER) {
-            return ResponseEntity.badRequest().build();
+        if (targetDev.isPresent()) {
+            if (targetDev.get().getType() == UserType.DEVELOPER) {
+                List<Issue> body = issueService.getIssueByState(IssueState.NEW);
+
+                if (!body.isEmpty()) {
+                    body.sort((issue1, issue2) -> {
+                        float jac1 = targetDev.get().calculateJaccard(issue1);
+                        float jac2 = targetDev.get().calculateJaccard(issue2);
+
+                        return Float.compare(jac2, jac1);
+                    });
+
+                    return ResponseEntity.ok(body);
+                }
+                else return ResponseEntity.noContent().build();
+            }
+            else return ResponseEntity.badRequest().build();
         }
-        //List<Issue> body = issueService.getAllIssues();
-        List<Issue> body = issueService.getIssueByState(IssueState.NEW);
-        if(body.isEmpty())
-            return ResponseEntity.noContent().build();
-        body.sort((issue1,issue2)->{
-            float jac1 = developer.calculateJaccard(issue1);
-            float jac2 = developer.calculateJaccard(issue2);
-            return Float.compare(jac2, jac1);
-        });
-
-        return ResponseEntity.ok(body);
+        else return ResponseEntity.notFound().build();
     }
 
     @Operation(
             summary = "특정 프로젝트에 포함된 모든 이슈 조회",
             description = "특정 프로젝트 1건에 포함된 모든 이슈의 데이터를 조회합니다."
     )
-    @RequestMapping("/project/{id}/issue")
+    @RequestMapping(value = "/project/{id}/issue", method = RequestMethod.GET)
     public ResponseEntity<List<Issue>> getAllIssueIncludedInProject(
             @Parameter(description = "이슈를 조회할 프로젝트의 UUID")
             @PathVariable(name = "id")
             UUID id
-    ){
+    ) {
         Optional<Project> targetProject = projectService.getProjectById(id);
+
         if (targetProject.isPresent()) {
             List<UUID> issueIds = targetProject.get().getIssueIds();
 
             if (!issueIds.isEmpty()) {
                 List<Issue> body = new ArrayList<>();
+
                 issueIds.forEach((UUID issueId) -> {
-                    body.add(issueService.getIssueById(issueId));
+                    Optional<Issue> targetIssue = issueService.getIssueById(issueId);
+                    targetIssue.ifPresent(body::add);
                 });
 
                 return ResponseEntity.ok(body);

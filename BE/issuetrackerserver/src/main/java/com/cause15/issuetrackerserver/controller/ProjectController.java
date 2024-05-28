@@ -7,6 +7,7 @@ import com.cause15.issuetrackerserver.dto.PatchProjectRequest;
 import com.cause15.issuetrackerserver.model.Project;
 import com.cause15.issuetrackerserver.model.User;
 import com.cause15.issuetrackerserver.service.ProjectService;
+import com.cause15.issuetrackerserver.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -25,22 +26,29 @@ import java.util.UUID;
 public class ProjectController {
     // Dependency injection
     private final ProjectService projectService;
+    private final UserService userService;
 
-    public ProjectController(ProjectService projectService) {
-        this.projectService=projectService;
+    public ProjectController(
+            ProjectService projectService,
+            UserService userService
+    ) {
+        this.projectService = projectService;
+        this.userService = userService;
     }
 
     // APIs
     @Operation(
-            summary = "새로운 프로젝트 추가",
-            description = "새로운 프로젝트를 DB에 추가합니다."
+            summary = "새로운 프로젝트 생성",
+            description = "새로운 프로젝트를 생성합니다."
     )
     @ApiResponse(responseCode = "200 OK", description = "성공적으로 새 프로젝트를 추가한 경우 반환")
     @RequestMapping(value = "/project", method = RequestMethod.POST)
     public ResponseEntity<Project> createProject(@RequestBody CreateProjectRequest createProjectRequest) {
-        Project body = new Project(
-                createProjectRequest.getTitle(),
-                createProjectRequest.getDescription()
+        Project body = projectService.createProject(
+                new Project(
+                    createProjectRequest.getTitle(),
+                    createProjectRequest.getDescription()
+                )
         );
         return ResponseEntity.ok(body);
     }
@@ -119,5 +127,136 @@ public class ProjectController {
         else return ResponseEntity.notFound().build();
     }
 
-    // TODO: 특정 사용자가 포함된 프로젝트 조회
+    @Operation(
+            summary = "특정 사용자가 포함된 프로젝트 검색",
+            description = "특정 사용자가 포함된 프로젝트를 검색합니다."
+    )
+    @ApiResponse(responseCode = "200 OK", description = "검색 결과가 존재할 경우 반환")
+    @RequestMapping(value = "/user/{id}/included_project", method = RequestMethod.GET)
+    public ResponseEntity<Project> getProjectInWhichUserIsIncluded(
+            @Parameter(description = "검색 대상 사용자의 UUID")
+            @PathVariable(name = "id")
+            UUID id
+    ) {
+        Optional<User> targetUser = userService.getUserById(id);
+
+        if (targetUser.isPresent()) {
+            List<Project> projectList = projectService.getAllProjects();
+
+            for (Project project : projectList) {
+                if (project.getUserIds().contains(id)) return ResponseEntity.ok(project);
+            }
+
+            return ResponseEntity.noContent().build();
+        }
+        else return ResponseEntity.notFound().build();
+    }
+
+    @Operation(
+            summary = "프로젝트에 이슈 1건 추가",
+            description = "이슈를 프로젝트에 추가합니다."
+    )
+    @ApiResponse(responseCode = "200 OK", description = "성공적으로 이슈를 추가했을 경우 반환")
+    @RequestMapping(value = "/project/{project_id}/issue/{issue_id}", method = RequestMethod.POST)
+    public ResponseEntity<Project> addIssueToProject(
+            @Parameter(description = "이슈를 추가할 프로젝트의 UUID")
+            @PathVariable(name = "project_id")
+            UUID projectId,
+            @Parameter(description = "추가할 이슈의 UUID")
+            @PathVariable(name = "issue_id")
+            UUID issueId
+    ) {
+        Optional<Project> targetProject = projectService.getProjectById(projectId);
+
+        if (targetProject.isPresent()) {
+            targetProject.get().getIssueIds().add(issueId);
+            Project body = projectService.updateProject(projectId, targetProject.get());
+
+            return body != null ?
+                    ResponseEntity.ok(body) : ResponseEntity.internalServerError().build();
+        }
+        else return ResponseEntity.notFound().build();
+    }
+
+    @Operation(
+            summary = "프로젝트에서 이슈 1건 삭제",
+            description = "프로젝트에서 특정한 이슈 1건을 제외한 후, 그 이슈를 삭제합니다."
+    )
+    @ApiResponse(responseCode = "200 OK", description = "성공적으로 이슈를 삭제했을 경우 반환")
+    @RequestMapping(value = "/project/{project_id}/issue/{issue_id}", method = RequestMethod.DELETE)
+    public ResponseEntity<Boolean> deleteIssueFromProject(
+            @Parameter(description = "이슈를 삭제할 프로젝트의 UUID")
+            @PathVariable(name = "project_id")
+            UUID projectId,
+            @Parameter(description = "삭제할 이슈의 UUID")
+            @PathVariable(name = "issue_id")
+            UUID issueId
+    ) {
+        Optional<Project> targetProject = projectService.getProjectById(projectId);
+
+        if (targetProject.isPresent()) {
+            if (targetProject.get().getIssueIds().contains(issueId)) {
+                targetProject.get().getIssueIds().remove(issueId);
+
+                if (projectService.updateProject(projectId, targetProject.get()) != null) return ResponseEntity.ok(Boolean.TRUE);
+                else return ResponseEntity.internalServerError().build();
+            }
+            else return ResponseEntity.notFound().build();
+        }
+        else return ResponseEntity.notFound().build();
+    }
+
+    @Operation(
+            summary = "프로젝트에 사용자 1명 추가",
+            description = "사용자를 프로젝트에 추가합니다."
+    )
+    @ApiResponse(responseCode = "200 OK", description = "성공적으로 사용자를 추가했을 경우 반환")
+    @RequestMapping(value = "/project/{project_id}/issue/{user_id}", method = RequestMethod.POST)
+    public ResponseEntity<Project> addUserToProject(
+            @Parameter(description = "사용자를 추가할 프로젝트의 UUID")
+            @PathVariable(name = "project_id")
+            UUID projectId,
+            @Parameter(description = "추가할 이슈의 UUID")
+            @PathVariable(name = "user_id")
+            UUID userId
+    ) {
+        Optional<Project> targetProject = projectService.getProjectById(projectId);
+
+        if (targetProject.isPresent()) {
+            targetProject.get().getUserIds().add(userId);
+            Project body = projectService.updateProject(projectId, targetProject.get());
+
+            return body != null ?
+                    ResponseEntity.ok(body) : ResponseEntity.internalServerError().build();
+        }
+        else return ResponseEntity.notFound().build();
+    }
+
+    @Operation(
+            summary = "프로젝트에서 사용자 1명 제외",
+            description = "프로젝트에서 특정한 사용자 1명을 제외합니다. 사용자는 삭제되지 않습니다."
+    )
+    @ApiResponse(responseCode = "200 OK", description = "성공적으로 사용자를 삭제했을 경우 반환")
+    @RequestMapping(value = "/project/{project_id}/user/{user_id}", method = RequestMethod.DELETE)
+    public ResponseEntity<Boolean> excludeUserFromProject(
+            @Parameter(description = "이슈를 삭제할 프로젝트의 UUID")
+            @PathVariable(name = "project_id")
+            UUID projectId,
+            @Parameter(description = "삭제할 이슈의 UUID")
+            @PathVariable(name = "user_id")
+            UUID userId
+    ) {
+        Optional<Project> targetProject = projectService.getProjectById(projectId);
+
+        if (targetProject.isPresent()) {
+            if (targetProject.get().getUserIds().contains(userId)) {
+                targetProject.get().getUserIds().remove(userId);
+
+                if (projectService.updateProject(projectId, targetProject.get()) != null) return ResponseEntity.ok(Boolean.TRUE);
+                else return ResponseEntity.internalServerError().build();
+            }
+            else return ResponseEntity.notFound().build();
+        }
+        else return ResponseEntity.notFound().build();
+    }
 }

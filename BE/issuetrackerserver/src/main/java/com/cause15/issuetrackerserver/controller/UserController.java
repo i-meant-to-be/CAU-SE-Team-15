@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Tag(name = "User Controller", description = "사용자 관련 API")
@@ -28,8 +29,8 @@ public class UserController {
 
     // APIs
     @Operation(
-            summary = "새로운 사용자 추가",
-            description = "새로운 사용자를 DB에 추가합니다."
+            summary = "새로운 사용자 생성",
+            description = "새로운 사용자를 생성합니다."
     )
     @ApiResponse(responseCode = "200 OK", description = "성공적으로 새 사용자를 추가한 경우 반환")
     @RequestMapping(value = "/user", method = RequestMethod.POST)
@@ -55,10 +56,8 @@ public class UserController {
             @PathVariable(name = "id")
             UUID id
     ) {
-        User body = userService.getUserById(id);
-
-        if (body != null) return ResponseEntity.ok(body);
-        else return ResponseEntity.notFound().build();
+        Optional<User> body = userService.getUserById(id);
+        return body.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @Operation(
@@ -73,15 +72,14 @@ public class UserController {
             @PathVariable(name = "id")
             UUID id
     ) {
-        User targetUser = userService.getUserById(id);
-        User body;
+        Optional<User> targetUser = userService.getUserById(id);
 
-        if (targetUser != null) {
-            if (patchUserRequest.getPassword() != null) targetUser.setPassword(patchUserRequest.getPassword());
-            if (patchUserRequest.getUsername() != null) targetUser.setName(patchUserRequest.getUsername());
-            body = userService.updateUser(id, targetUser);
+        if (targetUser.isPresent()) {
+            if (patchUserRequest.getPassword() != null) targetUser.get().setPassword(patchUserRequest.getPassword());
+            if (patchUserRequest.getUsername() != null) targetUser.get().setName(patchUserRequest.getUsername());
 
-            return body != null ? ResponseEntity.ok(body) : ResponseEntity.internalServerError().build();
+            if (userService.updateUser(id, targetUser.get()) != null) return ResponseEntity.ok(targetUser.get());
+            else return ResponseEntity.internalServerError().build();
         }
         else return ResponseEntity.notFound().build();
     }
@@ -110,9 +108,9 @@ public class UserController {
             @PathVariable(name = "id")
             UUID id
     ) {
-        User targetUser = userService.getUserById(id);
+        Optional<User> targetUser = userService.getUserById(id);
 
-        if (targetUser != null) {
+        if (targetUser.isPresent()) {
             return userService.deleteUser(id) ?
                     ResponseEntity.ok(Boolean.TRUE) : ResponseEntity.internalServerError().build();
         }
@@ -136,7 +134,4 @@ public class UserController {
         }
         else return ResponseEntity.notFound().build();
     }
-
-
-
 }
