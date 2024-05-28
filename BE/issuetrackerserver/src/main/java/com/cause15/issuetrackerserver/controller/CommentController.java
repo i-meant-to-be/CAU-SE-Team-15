@@ -76,7 +76,7 @@ public class CommentController {
     public ResponseEntity<List<Comment>> getAllComments() {
         List<Comment> body = commentService.getAllComments();
         return !body.isEmpty() ?
-                ResponseEntity.noContent().build() : ResponseEntity.ok(body);
+                ResponseEntity.ok(body) : ResponseEntity.noContent().build();
     }
 
     @Operation(
@@ -101,7 +101,7 @@ public class CommentController {
     @ApiResponse(responseCode = "200 OK", description = "성공적으로 댓글을 삭제한 경우 반환")
     @RequestMapping(value = "/comment/{id}", method = RequestMethod.DELETE)
     public ResponseEntity<Boolean> deleteComment(
-            @Parameter(description = "삭제할 댓글의 UUID", example = "123e4567-e89b-12d3-a456-12345678901", allowEmptyValue = false)
+            @Parameter(description = "삭제할 댓글의 UUID")
             @PathVariable(name = "id")
             UUID id
     ) {
@@ -152,7 +152,8 @@ public class CommentController {
         if (targetComment.isPresent()) {
             if (patchCommentRequest.getBody() != null) targetComment.get().setBody(patchCommentRequest.getBody());
 
-            return ResponseEntity.ok(targetComment.get());
+            return commentService.updateComment(id, targetComment.get()) != null ?
+                    ResponseEntity.ok(targetComment.get()) : ResponseEntity.internalServerError().build();
         }
 
         return ResponseEntity.notFound().build();

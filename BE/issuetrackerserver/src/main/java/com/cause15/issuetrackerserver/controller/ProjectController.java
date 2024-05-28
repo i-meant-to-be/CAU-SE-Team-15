@@ -119,10 +119,9 @@ public class ProjectController {
         if (targetProject.isPresent()) {
             if (patchProjectRequest.getDescription() != null)  targetProject.get().setDescription(patchProjectRequest.getDescription());
             if (patchProjectRequest.getTitle() != null)  targetProject.get().setTitle(patchProjectRequest.getTitle());
+
             body = projectService.updateProject(id, targetProject.get());
-
             return body != null ? ResponseEntity.ok(body) : ResponseEntity.internalServerError().build();
-
         }
         else return ResponseEntity.notFound().build();
     }
@@ -152,6 +151,7 @@ public class ProjectController {
         else return ResponseEntity.notFound().build();
     }
 
+    /*
     @Operation(
             summary = "프로젝트에 이슈 1건 추가",
             description = "이슈를 프로젝트에 추가합니다."
@@ -177,86 +177,5 @@ public class ProjectController {
         }
         else return ResponseEntity.notFound().build();
     }
-
-    @Operation(
-            summary = "프로젝트에서 이슈 1건 삭제",
-            description = "프로젝트에서 특정한 이슈 1건을 제외한 후, 그 이슈를 삭제합니다."
-    )
-    @ApiResponse(responseCode = "200 OK", description = "성공적으로 이슈를 삭제했을 경우 반환")
-    @RequestMapping(value = "/project/{project_id}/issue/{issue_id}", method = RequestMethod.DELETE)
-    public ResponseEntity<Boolean> deleteIssueFromProject(
-            @Parameter(description = "이슈를 삭제할 프로젝트의 UUID")
-            @PathVariable(name = "project_id")
-            UUID projectId,
-            @Parameter(description = "삭제할 이슈의 UUID")
-            @PathVariable(name = "issue_id")
-            UUID issueId
-    ) {
-        Optional<Project> targetProject = projectService.getProjectById(projectId);
-
-        if (targetProject.isPresent()) {
-            if (targetProject.get().getIssueIds().contains(issueId)) {
-                targetProject.get().getIssueIds().remove(issueId);
-
-                if (projectService.updateProject(projectId, targetProject.get()) != null) return ResponseEntity.ok(Boolean.TRUE);
-                else return ResponseEntity.internalServerError().build();
-            }
-            else return ResponseEntity.notFound().build();
-        }
-        else return ResponseEntity.notFound().build();
-    }
-
-    @Operation(
-            summary = "프로젝트에 사용자 1명 추가",
-            description = "사용자를 프로젝트에 추가합니다."
-    )
-    @ApiResponse(responseCode = "200 OK", description = "성공적으로 사용자를 추가했을 경우 반환")
-    @RequestMapping(value = "/project/{project_id}/issue/{user_id}", method = RequestMethod.POST)
-    public ResponseEntity<Project> addUserToProject(
-            @Parameter(description = "사용자를 추가할 프로젝트의 UUID")
-            @PathVariable(name = "project_id")
-            UUID projectId,
-            @Parameter(description = "추가할 이슈의 UUID")
-            @PathVariable(name = "user_id")
-            UUID userId
-    ) {
-        Optional<Project> targetProject = projectService.getProjectById(projectId);
-
-        if (targetProject.isPresent()) {
-            targetProject.get().getUserIds().add(userId);
-            Project body = projectService.updateProject(projectId, targetProject.get());
-
-            return body != null ?
-                    ResponseEntity.ok(body) : ResponseEntity.internalServerError().build();
-        }
-        else return ResponseEntity.notFound().build();
-    }
-
-    @Operation(
-            summary = "프로젝트에서 사용자 1명 제외",
-            description = "프로젝트에서 특정한 사용자 1명을 제외합니다. 사용자는 삭제되지 않습니다."
-    )
-    @ApiResponse(responseCode = "200 OK", description = "성공적으로 사용자를 삭제했을 경우 반환")
-    @RequestMapping(value = "/project/{project_id}/user/{user_id}", method = RequestMethod.DELETE)
-    public ResponseEntity<Boolean> excludeUserFromProject(
-            @Parameter(description = "이슈를 삭제할 프로젝트의 UUID")
-            @PathVariable(name = "project_id")
-            UUID projectId,
-            @Parameter(description = "삭제할 이슈의 UUID")
-            @PathVariable(name = "user_id")
-            UUID userId
-    ) {
-        Optional<Project> targetProject = projectService.getProjectById(projectId);
-
-        if (targetProject.isPresent()) {
-            if (targetProject.get().getUserIds().contains(userId)) {
-                targetProject.get().getUserIds().remove(userId);
-
-                if (projectService.updateProject(projectId, targetProject.get()) != null) return ResponseEntity.ok(Boolean.TRUE);
-                else return ResponseEntity.internalServerError().build();
-            }
-            else return ResponseEntity.notFound().build();
-        }
-        else return ResponseEntity.notFound().build();
-    }
+     */
 }

@@ -84,6 +84,34 @@ public class IssueController {
     }
 
     @Operation(
+            summary = "프로젝트에서 이슈 삭제",
+            description = "프로젝트에서 특정한 이슈 1건을 제외한 후, 그 이슈를 삭제합니다."
+    )
+    @ApiResponse(responseCode = "200 OK", description = "성공적으로 이슈를 삭제했을 경우 반환")
+    @RequestMapping(value = "/project/{project_id}/issue/{issue_id}", method = RequestMethod.DELETE)
+    public ResponseEntity<Boolean> deleteIssueFromProject(
+            @Parameter(description = "이슈를 삭제할 프로젝트의 UUID")
+            @PathVariable(name = "project_id")
+            UUID projectId,
+            @Parameter(description = "삭제할 이슈의 UUID")
+            @PathVariable(name = "issue_id")
+            UUID issueId
+    ) {
+        Optional<Project> targetProject = projectService.getProjectById(projectId);
+
+        if (targetProject.isPresent()) {
+            if (targetProject.get().getIssueIds().contains(issueId)) {
+                targetProject.get().getIssueIds().remove(issueId);
+
+                if (projectService.updateProject(projectId, targetProject.get()) != null) return ResponseEntity.ok(Boolean.TRUE);
+                else return ResponseEntity.internalServerError().build();
+            }
+            else return ResponseEntity.notFound().build();
+        }
+        else return ResponseEntity.notFound().build();
+    }
+
+    @Operation(
             summary = "이슈 1건의 데이터 조회",
             description = "특정한 이슈의 데이터를 반환합니다."
     )

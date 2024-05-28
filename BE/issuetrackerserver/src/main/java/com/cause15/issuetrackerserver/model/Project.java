@@ -5,6 +5,7 @@ import lombok.Setter;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,6 +25,8 @@ public class Project {
         this.description = description;
         this.id = UUID.randomUUID();
         this.createdDate = LocalDateTime.now();
+        this.userIds = new ArrayList<>();
+        this.issueIds = new ArrayList<>();
     }
 
 }

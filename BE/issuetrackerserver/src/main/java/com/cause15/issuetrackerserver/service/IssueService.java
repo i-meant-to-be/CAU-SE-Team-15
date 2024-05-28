@@ -36,7 +36,7 @@ public class IssueService {
             issue.setId(id);
             return issueRepository.save(issue);
         }
-        return null;
+        else return null;
     }
 
     public boolean deleteIssue(UUID id) {
@@ -44,7 +44,7 @@ public class IssueService {
             issueRepository.deleteById(id);
             return true;
         }
-        return false;
+        else return false;
     }
 
     //CustomCrud api
@@ -52,7 +52,7 @@ public class IssueService {
         if (issueRepository.existsByTitle(title)) {
             return issueRepository.findAllByTitle(title);
         }
-        return null;
+        else return null;
     }
 
     public List<Issue> getIssueByState(IssueState state){

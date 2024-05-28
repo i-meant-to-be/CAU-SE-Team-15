@@ -38,4 +38,12 @@ public class CommentService {
     public Comment createComment(Comment comment) {
         return commentRepository.save(comment);
     }
+
+    public Comment updateComment(UUID id, Comment comment) {
+        if (commentRepository.existsById(id)) {
+            comment.setId(id);
+            return commentRepository.save(comment);
+        }
+        else return null;
+    }
 }

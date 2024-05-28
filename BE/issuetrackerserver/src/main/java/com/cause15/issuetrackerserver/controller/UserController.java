@@ -3,7 +3,9 @@ package com.cause15.issuetrackerserver.controller;
 import com.cause15.issuetrackerserver.dto.CreateUserRequest;
 import com.cause15.issuetrackerserver.dto.LoginRequest;
 import com.cause15.issuetrackerserver.dto.PatchUserRequest;
+import com.cause15.issuetrackerserver.model.Project;
 import com.cause15.issuetrackerserver.model.User;
+import com.cause15.issuetrackerserver.service.ProjectService;
 import com.cause15.issuetrackerserver.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -22,8 +24,13 @@ import java.util.UUID;
 public class UserController {
     // Dependency injection
     private final UserService userService;
+    private final ProjectService projectService;
 
-    public UserController(UserService userService) {
+    public UserController(
+            UserService userService,
+            ProjectService projectService
+    ) {
+        this.projectService = projectService;
         this.userService = userService;
     }
 
@@ -111,8 +118,18 @@ public class UserController {
         Optional<User> targetUser = userService.getUserById(id);
 
         if (targetUser.isPresent()) {
-            return userService.deleteUser(id) ?
-                    ResponseEntity.ok(Boolean.TRUE) : ResponseEntity.internalServerError().build();
+            if (userService.deleteUser(id)) {
+                List<Project> projectList = projectService.getAllProjects();
+                projectList.forEach((Project project) -> {
+                    if (project.getUserIds().contains(id)) {
+                        project.getUserIds().remove(id);
+                        projectService.updateProject(project.getId(), project);
+                    }
+                });
+
+                return ResponseEntity.ok(Boolean.TRUE);
+            }
+            else return ResponseEntity.internalServerError().build();
         }
         else return ResponseEntity.notFound().build();
     }
@@ -131,6 +148,59 @@ public class UserController {
                 return ResponseEntity.ok(targetUser);
             }
             else return ResponseEntity.badRequest().build();
+        }
+        else return ResponseEntity.notFound().build();
+    }
+
+    @Operation(
+            summary = "프로젝트에 사용자 1명 포함",
+            description = "사용자를 프로젝트에 포함합니다. 이 API를 사용하기 위해서는, 사용자를 미리 생성해야 합니다."
+    )
+    @ApiResponse(responseCode = "200 OK", description = "성공적으로 사용자를 추가했을 경우 반환")
+    @RequestMapping(value = "/project/{project_id}/issue/{user_id}", method = RequestMethod.POST)
+    public ResponseEntity<Project> addUserToProject(
+            @Parameter(description = "사용자를 추가할 프로젝트의 UUID")
+            @PathVariable(name = "project_id")
+            UUID projectId,
+            @Parameter(description = "추가할 사용자의 UUID")
+            @PathVariable(name = "user_id")
+            UUID userId
+    ) {
+        Optional<Project> targetProject = projectService.getProjectById(projectId);
+
+        if (targetProject.isPresent()) {
+            targetProject.get().getUserIds().add(userId);
+            Project body = projectService.updateProject(projectId, targetProject.get());
+            return body != null ?
+                    ResponseEntity.ok(body) : ResponseEntity.internalServerError().build();
+        }
+        else return ResponseEntity.notFound().build();
+    }
+
+    @Operation(
+            summary = "프로젝트에서 사용자 1명 제외",
+            description = "프로젝트에서 특정한 사용자 1명을 제외합니다. 사용자는 삭제되지 않습니다."
+    )
+    @ApiResponse(responseCode = "200 OK", description = "성공적으로 사용자를 삭제했을 경우 반환")
+    @RequestMapping(value = "/project/{project_id}/user/{user_id}", method = RequestMethod.DELETE)
+    public ResponseEntity<Boolean> excludeUserFromProject(
+            @Parameter(description = "사용자를 제외할 프로젝트의 UUID")
+            @PathVariable(name = "project_id")
+            UUID projectId,
+            @Parameter(description = "제외할 사용자의 UUID")
+            @PathVariable(name = "user_id")
+            UUID userId
+    ) {
+        Optional<Project> targetProject = projectService.getProjectById(projectId);
+
+        if (targetProject.isPresent()) {
+            if (targetProject.get().getUserIds().contains(userId)) {
+                targetProject.get().getUserIds().remove(userId);
+
+                if (projectService.updateProject(projectId, targetProject.get()) != null) return ResponseEntity.ok(Boolean.TRUE);
+                else return ResponseEntity.internalServerError().build();
+            }
+            else return ResponseEntity.notFound().build();
         }
         else return ResponseEntity.notFound().build();
     }
