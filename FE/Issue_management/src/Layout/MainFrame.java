@@ -24,6 +24,8 @@ public class MainFrame extends JFrame {
     private Project selectedProject;
 
     private JPanel issue_panel;
+    private ArrayList<JPanel> issue_panels = new ArrayList<>();
+    private int index = -1;
 
     public MainFrame() {
         super("Main page");
@@ -119,6 +121,8 @@ public class MainFrame extends JFrame {
         setDefaultCloseOperation(this.EXIT_ON_CLOSE);
     }
 
+
+
     public String getID() {
         return admin.getUsername();
     }
@@ -151,6 +155,9 @@ public class MainFrame extends JFrame {
         issue_panel.removeAll();
         issue_panel.setLayout(new BorderLayout(10, 10));
 
+        issue_panels.clear();
+        index = -1;
+
         JPanel detail_panel = new JPanel();
         detail_panel.setLayout(new GridLayout(1, 7));
         JLabel issue_title = new JLabel("Issue_title", JLabel.CENTER);
@@ -180,10 +187,11 @@ public class MainFrame extends JFrame {
         //panel은 이슈 목록
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        ArrayList<JPanel> issue_panels = new ArrayList<>();
+        clickPanelListener c = new clickPanelListener();
         for (Issue issue : issues) {
             JPanel new_Panel = new JPanel();
-            new_Panel.setLayout(new GridLayout(1, 6));
+            new_Panel.addMouseListener(c);
+            new_Panel.setLayout(new GridLayout(1, 7));
             new_Panel.setBorder(BorderFactory.createLineBorder(Color.black, 3));
             new_Panel.add(new JLabel(issue.getTitle(), JLabel.CENTER));
             new_Panel.add(new JLabel(issue.getReporterId().toString(), JLabel.CENTER));
@@ -195,7 +203,6 @@ public class MainFrame extends JFrame {
                 new_Panel.add(new JLabel(issue.getAssigneeId().toString(), JLabel.CENTER));
             }
             new_Panel.add(new JLabel(issue.getState().toString(), JLabel.CENTER));
-            issue_panels.add(new_Panel);
             // "Detail" 버튼 추가
             JButton detailButton = new JButton("Detail");
             detailButton.setMinimumSize(new Dimension(30, 30));
@@ -214,9 +221,6 @@ public class MainFrame extends JFrame {
         for (int i = 0; i < issue_panels.size(); i++) {
             panel.add(issue_panels.get(i));
         }
-        JScrollPane scroll = new JScrollPane(panel);
-        scroll.setViewportView(panel);
-
         issue_panel.add(detail_panel, BorderLayout.NORTH);
         issue_panel.add(panel, BorderLayout.CENTER);
         issue_panel.updateUI();
@@ -227,5 +231,37 @@ public class MainFrame extends JFrame {
     }
     public void start_main(){
         MainFrame.this.setVisible(true);
+    }
+
+    class clickPanelListener implements MouseListener {
+        public void mouseClicked(MouseEvent e) {
+            for(int i = 0; i < issue_panels.size(); i++) {
+                if(e.getSource().equals(issue_panels.get(i))) {
+                    int temp = index;
+                    index = i;
+                    if(index != temp)
+                    {
+                        IssueChanger issueChanger = new IssueChanger(MainFrame.this, issues.get(index));
+                        issueChanger.addWindowListener(new WindowAdapter() {
+                            public void windowClosing(WindowEvent e) {
+                                MainFrame.this.setEnabled(true);
+                            }
+                        });
+                    }
+                    index = -1;
+                    break;
+                }
+            }
+            MainFrame.this.repaint();
+
+        }
+        @Override
+        public void mousePressed(MouseEvent e) {}
+        @Override
+        public void mouseReleased(MouseEvent e) {}
+        @Override
+        public void mouseEntered(MouseEvent e) {}
+        @Override
+        public void mouseExited(MouseEvent e) {}
     }
 }

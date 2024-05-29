@@ -19,6 +19,7 @@ public class IssueDetailFrame extends JFrame {
         this.issue = issue;
         setSize(600, 400);
         setLocationRelativeTo(null);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
         JPanel pane = new JPanel();
         pane.setLayout(new BorderLayout(10, 10));

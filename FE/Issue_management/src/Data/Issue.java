@@ -83,6 +83,8 @@ public class Issue {
         this.comments.add(comment);
     }
 
+    public void removeComment(int index) { this.comments.remove(index); }
+
     public void setId(UUID id) {
         this.id = id;
     }
