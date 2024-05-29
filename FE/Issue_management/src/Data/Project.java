@@ -57,6 +57,7 @@ public class Project {
         this.users = users;
     }
 
+    public void setCreationDate(LocalDateTime createdDate) {this.creationDate = createdDate;}
 
     public ArrayList<Issue> getIssues() {
         return issues;

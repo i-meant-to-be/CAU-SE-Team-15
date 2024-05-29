@@ -17,6 +17,15 @@ public class UserData {
     private User[] sd_user;
     private int userCnt;
 
+    public User getUser(UUID id){
+        this.getAllUser();
+        for(User user : sd_user){
+            if(user.getUUID().equals(id))
+                return user;
+        }
+        return null;
+    }
+
     public User getUser(String username) {
         this.getAllUser();
         for (User user : sd_user) {
