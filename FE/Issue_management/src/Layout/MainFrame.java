@@ -187,7 +187,7 @@ public class MainFrame extends JFrame {
             new_Panel.setLayout(new GridLayout(1, 6));
             new_Panel.setBorder(BorderFactory.createLineBorder(Color.black, 3));
             new_Panel.add(new JLabel(issue.getTitle(), JLabel.CENTER));
-            new_Panel.add(new JLabel(issue.getReporterId(), JLabel.CENTER));
+            new_Panel.add(new JLabel(issue.getReporterId().toString(), JLabel.CENTER));
             new_Panel.add(new JLabel(issue.getReportedDate().toString(), JLabel.CENTER));
             new_Panel.add(new JLabel(issue.getType().toString(), JLabel.CENTER));
             if (issue.getAssigneeId() == null) {

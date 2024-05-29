@@ -21,11 +21,62 @@ public class ProjectData {
     private List<UUID> userList;
 
     public Project[] getAllProjects(){
+        this.getAllProject();
         return sd_project;
     }
 
     public int getProjectNum(){
+        this.getAllProject();
         return projectCnt;
+    }
+
+    public Project getProject(UUID projectId){
+        Project project = null;
+        try {
+            URL url = new URL("http://localhost:8080/api/project/"+projectId.toString());
+            HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+
+            conn.setRequestMethod("GET"); // http 메서드
+            conn.setRequestProperty("Content-Type", "application/json"); // header Content-Type 정보
+            conn.setDoOutput(true); // 서버로부터 받는 값이 있다면 true
+
+            // 서버로부터 데이터 읽어오기
+            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            StringBuilder sb = new StringBuilder();
+            String line = null;
+
+            while((line = br.readLine()) != null) { // 읽을 수 있을 때 까지 반복
+                sb.append(line);
+            }
+            JSONObject jsonObject = new JSONObject(sb.toString()); // json으로 변경 (역직렬화)
+
+            UUID id = UUID.fromString(jsonObject.getString("id"));
+
+            JSONArray userIdArray = jsonObject.getJSONArray("userIds");
+            for(int j = 0; j < userIdArray.length(); j++) {
+                userList.add(UUID.fromString(userIdArray.getString(j)));
+            }
+
+            String title = jsonObject.getString("title");
+            String description = jsonObject.getString("discription");
+            String createdTime = jsonObject.getString("createdDate");
+            LocalDateTime created = LocalDateTime.parse(createdTime);
+
+            project = new Project(title, description, userList);
+            project.setCreationDate(created);
+            project.setId(id);
+
+            JSONArray issueIdArray = jsonObject.getJSONArray("issueIds");
+            for(int j = 0; j < issueIdArray.length(); j++) {
+                UUID issueId = UUID.fromString(issueIdArray.getString(j));
+                IssueData issueData = new IssueData();
+                project.addIssue(issueData.getIssue(issueId));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return project;
     }
 
     public void deleteProject(Project project){
@@ -100,23 +151,14 @@ public class ProjectData {
                 sb.append(line);
             }
 
-            //String response = sb.toString();
-            //System.out.println("Response from server: " + response);
-
             JSONArray jsonArray = new JSONArray(sb.toString()); // json으로 변경 (역직렬화)
 
             projectCnt = jsonArray.length();
-            //System.out.println(userCnt);
             sd_project = new Project[projectCnt];
 
             for (int i = 0; i < projectCnt; i++) {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                 UUID id = UUID.fromString(jsonObject.getString("id"));
-
-                JSONArray issueIdArray = jsonObject.getJSONArray("issueIds");
-                for(int j = 0; j < issueIdArray.length(); j++) {
-                    UUID issueId = UUID.fromString(issueIdArray.getString(j));
-                }
 
                 JSONArray userIdArray = jsonObject.getJSONArray("userIds");
                 for(int j = 0; j < userIdArray.length(); j++) {
@@ -130,6 +172,13 @@ public class ProjectData {
                 sd_project[i] = new Project(title, description, userList);
                 sd_project[i].setCreationDate(created);
                 sd_project[i].setId(id);
+
+                JSONArray issueIdArray = jsonObject.getJSONArray("issueIds");
+                for(int j = 0; j < issueIdArray.length(); j++) {
+                    UUID issueId = UUID.fromString(issueIdArray.getString(j));
+                    IssueData issueData = new IssueData();
+                    sd_project[i].addIssue(issueData.getIssue(issueId));
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();

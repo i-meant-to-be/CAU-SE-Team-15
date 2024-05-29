@@ -73,7 +73,7 @@ public class IssueButton {
                     }
 
                     // Issue 생성 및 추가
-                    Issue newIssue = new Issue(issueTitle, user.getUsername(), LocalDateTime.now().withNano(0), "Description", null, type, IssueState.NEW);
+                    Issue newIssue = new Issue(issueTitle, user.getUUID(), LocalDateTime.now().withNano(0), "Description", null, type, IssueState.NEW);
                     project.addIssue(newIssue);
                     JOptionPane.showMessageDialog(null, "Issue created successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
                     break; //제목을 제대로 입력하면 반복 중단

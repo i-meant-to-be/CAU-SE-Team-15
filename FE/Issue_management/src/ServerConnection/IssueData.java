@@ -17,7 +17,13 @@ public class IssueData {
     private Issue [] sd_issue;
     private int issueCnt;
 
+    public Issue[] getAllIssues(){
+        this.getAllIssue();
+        return sd_issue;
+    }
+
     public Issue[] getAllIssues(UUID projectId){
+        this.getAllIssue(projectId);
         return sd_issue;
     }
 
@@ -25,9 +31,43 @@ public class IssueData {
         return issueCnt;
     }
 
-    public void modifyIssue(UUID projectId, Issue issue){
+    public void modifyIssueState(Issue issue){
         try {
-            URL url = new URL("http://localhost:8080/api/issue/"+issue.getId());
+            URL url = new URL("http://localhost:8080/api/issue/"+issue.getId().toString());
+            HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+
+            conn.setRequestMethod("PUT"); // http 메서드
+            conn.setRequestProperty("Content-Type", "application/json"); // header Content-Type 정보
+            conn.setDoInput(true); // 서버에 전달할 값이 있다면 true
+            conn.setDoOutput(true); // 서버로부터 받는 값이 있다면 true
+
+            // 서버에 데이터 전달
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("state", issue.getState().toString());
+            //issue fixer 데이터 추가하기
+
+            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(conn.getOutputStream()));
+            bw.write(jsonObject.toString()); // 버퍼에 담기
+            bw.flush(); // 버퍼에 담긴 데이터 전달
+            bw.close();
+
+            // 서버로부터 데이터 읽어오기
+            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            StringBuilder sb = new StringBuilder();
+            String line = null;
+
+            while((line = br.readLine()) != null) { // 읽을 수 있을 때 까지 반복
+                sb.append(line);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void modifyIssue(Issue issue){
+        try {
+            URL url = new URL("http://localhost:8080/api/issue/"+issue.getId().toString());
             HttpURLConnection conn = (HttpURLConnection)url.openConnection();
 
             conn.setRequestMethod("PUT"); // http 메서드
@@ -64,9 +104,9 @@ public class IssueData {
         }
     }
 
-    public void deleteIssue(UUID projectId, Issue issue){
+    public void deleteIssue(Issue issue){
         try {
-            URL url = new URL("http://localhost:8080/api/project"+projectId+"/issues/"+issue.getId());
+            URL url = new URL("http://localhost:8080/api/project/"+issue.getProjectId().toString()+"/issues/"+issue.getId());
             HttpURLConnection conn = (HttpURLConnection)url.openConnection();
 
             conn.setRequestMethod("DELETE"); // http 메서드
@@ -88,7 +128,7 @@ public class IssueData {
 
     public void addIssue(UUID projectId, Issue issue){
         try {
-            URL url = new URL("http://localhost:8080/api/project/"+projectId+"/issue");
+            URL url = new URL("http://localhost:8080/api/project/"+projectId.toString()+"/issue");
             HttpURLConnection conn = (HttpURLConnection)url.openConnection();
 
             conn.setRequestMethod("POST"); // http 메서드
@@ -120,9 +160,10 @@ public class IssueData {
         }
     }
 
-    public void getAllIssue(){
+    public Issue getIssue(UUID issueId){
+        Issue issue = null;
         try {
-            URL url = new URL("http://localhost:8080/api/issue");
+            URL url = new URL("http://localhost:8080/api/issue/"+issueId.toString());
             HttpURLConnection conn = (HttpURLConnection)url.openConnection();
 
             conn.setRequestMethod("GET"); // http 메서드
@@ -138,13 +179,64 @@ public class IssueData {
                 sb.append(line);
             }
 
-            //String response = sb.toString();
-            //System.out.println("Response from server: " + response);
+            JSONObject jsonObject = new JSONObject(sb.toString()); // json으로 변경 (역직렬화)
+
+            UUID id = UUID.fromString(jsonObject.getString("id"));
+            String title = jsonObject.getString("title");
+            String description = jsonObject.getString("discription");
+            IssueType type = IssueType.valueOf(jsonObject.getString("type"));
+            IssueState state = IssueState.valueOf(jsonObject.getString("state"));
+            String reportedDate = jsonObject.getString("reportedDate");
+            LocalDateTime reported = LocalDateTime.parse(reportedDate);
+
+            UUID reporterId = UUID.fromString(jsonObject.getString("reporterId"));
+            UUID fixerId = UUID.fromString(jsonObject.getString("fixerId"));
+            UUID assigneeId = UUID.fromString(jsonObject.getString("assigneeId"));
+
+            issue = new Issue(title, reporterId, reported, description, assigneeId, type, state);
+            issue.setId(id);
+
+            JSONArray commentArray = jsonObject.getJSONArray("commentIds");
+            UUID[] commentIds = new UUID[commentArray.length()];
+            for(int j = 0; j < commentArray.length(); j++) {
+                commentIds[j] = UUID.fromString(commentArray.getString(j));
+                CommentData commentData = new CommentData();
+                issue.addComment(commentData.getComment(commentIds[j]));
+            }
+
+            JSONArray tagArray = jsonObject.getJSONArray("tag");
+            String [] tags = new String[tagArray.length()];
+            for(int j = 0; j < tagArray.length(); j++) {
+                tags[j] = tagArray.getString(j);
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return issue;
+    }
+
+    public void getAllIssue(UUID projectId){
+        try {
+            URL url = new URL("http://localhost:8080/api/project/"+projectId.toString()+"/issue");
+            HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+
+            conn.setRequestMethod("GET"); // http 메서드
+            conn.setRequestProperty("Content-Type", "application/json"); // header Content-Type 정보
+            conn.setDoOutput(true); // 서버로부터 받는 값이 있다면 true
+
+            // 서버로부터 데이터 읽어오기
+            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            StringBuilder sb = new StringBuilder();
+            String line = null;
+
+            while((line = br.readLine()) != null) { // 읽을 수 있을 때 까지 반복
+                sb.append(line);
+            }
 
             JSONArray jsonArray = new JSONArray(sb.toString()); // json으로 변경 (역직렬화)
 
             issueCnt = jsonArray.length();
-            //System.out.println(userCnt);
             sd_issue = new Issue[issueCnt];
 
             for (int i = 0; i < issueCnt; i++) {
@@ -168,9 +260,68 @@ public class IssueData {
                 UUID[] commentIds = new UUID[commentArray.length()];
                 for(int j = 0; j < commentArray.length(); j++) {
                     commentIds[j] = UUID.fromString(commentArray.getString(j));
-                    String comment;
-                    //sd_issue[i].addComment(comment);
-                    //commentId로 comment string 찾아서 저장하기
+                    CommentData commentData = new CommentData();
+                    sd_issue[i].addComment(commentData.getComment(commentIds[j]));
+                }
+
+                JSONArray tagArray = jsonObject.getJSONArray("tag");
+                String [] tags = new String[tagArray.length()];
+                for(int j = 0; j < tagArray.length(); j++) {
+                    tags[j] = tagArray.getString(j);
+                }
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void getAllIssue(){
+        try {
+            URL url = new URL("http://localhost:8080/api/issue");
+            HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+
+            conn.setRequestMethod("GET"); // http 메서드
+            conn.setRequestProperty("Content-Type", "application/json"); // header Content-Type 정보
+            conn.setDoOutput(true); // 서버로부터 받는 값이 있다면 true
+
+            // 서버로부터 데이터 읽어오기
+            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            StringBuilder sb = new StringBuilder();
+            String line = null;
+
+            while((line = br.readLine()) != null) { // 읽을 수 있을 때 까지 반복
+                sb.append(line);
+            }
+
+            JSONArray jsonArray = new JSONArray(sb.toString()); // json으로 변경 (역직렬화)
+
+            issueCnt = jsonArray.length();
+            sd_issue = new Issue[issueCnt];
+
+            for (int i = 0; i < issueCnt; i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                UUID id = UUID.fromString(jsonObject.getString("id"));
+                String title = jsonObject.getString("title");
+                String description = jsonObject.getString("discription");
+                IssueType type = IssueType.valueOf(jsonObject.getString("type"));
+                IssueState state = IssueState.valueOf(jsonObject.getString("state"));
+                String reportedDate = jsonObject.getString("reportedDate");
+                LocalDateTime reported = LocalDateTime.parse(reportedDate);
+
+                UUID reporterId = UUID.fromString(jsonObject.getString("reporterId"));
+                UUID fixerId = UUID.fromString(jsonObject.getString("fixerId"));
+                UUID assigneeId = UUID.fromString(jsonObject.getString("assigneeId"));
+
+                sd_issue[i] = new Issue(title, reporterId, reported, description, assigneeId, type, state);
+                sd_issue[i].setId(id);
+
+                JSONArray commentArray = jsonObject.getJSONArray("commentIds");
+                UUID[] commentIds = new UUID[commentArray.length()];
+                for(int j = 0; j < commentArray.length(); j++) {
+                    commentIds[j] = UUID.fromString(commentArray.getString(j));
+                    CommentData commentData = new CommentData();
+                    sd_issue[i].addComment(commentData.getComment(commentIds[j]));
                 }
 
                 JSONArray tagArray = jsonObject.getJSONArray("tag");
