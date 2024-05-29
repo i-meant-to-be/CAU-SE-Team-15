@@ -107,6 +107,7 @@ public class ProjectData {
                 LocalDateTime created = LocalDateTime.parse(createdTime);
                 sd_project[i] = new Project(title, description, userList);
                 sd_project[i].setCreationDate(created);
+                sd_project[i].setId(id);
             }
         } catch (Exception e) {
             e.printStackTrace();

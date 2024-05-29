@@ -9,7 +9,7 @@ public class Comment {
     private LocalDateTime timestamp;
 
     public Comment(String text) {
-        this.id = UUID.randomUUID();
+        //this.id = UUID.randomUUID();
         this.text = text;
         this.timestamp = LocalDateTime.now().withNano(0);
     }

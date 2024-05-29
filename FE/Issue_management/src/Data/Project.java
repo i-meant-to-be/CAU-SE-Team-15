@@ -18,7 +18,7 @@ public class Project {
 
     public Project(String name, String description, List<UUID> users) {
         this.creationDate = LocalDateTime.now();
-        this.id = UUID.randomUUID();
+        //this.id = UUID.randomUUID();
         this.name = name;
         this.issues = new ArrayList<>();
         this.users = users;
@@ -27,6 +27,10 @@ public class Project {
 
     public UUID getId() {
         return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
     }
 
     public String getName() {

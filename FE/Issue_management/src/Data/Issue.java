@@ -8,16 +8,17 @@ import java.util.UUID;
 public class Issue {
     private UUID id;
     private String title;
-    private String reporter_id;
+    private UUID reporter_id;
     private LocalDateTime reported_date;
     private String description;
     private UUID assignee_id;
     private IssueType type;
     private IssueState state;
     private List<Comment> comments;
+    private UUID projectId;
 
-    public Issue(String title, String reporter_id, LocalDateTime reported_date, String description, UUID assignee_id, IssueType type, IssueState state) {
-        this.id = UUID.randomUUID();
+    public Issue(String title, UUID reporter_id, LocalDateTime reported_date, String description, UUID assignee_id, IssueType type, IssueState state) {
+        //this.id = UUID.randomUUID();
         this.title = title;
         this.reporter_id = reporter_id;
         this.reported_date = reported_date;
@@ -38,7 +39,7 @@ public class Issue {
         return title;
     }
 
-    public String getReporterId() {
+    public UUID getReporterId() {
         return reporter_id;
     }
 
@@ -66,7 +67,23 @@ public class Issue {
         return comments;
     }
 
+    public UUID getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(UUID projectId) {
+        this.projectId = projectId;
+    }
+
     public void addComment(String text) {
         this.comments.add(new Comment(text));
+    }
+
+    public void addComment(Comment comment) {
+        this.comments.add(comment);
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
     }
 }

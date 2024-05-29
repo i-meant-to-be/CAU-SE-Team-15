@@ -100,17 +100,21 @@ public class IssueData {
                 String reportedDate = jsonObject.getString("reportedDate");
                 LocalDateTime reported = LocalDateTime.parse(reportedDate);
 
-                JSONArray commentArray = jsonObject.getJSONArray("commentIds");
-                UUID[] commentIds = new UUID[commentArray.length()];
-                String[] comments = new String[commentArray.length()];
-                for(int j = 0; j < commentArray.length(); j++) {
-                    commentIds[j] = UUID.fromString(commentArray.getString(j));
-                    //commentId로 comment string 찾아서 저장하기
-                }
-
                 UUID reporterId = UUID.fromString(jsonObject.getString("reporterId"));
                 UUID fixerId = UUID.fromString(jsonObject.getString("fixerId"));
                 UUID assigneeId = UUID.fromString(jsonObject.getString("assigneeId"));
+
+                sd_issue[i] = new Issue(title, reporterId, reported, description, assigneeId, type, state);
+                sd_issue[i].setId(id);
+
+                JSONArray commentArray = jsonObject.getJSONArray("commentIds");
+                UUID[] commentIds = new UUID[commentArray.length()];
+                for(int j = 0; j < commentArray.length(); j++) {
+                    commentIds[j] = UUID.fromString(commentArray.getString(j));
+                    String comment;
+                    //sd_issue[i].addComment(comment);
+                    //commentId로 comment string 찾아서 저장하기
+                }
 
                 JSONArray tagArray = jsonObject.getJSONArray("tag");
                 String [] tags = new String[tagArray.length()];
@@ -118,7 +122,6 @@ public class IssueData {
                     tags[j] = tagArray.getString(j);
                 }
 
-                //sd_issue[i] = new Issue(title, reporterId, reported, description, assigneeId, type, state, comments);
             }
         } catch (Exception e) {
             e.printStackTrace();
