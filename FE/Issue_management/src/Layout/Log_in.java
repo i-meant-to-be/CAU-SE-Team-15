@@ -8,6 +8,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.UUID;
 
 
 public class Log_in extends JFrame {
@@ -81,6 +82,7 @@ public class Log_in extends JFrame {
             //어드민 로그인 + 유저타입 어드민으로 설정
             if(input_ID.getText().equals(MF.getID()) && pw.equals(MF.getPW())){
                 user.setUser(input_ID.getText(), pw, UserType.ADMIN);
+                user.setUUID(UUID.randomUUID());
                 MF.getuserlabel().setText(MF.get_user().getUsername());
                 MF.repaint();
                 MF.loggedIn = true;

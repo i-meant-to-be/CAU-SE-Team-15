@@ -18,7 +18,7 @@ public class Issue {
     private UUID projectId;
 
     public Issue(String title, UUID reporter_id, LocalDateTime reported_date, String description, UUID assignee_id, IssueType type, IssueState state) {
-        //this.id = UUID.randomUUID();
+        this.id = UUID.randomUUID();
         this.title = title;
         this.reporter_id = reporter_id;
         this.reported_date = reported_date;

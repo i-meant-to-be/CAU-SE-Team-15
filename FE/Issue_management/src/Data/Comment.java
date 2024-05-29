@@ -10,7 +10,7 @@ public class Comment {
     private UUID authorId;
 
     public Comment(String text) {
-        //this.id = UUID.randomUUID();
+        this.id = UUID.randomUUID();
         this.text = text;
         this.timestamp = LocalDateTime.now().withNano(0);
     }

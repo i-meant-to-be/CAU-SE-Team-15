@@ -13,8 +13,7 @@ import java.util.ArrayList;
 public class MainFrame extends JFrame {
     boolean loggedIn = false;
 
-    private String ADMIN_ID = "admin";
-    private String ADMIN_PW = "1234";
+    private User admin = new User("admin", "1234", UserType.ADMIN);
     private User user = new User();
     private Log_in login;
     private JLabel user_name;
@@ -121,11 +120,11 @@ public class MainFrame extends JFrame {
     }
 
     public String getID() {
-        return ADMIN_ID;
+        return admin.getUsername();
     }
 
     public String getPW() {
-        return ADMIN_PW;
+        return admin.getPassword();
     }
 
     public User get_user() {
