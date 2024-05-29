@@ -25,6 +25,67 @@ public class IssueData {
         return issueCnt;
     }
 
+    public void modifyIssue(UUID projectId, Issue issue){
+        try {
+            URL url = new URL("http://localhost:8080/api/issue/"+issue.getId());
+            HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+
+            conn.setRequestMethod("PUT"); // http 메서드
+            conn.setRequestProperty("Content-Type", "application/json"); // header Content-Type 정보
+            conn.setDoInput(true); // 서버에 전달할 값이 있다면 true
+            conn.setDoOutput(true); // 서버로부터 받는 값이 있다면 true
+
+            // 서버에 데이터 전달
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("title", issue.getTitle());
+            jsonObject.put("description", issue.getDescription());
+            jsonObject.put("type", issue.getType().toString());
+            jsonObject.put("reporterId", issue.getReporterId().toString());
+            jsonObject.put("assigneeId", issue.getAssigneeId().toString());
+            jsonObject.put("state", issue.getState().toString());
+            //issue fixer 데이터 추가하기
+
+            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(conn.getOutputStream()));
+            bw.write(jsonObject.toString()); // 버퍼에 담기
+            bw.flush(); // 버퍼에 담긴 데이터 전달
+            bw.close();
+
+            // 서버로부터 데이터 읽어오기
+            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            StringBuilder sb = new StringBuilder();
+            String line = null;
+
+            while((line = br.readLine()) != null) { // 읽을 수 있을 때 까지 반복
+                sb.append(line);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteIssue(UUID projectId, Issue issue){
+        try {
+            URL url = new URL("http://localhost:8080/api/project"+projectId+"/issues/"+issue.getId());
+            HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+
+            conn.setRequestMethod("DELETE"); // http 메서드
+            conn.setDoInput(true); // 서버에 전달할 값이 있다면 true
+
+            // 서버로부터 데이터 읽어오기
+            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            StringBuilder sb = new StringBuilder();
+            String line = null;
+
+            while((line = br.readLine()) != null) { // 읽을 수 있을 때 까지 반복
+                sb.append(line);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public void addIssue(UUID projectId, Issue issue){
         try {
             URL url = new URL("http://localhost:8080/api/project/"+projectId+"/issue");
@@ -39,7 +100,7 @@ public class IssueData {
             jsonObject.put("title", issue.getTitle());
             jsonObject.put("description", issue.getDescription());
             jsonObject.put("type", issue.getType().toString());
-            jsonObject.put("reporterId", issue.getReporterId());
+            jsonObject.put("reporterId", issue.getReporterId().toString());
 
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(conn.getOutputStream()));
             bw.write(jsonObject.toString()); // 버퍼에 담기
@@ -57,10 +118,6 @@ public class IssueData {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    public void modifyIssue(Project project, Issue issue){
-
     }
 
     public void getAllIssue(){
