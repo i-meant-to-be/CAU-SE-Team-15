@@ -34,7 +34,14 @@ public class ProjectButton {
         } else if (choice == 1) {
             User user = MF.get_user();
             if (user.getType().equals(UserType.ADMIN)){
-                createNewProject();
+                ProjectCreator projectCreator = new ProjectCreator(ProjectButton.this);
+                MF.setVisible(false);
+                projectCreator.addWindowListener(new WindowAdapter() {
+                    public void windowClosed(WindowEvent e) {
+                        MF.setVisible(true);
+                    }
+                });
+
             }
             else {
                 JOptionPane.showMessageDialog(null, "Only ADMIN can create a new project.", "Access Denied", JOptionPane.WARNING_MESSAGE);
@@ -84,10 +91,6 @@ public class ProjectButton {
                 });
             }
         }
-    }
-
-    private void createNewProject() {
-        ProjectCreator projectCreator = new ProjectCreator(ProjectButton.this);
     }
 
     public ArrayList<Project> getProjects() {

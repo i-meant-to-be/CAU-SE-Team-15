@@ -7,10 +7,7 @@ import javax.swing.*;
 import javax.swing.border.AbstractBorder;
 import javax.swing.border.LineBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.util.ArrayList;
 
 public class MainFrame extends JFrame {
@@ -60,8 +57,18 @@ public class MainFrame extends JFrame {
         JButton registerButton = new JButton("Register");
         registerButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if(login.getUser().getType().equals(UserType.ADMIN)) {new RegisterButton();}
-                else{
+                if (login.getUser().getType().equals(UserType.ADMIN)) {
+                    RegisterButton rb = new RegisterButton();
+                    rb.addWindowListener(new WindowAdapter() {
+                        public void windowOpened(WindowEvent e) {
+                            stop_main();
+                        }
+
+                        public void windowClosed(WindowEvent e) {
+                            start_main();
+                        }
+                    });
+                } else {
                     JOptionPane.showMessageDialog(MainFrame.this,
                             "You don't have permission to register.",
                             "Warning",
@@ -79,7 +86,9 @@ public class MainFrame extends JFrame {
 
         JButton issueButton = new JButton("Issue");
         issueButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) { new IssueButton(MainFrame.this, projects); }
+            public void actionPerformed(ActionEvent e) {
+                new IssueButton(MainFrame.this, projects);
+            }
         });
 
         JButton search = new JButton("Search");
@@ -102,7 +111,7 @@ public class MainFrame extends JFrame {
         }
         login.addWindowListener(new WindowAdapter() {
             public void windowClosed(WindowEvent e) {
-                if(loggedIn) {
+                if (loggedIn) {
                     user_name.setText(user.getUsername());
                     repaint();
                 }
@@ -119,18 +128,24 @@ public class MainFrame extends JFrame {
         return ADMIN_PW;
     }
 
-    public User get_user() {return user;}
+    public User get_user() {
+        return user;
+    }
 
-    public ArrayList<Project> get_projects() {return projects;}
+    public ArrayList<Project> get_projects() {
+        return projects;
+    }
 
     public void setProject(Project project) {
         this.selectedProject = project;
     }
 
-    public JLabel getuserlabel(){return user_name;}
+    public JLabel getuserlabel() {
+        return user_name;
+    }
 
 
-    public void showIssues(){
+    public void showIssues() {
         AbstractBorder border = new LineBorder(Color.BLACK, 2);
 
         issues = selectedProject.getIssues();
@@ -167,7 +182,7 @@ public class MainFrame extends JFrame {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         ArrayList<JPanel> issue_panels = new ArrayList<>();
-        for(Issue issue : issues){
+        for (Issue issue : issues) {
             JPanel new_Panel = new JPanel();
             new_Panel.setLayout(new GridLayout(1, 6));
             new_Panel.setBorder(BorderFactory.createLineBorder(Color.black, 3));
@@ -175,10 +190,9 @@ public class MainFrame extends JFrame {
             new_Panel.add(new JLabel(issue.getReporterId(), JLabel.CENTER));
             new_Panel.add(new JLabel(issue.getReportedDate().toString(), JLabel.CENTER));
             new_Panel.add(new JLabel(issue.getType().toString(), JLabel.CENTER));
-            if(issue.getAssigneeId()==null){
+            if (issue.getAssigneeId() == null) {
                 new_Panel.add(new JLabel("Not assigned yet", JLabel.CENTER));
-            }
-            else {
+            } else {
                 new_Panel.add(new JLabel(issue.getAssigneeId().toString(), JLabel.CENTER));
             }
             new_Panel.add(new JLabel(issue.getState().toString(), JLabel.CENTER));
@@ -198,7 +212,7 @@ public class MainFrame extends JFrame {
             new_Panel.add(detailButton);
             issue_panels.add(new_Panel);
         }
-        for(int i = 0; i < issue_panels.size(); i++){
+        for (int i = 0; i < issue_panels.size(); i++) {
             panel.add(issue_panels.get(i));
         }
         JScrollPane scroll = new JScrollPane(panel);
@@ -209,4 +223,10 @@ public class MainFrame extends JFrame {
         issue_panel.updateUI();
     }
 
+    public void stop_main() {
+        MainFrame.this.setVisible(false);
+    }
+    public void start_main(){
+        MainFrame.this.setVisible(true);
+    }
 }

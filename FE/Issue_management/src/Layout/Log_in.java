@@ -20,6 +20,8 @@ public class Log_in extends JFrame {
     Log_in(MainFrame MF){
         super("Log in");
         this.MF = MF;
+        MF.setEnabled(false);
+
         user = MF.get_user();
 
         JPanel pane = new JPanel();
@@ -82,6 +84,7 @@ public class Log_in extends JFrame {
                 MF.getuserlabel().setText(MF.get_user().getUsername());
                 MF.repaint();
                 MF.loggedIn = true;
+                MF.setEnabled(true);
                 dispose();
             }
             //서버 통신으로 정보 받아와서 로그인
@@ -92,6 +95,7 @@ public class Log_in extends JFrame {
                 MF.getuserlabel().setText(MF.get_user().getUsername());
                 MF.repaint();
                 MF.loggedIn = true;
+                MF.setEnabled(true);
                 dispose();
             }
             else {

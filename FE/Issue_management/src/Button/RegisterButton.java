@@ -19,6 +19,7 @@ public class RegisterButton extends JFrame {
 
     public RegisterButton(){
         super("Register");
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
         JPanel pane = new JPanel();
         pane.setLayout(new BoxLayout(pane, BoxLayout.Y_AXIS));
