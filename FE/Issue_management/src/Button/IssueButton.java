@@ -12,10 +12,10 @@ public class IssueButton {
 
     public IssueButton(MainFrame MF, ArrayList<Project> projects) {
         User user = MF.get_user();
-        if(user.getType().equals(UserType.TESTER)) {
+        if(user.getType().equals(UserType.TESTER) || user.getType().equals(UserType.ADMIN)) {
             if (projects.isEmpty()) { //프로젝트 리스트가 비어 있는지 확인
-            JOptionPane.showMessageDialog(null, "No projects available. Please create a project first.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
+                JOptionPane.showMessageDialog(null, "No projects available. Please create a project first.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
             }
 
             String[] projectNames = projects.stream().map(Project::getName).toArray(String[]::new);
@@ -73,7 +73,7 @@ public class IssueButton {
                     }
 
                     // Issue 생성 및 추가
-                    Issue newIssue = new Issue(issueTitle, user.getUsername(), LocalDateTime.now().withNano(0), "Description", null, type, IssueState.NEW, new String[0]);
+                    Issue newIssue = new Issue(issueTitle, user.getUsername(), LocalDateTime.now().withNano(0), "Description", null, type, IssueState.NEW);
                     project.addIssue(newIssue);
                     JOptionPane.showMessageDialog(null, "Issue created successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
                     break; //제목을 제대로 입력하면 반복 중단

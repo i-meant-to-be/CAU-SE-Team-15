@@ -47,6 +47,7 @@ public class ProjectCreator extends JFrame {
         super("Project Creator");
         this.projectButton = projectButton;
         this.projects = projectButton.getProjects();
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
         setPreferredSize(new Dimension(750, 600));
 

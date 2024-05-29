@@ -1,12 +1,13 @@
 package Layout;
 
+import Data.Comment;
 import Data.Issue;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
+import java.util.List;
 
 public class IssueDetailFrame extends JFrame {
     private Issue issue;
@@ -76,11 +77,9 @@ public class IssueDetailFrame extends JFrame {
     // 코멘트를 표시하는 메서드
     private void displayComments() {
         StringBuilder sb = new StringBuilder();
-        String[] comments = issue.getComments();
-        if (comments != null) {
-            for (String comment : comments) {
-                sb.append(comment).append("\n");
-            }
+        List<Comment> comments = issue.getComments();
+        for (Comment comment : comments) {
+            sb.append(comment.toString()).append("\n");
         }
         commentsDisplayArea.setText(sb.toString());
     }
