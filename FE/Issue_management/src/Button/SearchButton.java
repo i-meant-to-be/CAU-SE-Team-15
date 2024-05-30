@@ -1,6 +1,8 @@
 package Button;
 
 import Data.*;
+import Layout.MainFrame;
+import ServerConnection.UserData;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,14 +19,14 @@ public class SearchButton extends JFrame {
     private JComboBox<String> reporterComboBox;
     private JTextArea resultArea;
 
-    public SearchButton(List<Project> projects) {
+    public SearchButton(List<Project> projects, UserData userdata) {
         this.projects = projects;
         String[] projectNames = projects.stream().map(Project::getName).toArray(String[]::new);
-        initializeUI(this.projects, projectNames);
+        initializeUI(this.projects, projectNames, userdata);
     }
 
 
-    private void initializeUI(List<Project> projects, String[] projectNames) {
+    private void initializeUI(List<Project> projects, String[] projectNames,UserData userdata) {
         setTitle("Search Issues");
         setSize(500, 400);
         setLayout(new BorderLayout(10, 10));
@@ -45,7 +47,12 @@ public class SearchButton extends JFrame {
 
         assignedComboBox.addItem("All Assignees");
         reporterComboBox.addItem("All Reporters");
-
+        for (Project project : projects) {
+            for (Issue issue : project.getIssues()) {
+                UserData userData = new UserData();
+                reporterComboBox.addItem(userData.getUser(issue.getReporterId()).getUsername());
+            }
+        }
         filterPanel.add(new JLabel("Project:"));
         filterPanel.add(projectComboBox);
         filterPanel.add(new JLabel("State:"));
@@ -67,7 +74,7 @@ public class SearchButton extends JFrame {
                 String selectedProjectName = (String) projectComboBox.getSelectedItem();
                 IssueState selectedState = (IssueState) stateComboBox.getSelectedItem();
                 String selectedAssignee = (String) assignedComboBox.getSelectedItem();
-                String selectedReporter = (String) reporterComboBox.getSelectedItem(); //고쳐야할 코드
+                String selectedReporter = (String) reporterComboBox.getSelectedItem();
 
                 List<Issue> filteredIssues = filterIssues(selectedProjectName, selectedState, selectedAssignee, selectedReporter);
                 displayIssues(filteredIssues);
