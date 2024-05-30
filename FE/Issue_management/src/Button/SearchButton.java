@@ -44,6 +44,10 @@ public class SearchButton extends JFrame {
 
         assignedComboBox.addItem("All Assignees");
         reporterComboBox.addItem("All Reporters");
+        for (Project project : projects) {
+            projectComboBox.addItem(project.getName());
+        }
+
 
         // Add dummy assignees and reporters for demonstration
         assignedComboBox.addItem("User1");
@@ -90,10 +94,10 @@ public class SearchButton extends JFrame {
             if (projectName.equals("All Projects") || project.getName().equals(projectName)) {
                 for (Issue issue : project.getIssues()) {
                     boolean matchesState = (state == null || issue.getState() == state);
-                    boolean matchesAssignee = (assignee.equals("All Assignees") || issue.getAssigneeId().toString().equals(assignee));
-                    boolean matchesReporter = (reporter.equals("All Reporters") || issue.getReporterId().toString().equals(reporter));
-
-                    if (matchesState && matchesAssignee && matchesReporter) {
+                    //boolean matchesAssignee = (assignee.equals("All Assignees") || issue.getAssigneeId().toString().equals(assignee));
+                    //boolean matchesReporter = (reporter.equals("All Reporters") || issue.getReporterId().toString().equals(reporter));
+                    if (matchesState) {
+                    //if (matchesState && matchesAssignee && matchesReporter) {
                         filteredIssues.add(issue);
                     }
                 }
