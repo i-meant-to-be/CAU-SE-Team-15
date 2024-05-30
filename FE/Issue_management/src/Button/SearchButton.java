@@ -8,7 +8,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class SearchButton extends JFrame {
     private List<Project> projects;
@@ -20,10 +19,12 @@ public class SearchButton extends JFrame {
 
     public SearchButton(List<Project> projects) {
         this.projects = projects;
-        initializeUI();
+        String[] projectNames = projects.stream().map(Project::getName).toArray(String[]::new);
+        initializeUI(this.projects, projectNames);
     }
 
-    private void initializeUI() {
+
+    private void initializeUI(List<Project> projects, String[] projectNames) {
         setTitle("Search Issues");
         setSize(500, 400);
         setLayout(new BorderLayout(10, 10));
@@ -34,7 +35,7 @@ public class SearchButton extends JFrame {
 
         projectComboBox = new JComboBox<>();
         projectComboBox.addItem("All Projects");
-        for (Project project : projects) {
+        for (Project project : this.projects) {
             projectComboBox.addItem(project.getName());
         }
 
@@ -44,16 +45,6 @@ public class SearchButton extends JFrame {
 
         assignedComboBox.addItem("All Assignees");
         reporterComboBox.addItem("All Reporters");
-        for (Project project : projects) {
-            projectComboBox.addItem(project.getName());
-        }
-
-
-        // Add dummy assignees and reporters for demonstration
-        assignedComboBox.addItem("User1");
-        assignedComboBox.addItem("User2");
-        reporterComboBox.addItem("User1");
-        reporterComboBox.addItem("User2");
 
         filterPanel.add(new JLabel("Project:"));
         filterPanel.add(projectComboBox);
@@ -69,13 +60,14 @@ public class SearchButton extends JFrame {
         JScrollPane scrollPane = new JScrollPane(resultArea);
 
         JButton searchButton = new JButton("Search");
+
         searchButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String selectedProjectName = (String) projectComboBox.getSelectedItem();
                 IssueState selectedState = (IssueState) stateComboBox.getSelectedItem();
                 String selectedAssignee = (String) assignedComboBox.getSelectedItem();
-                String selectedReporter = (String) reporterComboBox.getSelectedItem();
+                String selectedReporter = (String) reporterComboBox.getSelectedItem(); //고쳐야할 코드
 
                 List<Issue> filteredIssues = filterIssues(selectedProjectName, selectedState, selectedAssignee, selectedReporter);
                 displayIssues(filteredIssues);
@@ -94,10 +86,10 @@ public class SearchButton extends JFrame {
             if (projectName.equals("All Projects") || project.getName().equals(projectName)) {
                 for (Issue issue : project.getIssues()) {
                     boolean matchesState = (state == null || issue.getState() == state);
-                    //boolean matchesAssignee = (assignee.equals("All Assignees") || issue.getAssigneeId().toString().equals(assignee));
-                    //boolean matchesReporter = (reporter.equals("All Reporters") || issue.getReporterId().toString().equals(reporter));
-                    if (matchesState) {
-                    //if (matchesState && matchesAssignee && matchesReporter) {
+                    boolean matchesAssignee = (assignee.equals("All Assignees") || assignee.equals(issue.getAssigneeId()));
+                    boolean matchesReporter = (reporter.equals("All Reporters") || reporter.equals(issue.getReporterId()));
+
+                    if (matchesState && matchesAssignee && matchesReporter) {
                         filteredIssues.add(issue);
                     }
                 }
@@ -106,6 +98,7 @@ public class SearchButton extends JFrame {
 
         return filteredIssues;
     }
+
 
     private void displayIssues(List<Issue> issues) {
         StringBuilder sb = new StringBuilder();

@@ -102,8 +102,14 @@ public class MainFrame extends JFrame {
 
         JButton search = new JButton("Search");
         search.addActionListener(new ActionListener() {
+
             @Override
             public void actionPerformed(ActionEvent e) {
+                ProjectData projectData = new ProjectData();
+                Project[] projects1 = projectData.getAllProjects();
+                for (Project project : projects1) {
+                    projects.add(project);
+                }
                 new SearchButton(projects).setVisible(true);
             }
         });
