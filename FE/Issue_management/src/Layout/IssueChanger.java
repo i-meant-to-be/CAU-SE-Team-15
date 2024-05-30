@@ -155,25 +155,29 @@ public class IssueChanger extends JFrame {
     }
 
     public void loadComment(JPanel commentsPanel, Issue issue) {
+        //커멘츠패널은 커멘트 패널을 담는 패널
+        //커멘츠는 커멘트 패널들의 어레이리스트
         commentsPanel.removeAll();
         comments.clear();
         commentsPanel.setLayout(new GridLayout(issue.getComments().size(), 1));
         clickPanelListener click = new clickPanelListener();
         for(Comment comment : issue.getComments()) {
-            JPanel commentPanel = new JPanel(new GridLayout(3, 1));
-            commentPanel.addMouseListener(click);
-            commentPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
-            comments.add(commentPanel);
-            JLabel commentAuthor = new JLabel();
-            if(comment.getAuthorId()!=null)
-                commentAuthor.setText("Author :" + comment.getAuthorId().toString());
-            JLabel commentText = new JLabel("Text :" + comment.getText());
-            JLabel commentDate = new JLabel("Date :" + comment.getTimestamp().toString());
-            commentPanel.add(commentAuthor);
-            commentPanel.add(commentText);
-            commentPanel.add(commentDate);
-            commentsPanel.add(commentPanel);
-
+            if(comment!=null) {
+                //커멘트 패널은 커멘트 패널 하나
+                JPanel commentPanel = new JPanel(new GridLayout(3, 1));
+                commentPanel.addMouseListener(click);
+                commentPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+                comments.add(commentPanel);
+                JLabel commentAuthor = new JLabel();
+                if (comment.getAuthorId() != null)
+                    commentAuthor.setText("Author :" + comment.getAuthorId().toString());
+                JLabel commentText = new JLabel("Text :" + comment.getText());
+                JLabel commentDate = new JLabel("Date :" + comment.getTimestamp().toString());
+                commentPanel.add(commentAuthor);
+                commentPanel.add(commentText);
+                commentPanel.add(commentDate);
+                commentsPanel.add(commentPanel);
+            }
         }
         commentsPanel.revalidate();
         commentsPanel.repaint();

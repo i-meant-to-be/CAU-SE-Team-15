@@ -21,7 +21,7 @@ public class MainFrame extends JFrame {
     private JLabel user_name;
 
     private ArrayList<Project> projects = new ArrayList<>();
-    private ArrayList<Issue> issues = new ArrayList<>();
+    private ArrayList<Issue> sd_issues = new ArrayList<>();
 
     private Project selectedProject;
 
@@ -163,18 +163,27 @@ public class MainFrame extends JFrame {
     public void showIssues() {
         AbstractBorder border = new LineBorder(Color.BLACK, 2);
 
-        issues = new ArrayList<>();
+//        issues.clear();
+//        issues = selectedProject.getIssues();
+
+        //프로젝트관련 클래스에서 서버와 연동해 프로젝트 받아오고 그걸 통해 Issue들을 저장
         IssueData issueData = new IssueData();
-        Issue[] sd_issue = issueData.getAllIssues(selectedProject.getId());
-        if(sd_issue!=null) {
-            for (Issue iss : sd_issue) {
-                issues.add(iss);
-            }
+        for(int i = 0; i < issueData.getAllIssues(selectedProject.getId()).length; i++) {
+            sd_issues.add(issueData.getAllIssues(selectedProject.getId())[i]);
         }
 
+//
+//        if(sd_issue!=null) {
+//            for (Issue iss : sd_issue) {
+//                issues.add(iss);
+//            }
+//        }
+
+        //현재 이슈 패널 초기화
         issue_panel.removeAll();
         issue_panel.setLayout(new BorderLayout(10, 10));
 
+        //이슈 패널들 목록 초기화
         issue_panels.clear();
         index = -1;
 
@@ -208,7 +217,7 @@ public class MainFrame extends JFrame {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         clickPanelListener c = new clickPanelListener();
-        for (Issue issue : issues) {
+        for (Issue issue : sd_issues) {
             if (issue != null) {
                 JPanel new_Panel = new JPanel();
                 new_Panel.addMouseListener(c);
@@ -241,6 +250,10 @@ public class MainFrame extends JFrame {
                 new_Panel.add(detailButton);
                 issue_panels.add(new_Panel);
             }
+            else {
+                JOptionPane.showMessageDialog(null, "there's no issue in this project", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
         }
         for (int i = 0; i < issue_panels.size(); i++) {
             panel.add(issue_panels.get(i));
@@ -265,7 +278,7 @@ public class MainFrame extends JFrame {
                     index = i;
                     if(index != temp)
                     {
-                        IssueChanger issueChanger = new IssueChanger(MainFrame.this, issues.get(index));
+                        IssueChanger issueChanger = new IssueChanger(MainFrame.this, sd_issues.get(index));
                         issueChanger.addWindowListener(new WindowAdapter() {
                             public void windowClosing(WindowEvent e) {
                                 MainFrame.this.setEnabled(true);
