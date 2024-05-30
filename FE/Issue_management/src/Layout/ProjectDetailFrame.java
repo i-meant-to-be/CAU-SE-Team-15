@@ -63,8 +63,20 @@ public class ProjectDetailFrame extends JFrame {
                 dispose();
             }
         });
+        JButton delete = new JButton("Remove");
+        delete.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                int response = JOptionPane.showConfirmDialog(null, "do you want to delete this project?", "Warning", JOptionPane.WARNING_MESSAGE);
+                if(response == JOptionPane.YES_OPTION) {
+                    //프로젝트 삭제 코드
+                    dispose();
+                }
+            }
+        });
         buttons.add(new JPanel());
         buttons.add(OK);
+        buttons.add(new JPanel());
+        buttons.add(delete);
         buttons.add(new JPanel());
         buttons.add(cancel);
         buttons.add(new JPanel());

@@ -91,6 +91,7 @@ public class MainFrame extends JFrame {
         JButton issueButton = new JButton("Issue");
         issueButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                projects.clear();
                 ProjectData projectData = new ProjectData();
                 Project[] projects1 = projectData.getAllProjects();
                 for(Project project : projects1) {
@@ -105,6 +106,7 @@ public class MainFrame extends JFrame {
 
             @Override
             public void actionPerformed(ActionEvent e) {
+                projects.clear();
                 ProjectData projectData = new ProjectData();
                 Project[] projects1 = projectData.getAllProjects();
                 for (Project project : projects1) {
