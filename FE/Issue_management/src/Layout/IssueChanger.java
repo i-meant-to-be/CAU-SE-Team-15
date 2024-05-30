@@ -120,7 +120,7 @@ public class IssueChanger extends JFrame {
         addComment.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                IssueDetailFrame issueDetailFrame = new IssueDetailFrame(issue);
+                IssueDetailFrame issueDetailFrame = new IssueDetailFrame(issue,MF);
                 loadComment(commentsPanel, issue);
                 issueDetailFrame.addWindowListener(new WindowAdapter() {
                     public void windowClosed(WindowEvent e) {

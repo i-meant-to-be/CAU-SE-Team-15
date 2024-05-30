@@ -1,6 +1,6 @@
 package ServerConnection;
 
-import Data.*;
+import Data.Comment;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -55,7 +55,7 @@ public class CommentData {
                 UUID id = UUID.fromString(jsonObject.getString("id"));
                 String text = jsonObject.getString("body");
                 UUID authorId = UUID.fromString(jsonObject.getString("authorId"));
-                String createdDate = jsonObject.getString("Date");
+                String createdDate = jsonObject.getString("date");
                 LocalDateTime created = LocalDateTime.parse(createdDate);
                 sd_comments[i] = new Comment(id,text,created,authorId);
             }
@@ -119,7 +119,7 @@ public class CommentData {
     }
 
     public Comment getComment(UUID commentId){
-        Comment sd_comment = null;
+        Comment sd_comment;
         try {
             URL url = new URL("http://localhost:8080/api/comment/"+commentId.toString());
             HttpURLConnection conn = (HttpURLConnection)url.openConnection();
@@ -138,18 +138,19 @@ public class CommentData {
             }
 
             JSONObject jsonObject = new JSONObject(sb.toString()); // json으로 변경 (역직렬화)
+             UUID id = UUID.fromString(jsonObject.getString("id"));
+             String text = jsonObject.getString("body");
+             UUID authorId = UUID.fromString(jsonObject.getString("authorId"));
+             String createdDate = jsonObject.getString("date");
+             LocalDateTime created = LocalDateTime.parse(createdDate);
 
-            UUID id = UUID.fromString(jsonObject.getString("id"));
-            String text = jsonObject.getString("body");
-            UUID authorId = UUID.fromString(jsonObject.getString("authorId"));
-            String createdDate = jsonObject.getString("Date");
-            LocalDateTime created = LocalDateTime.parse(createdDate);
+             sd_comment = new Comment(id, text, created, authorId);
+             return sd_comment;
 
-            sd_comment = new Comment(id,text,created,authorId);
 
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return sd_comment;
+        return null;
     }
 }

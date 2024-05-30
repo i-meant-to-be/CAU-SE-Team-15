@@ -1,6 +1,8 @@
 package ServerConnection;
 
-import Data.*;
+import Data.Issue;
+import Data.IssueState;
+import Data.IssueType;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -161,7 +163,7 @@ public class IssueData {
     }
 
     public Issue getIssue(UUID issueId){
-        Issue issue = null;
+        Issue issue;
         try {
             URL url = new URL("http://localhost:8080/api/issue/"+issueId.toString());
             HttpURLConnection conn = (HttpURLConnection)url.openConnection();
@@ -183,37 +185,41 @@ public class IssueData {
 
             UUID id = UUID.fromString(jsonObject.getString("id"));
             String title = jsonObject.getString("title");
-            String description = jsonObject.getString("discription");
+            String description = jsonObject.getString("description");
             IssueType type = IssueType.valueOf(jsonObject.getString("type"));
             IssueState state = IssueState.valueOf(jsonObject.getString("state"));
             String reportedDate = jsonObject.getString("reportedDate");
             LocalDateTime reported = LocalDateTime.parse(reportedDate);
 
             UUID reporterId = UUID.fromString(jsonObject.getString("reporterId"));
-            UUID fixerId = UUID.fromString(jsonObject.getString("fixerId"));
-            UUID assigneeId = UUID.fromString(jsonObject.getString("assigneeId"));
+            //UUID fixerId = UUID.fromString(jsonObject.getString("fixerId"));
+            //UUID assigneeId = UUID.fromString(jsonObject.getString("assigneeId"));
 
-            issue = new Issue(title, reporterId, reported, description, assigneeId, type, state);
+            issue = new Issue(title, reporterId, reported, description, type, state);
             issue.setId(id);
 
             JSONArray commentArray = jsonObject.getJSONArray("commentIds");
-            UUID[] commentIds = new UUID[commentArray.length()];
-            for(int j = 0; j < commentArray.length(); j++) {
-                commentIds[j] = UUID.fromString(commentArray.getString(j));
-                CommentData commentData = new CommentData();
-                issue.addComment(commentData.getComment(commentIds[j]));
+            if(commentArray!=null) {
+                UUID[] commentIds = new UUID[commentArray.length()];
+                for (int j = 0; j < commentArray.length(); j++) {
+                    commentIds[j] = UUID.fromString(commentArray.getString(j));
+                    CommentData commentData = new CommentData();
+                    issue.addComment(commentData.getComment(commentIds[j]));
+                }
             }
+            JSONArray tagArray = jsonObject.getJSONArray("tags");
+            if(tagArray!=null) {
+                String[] tags = new String[tagArray.length()];
+                for (int j = 0; j < tagArray.length(); j++) {
+                    tags[j] = tagArray.getString(j);
 
-            JSONArray tagArray = jsonObject.getJSONArray("tag");
-            String [] tags = new String[tagArray.length()];
-            for(int j = 0; j < tagArray.length(); j++) {
-                tags[j] = tagArray.getString(j);
-
+                }
             }
+            return issue;
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return issue;
+        return null;
     }
 
     public void getAllIssue(UUID projectId){
@@ -243,18 +249,20 @@ public class IssueData {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                 UUID id = UUID.fromString(jsonObject.getString("id"));
                 String title = jsonObject.getString("title");
-                String description = jsonObject.getString("discription");
+                String description = jsonObject.getString("description");
                 IssueType type = IssueType.valueOf(jsonObject.getString("type"));
                 IssueState state = IssueState.valueOf(jsonObject.getString("state"));
                 String reportedDate = jsonObject.getString("reportedDate");
                 LocalDateTime reported = LocalDateTime.parse(reportedDate);
 
-                UUID reporterId = UUID.fromString(jsonObject.getString("reporterId"));
-                UUID fixerId = UUID.fromString(jsonObject.getString("fixerId"));
-                UUID assigneeId = UUID.fromString(jsonObject.getString("assigneeId"));
 
-                sd_issue[i] = new Issue(title, reporterId, reported, description, assigneeId, type, state);
+                UUID reporterId = UUID.fromString(jsonObject.getString("reporterId"));
+                //UUID fixerId = UUID.fromString(jsonObject.getString("fixerId"));
+                //UUID assigneeId = UUID.fromString(jsonObject.getString("assigneeId"));
+
+                sd_issue[i] = new Issue(title, reporterId, reported, description, type, state);
                 sd_issue[i].setId(id);
+                //issue 에 assignee와 fixer 도 추가해야됨
 
                 JSONArray commentArray = jsonObject.getJSONArray("commentIds");
                 UUID[] commentIds = new UUID[commentArray.length()];
@@ -264,7 +272,7 @@ public class IssueData {
                     sd_issue[i].addComment(commentData.getComment(commentIds[j]));
                 }
 
-                JSONArray tagArray = jsonObject.getJSONArray("tag");
+                JSONArray tagArray = jsonObject.getJSONArray("tags");
                 String [] tags = new String[tagArray.length()];
                 for(int j = 0; j < tagArray.length(); j++) {
                     tags[j] = tagArray.getString(j);
@@ -303,7 +311,7 @@ public class IssueData {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                 UUID id = UUID.fromString(jsonObject.getString("id"));
                 String title = jsonObject.getString("title");
-                String description = jsonObject.getString("discription");
+                String description = jsonObject.getString("description");
                 IssueType type = IssueType.valueOf(jsonObject.getString("type"));
                 IssueState state = IssueState.valueOf(jsonObject.getString("state"));
                 String reportedDate = jsonObject.getString("reportedDate");
@@ -324,7 +332,7 @@ public class IssueData {
                     sd_issue[i].addComment(commentData.getComment(commentIds[j]));
                 }
 
-                JSONArray tagArray = jsonObject.getJSONArray("tag");
+                JSONArray tagArray = jsonObject.getJSONArray("tags");
                 String [] tags = new String[tagArray.length()];
                 for(int j = 0; j < tagArray.length(); j++) {
                     tags[j] = tagArray.getString(j);

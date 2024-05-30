@@ -6,6 +6,7 @@ import Data.UserType;
 import Layout.MainFrame;
 import Layout.ProjectCreator;
 import Layout.ProjectDetailFrame;
+import ServerConnection.ProjectData;
 
 import javax.swing.*;
 import java.awt.event.WindowAdapter;
@@ -15,12 +16,18 @@ import java.util.ArrayList;
 public class ProjectButton {
 
     private MainFrame MF;
-    private ArrayList<Project> projects;
+    private ArrayList<Project> projects= new ArrayList<>();
     private Project selected_project;
 
     public ProjectButton(MainFrame MF) {
         this.MF = MF;
-        projects = MF.get_projects();
+        ProjectData projectData = new ProjectData();
+        Project[] projects1 = projectData.getAllProjects();
+        for (Project project : projects1) {
+            if(project != null)
+                projects.add(project);
+        }
+        //projects = MF.get_projects();
         showProjectOptions();
     }
 

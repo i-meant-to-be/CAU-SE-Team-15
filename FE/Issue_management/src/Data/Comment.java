@@ -1,5 +1,7 @@
 package Data;
 
+import ServerConnection.UserData;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -26,6 +28,10 @@ public class Comment {
         return authorId;
     }
 
+    public void setAuthorId(UUID authorId){
+        this.authorId = authorId;
+    }
+
     public UUID getId() {
         return id;
     }
@@ -44,6 +50,7 @@ public class Comment {
 
     @Override
     public String toString() {
-        return text + ": " + timestamp; //댓글 출력할 때 댓글 입력한 시간도 같이 표시
+        UserData userData = new UserData();
+        return text + "  ::  " + userData.getUser(authorId).getUsername()+ "  ::  " + timestamp ; //댓글 출력할 때 댓글 입력한 시간도 같이 표시
     }
 }

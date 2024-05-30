@@ -1,6 +1,6 @@
 package ServerConnection;
 
-import Data.*;
+import Data.Project;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -11,14 +11,14 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 public class ProjectData {
     private Project[] sd_project;
-    private int projectCnt;
-    private List<Issue> issueList;
-    private List<UUID> userList;
+    private int projectCnt = 0;
+    private List<UUID> userList = new ArrayList<>();
 
     public Project[] getAllProjects(){
         this.getAllProject();
@@ -31,7 +31,7 @@ public class ProjectData {
     }
 
     public Project getProject(UUID projectId){
-        Project project = null;
+        Project project;
         try {
             URL url = new URL("http://localhost:8080/api/project/"+projectId.toString());
             HttpURLConnection conn = (HttpURLConnection)url.openConnection();
@@ -58,7 +58,7 @@ public class ProjectData {
             }
 
             String title = jsonObject.getString("title");
-            String description = jsonObject.getString("discription");
+            String description = jsonObject.getString("description");
             String createdTime = jsonObject.getString("createdDate");
             LocalDateTime created = LocalDateTime.parse(createdTime);
 
@@ -73,10 +73,11 @@ public class ProjectData {
                 project.addIssue(issueData.getIssue(issueId));
             }
 
+            return project;
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return project;
+        return null;
     }
 
     public void deleteProject(Project project){
@@ -158,6 +159,7 @@ public class ProjectData {
 
             for (int i = 0; i < projectCnt; i++) {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
+
                 UUID id = UUID.fromString(jsonObject.getString("id"));
 
                 JSONArray userIdArray = jsonObject.getJSONArray("userIds");
@@ -166,7 +168,7 @@ public class ProjectData {
                 }
 
                 String title = jsonObject.getString("title");
-                String description = jsonObject.getString("discription");
+                String description = jsonObject.getString("description");
                 String createdTime = jsonObject.getString("createdDate");
                 LocalDateTime created = LocalDateTime.parse(createdTime);
                 sd_project[i] = new Project(title, description, userList);

@@ -2,6 +2,8 @@ package Layout;
 
 import Data.*;
 import Button.*;
+import ServerConnection.IssueData;
+import ServerConnection.UserData;
 
 import javax.swing.*;
 import javax.swing.border.AbstractBorder;
@@ -135,6 +137,10 @@ public class MainFrame extends JFrame {
         return user;
     }
 
+    public void set_user(User user2) {
+        this.user = user2;
+    }
+
     public ArrayList<Project> get_projects() {
         return projects;
     }
@@ -151,7 +157,15 @@ public class MainFrame extends JFrame {
     public void showIssues() {
         AbstractBorder border = new LineBorder(Color.BLACK, 2);
 
-        issues = selectedProject.getIssues();
+        issues = new ArrayList<>();
+        IssueData issueData = new IssueData();
+        Issue[] sd_issue = issueData.getAllIssues(selectedProject.getId());
+        if(sd_issue!=null) {
+            for (Issue iss : sd_issue) {
+                issues.add(iss);
+            }
+        }
+
         issue_panel.removeAll();
         issue_panel.setLayout(new BorderLayout(10, 10));
 
@@ -189,34 +203,38 @@ public class MainFrame extends JFrame {
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         clickPanelListener c = new clickPanelListener();
         for (Issue issue : issues) {
-            JPanel new_Panel = new JPanel();
-            new_Panel.addMouseListener(c);
-            new_Panel.setLayout(new GridLayout(1, 7));
-            new_Panel.setBorder(BorderFactory.createLineBorder(Color.black, 3));
-            new_Panel.add(new JLabel(issue.getTitle(), JLabel.CENTER));
-            new_Panel.add(new JLabel(issue.getReporterId().toString(), JLabel.CENTER));
-            new_Panel.add(new JLabel(issue.getReportedDate().toString(), JLabel.CENTER));
-            new_Panel.add(new JLabel(issue.getType().toString(), JLabel.CENTER));
-            if (issue.getAssigneeId() == null) {
-                new_Panel.add(new JLabel("Not assigned yet", JLabel.CENTER));
-            } else {
-                new_Panel.add(new JLabel(issue.getAssigneeId().toString(), JLabel.CENTER));
-            }
-            new_Panel.add(new JLabel(issue.getState().toString(), JLabel.CENTER));
-            // "Detail" 버튼 추가
-            JButton detailButton = new JButton("Detail");
-            detailButton.setMinimumSize(new Dimension(30, 30));
-            detailButton.setMaximumSize(new Dimension(30, 30));
-            detailButton.setPreferredSize(new Dimension(30, 30));
-            detailButton.setSize(new Dimension(30, 30));
-            detailButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    new IssueDetailFrame(issue);
+            if (issue != null) {
+                JPanel new_Panel = new JPanel();
+                new_Panel.addMouseListener(c);
+                new_Panel.setLayout(new GridLayout(1, 7));
+                new_Panel.setBorder(BorderFactory.createLineBorder(Color.black, 3));
+                new_Panel.add(new JLabel(issue.getTitle(), JLabel.CENTER));
+                UserData userData = new UserData();
+                String reporter = userData.getUser(issue.getReporterId()).getUsername();
+                new_Panel.add(new JLabel(reporter, JLabel.CENTER));
+                new_Panel.add(new JLabel(issue.getReportedDate().toString(), JLabel.CENTER));
+                new_Panel.add(new JLabel(issue.getType().toString(), JLabel.CENTER));
+                if (issue.getAssigneeId() == null) {
+                    new_Panel.add(new JLabel("Not assigned yet", JLabel.CENTER));
+                } else {
+                    new_Panel.add(new JLabel(issue.getAssigneeId().toString(), JLabel.CENTER));
                 }
-            });
-            new_Panel.add(detailButton);
-            issue_panels.add(new_Panel);
+                new_Panel.add(new JLabel(issue.getState().toString(), JLabel.CENTER));
+                // "Detail" 버튼 추가
+                JButton detailButton = new JButton("Detail");
+                detailButton.setMinimumSize(new Dimension(30, 30));
+                detailButton.setMaximumSize(new Dimension(30, 30));
+                detailButton.setPreferredSize(new Dimension(30, 30));
+                detailButton.setSize(new Dimension(30, 30));
+                detailButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        new IssueDetailFrame(issue,MainFrame.this);
+                    }
+                });
+                new_Panel.add(detailButton);
+                issue_panels.add(new_Panel);
+            }
         }
         for (int i = 0; i < issue_panels.size(); i++) {
             panel.add(issue_panels.get(i));

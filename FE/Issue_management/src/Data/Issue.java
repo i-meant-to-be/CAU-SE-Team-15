@@ -29,6 +29,17 @@ public class Issue {
         this.comments = new ArrayList<>();
     }
 
+    public Issue(String title, UUID reporter_id, LocalDateTime reported_date, String description, IssueType type, IssueState state) {
+        this.id = UUID.randomUUID();
+        this.title = title;
+        this.reporter_id = reporter_id;
+        this.reported_date = reported_date;
+        this.description = description;
+        this.type = type;
+        this.state = state;
+        this.comments = new ArrayList<>();
+    }
+
     // Getter 및 setter 메서드
 
     public UUID getId() {

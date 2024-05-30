@@ -94,6 +94,7 @@ public class Log_in extends JFrame {
                 UserData userData = new UserData();
                 User user1 = userData.getUser(input_ID.getText());
                 user.setUser(user1.getUsername(),user1.getPassword(),user1.getType());
+                MF.set_user(user1);
                 MF.getuserlabel().setText(MF.get_user().getUsername());
                 MF.repaint();
                 MF.loggedIn = true;
