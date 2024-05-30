@@ -180,15 +180,18 @@ public class MainFrame extends JFrame {
 
 
     public void showIssues() {
+        if(selectedProject.getIssues().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "there's no issue", "Warning", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
         AbstractBorder border = new LineBorder(Color.BLACK, 2);
 
 
         sd_issues.clear();
 //        issues.clear();
 //        issues = selectedProject.getIssues();
-
-        //프로젝트관련 클래스에서 서버와 연동해 프로젝트 받아오고 그걸 통해 Issue들을 저장
         IssueData issueData = new IssueData();
+        //프로젝트관련 클래스에서 서버와 연동해 프로젝트 받아오고 그걸 통해 Issue들을 저장
         for(int i = 0; i < issueData.getAllIssues(selectedProject.getId()).length; i++) {
             sd_issues.add(issueData.getAllIssues(selectedProject.getId())[i]);
         }

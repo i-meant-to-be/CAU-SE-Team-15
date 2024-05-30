@@ -42,6 +42,7 @@ public class ProjectCreator extends JFrame {
     private ComboboxMouseListener mouseListener;
     private ArrayList<Button_x_Listener> buttonListeners = new ArrayList<>();
 
+
     private int index;
 
     public ProjectCreator(ProjectButton projectButton) {
@@ -331,10 +332,18 @@ public class ProjectCreator extends JFrame {
             if(projectNameField.getText().isEmpty())
                 JOptionPane.showMessageDialog(projectMemberPanel2_1, "Please enter the project name!");
             else {
-                Project project = new Project(projectNameField.getText(), projectDescription.getText(), users);
+                UserData userData = new UserData();
+                List<UUID> userIds = new ArrayList<>();
+                for(int i=0; i<userComboBoxList.size(); i++) {
+                    if(userComboBoxList.get(i).getSelectedItem()!=null) {
+                        userIds.add(userData.getUser((String)userComboBoxList.get(i).getSelectedItem()).getUUID());
+                    }
+                }
+                Project project = new Project(projectNameField.getText(), projectDescription.getText(), userIds);
                 //projects.add(project);
                 ProjectData projectData = new ProjectData();
                 projectData.addProject(project);
+
                 JOptionPane.showMessageDialog(null, "Project Created", "Success", JOptionPane.PLAIN_MESSAGE);
                 dispose();
             }
