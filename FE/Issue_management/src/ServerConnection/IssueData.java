@@ -4,6 +4,7 @@ import Data.Issue;
 import Data.IssueState;
 import Data.IssueType;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -22,6 +23,11 @@ public class IssueData {
     public Issue[] getAllIssues(){
         this.getAllIssue();
         return sd_issue;
+    }
+
+    public int getIssueNum(UUID projectId){
+        this.getAllIssue(projectId);
+        return issueCnt;
     }
 
     public Issue[] getAllIssues(UUID projectId){
@@ -318,8 +324,15 @@ public class IssueData {
                 LocalDateTime reported = LocalDateTime.parse(reportedDate);
 
                 UUID reporterId = UUID.fromString(jsonObject.getString("reporterId"));
-                UUID fixerId = UUID.fromString(jsonObject.getString("fixerId"));
-                UUID assigneeId = UUID.fromString(jsonObject.getString("assigneeId"));
+                UUID fixerId;
+                try{
+                    fixerId = UUID.fromString(jsonObject.getString("fixerId"));
+                } catch (JSONException e) {fixerId =null;}
+
+                UUID assigneeId;
+                try {
+                    assigneeId = UUID.fromString(jsonObject.getString("assigneeId"));
+                } catch (JSONException e) {assigneeId=null;}
 
                 sd_issue[i] = new Issue(title, reporterId, reported, description, assigneeId, type, state);
                 sd_issue[i].setId(id);
