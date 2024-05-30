@@ -36,7 +36,7 @@ public class MainFrame extends JFrame {
         pane.setLayout(new BorderLayout(10, 10));
 
         JPanel user_func = new JPanel();
-        user_func.setLayout(new GridLayout(5, 1));
+        user_func.setLayout(new GridLayout(6, 1));
 
         JPanel user_info = new JPanel();
         user_info.setBorder(BorderFactory.createLineBorder(Color.black, 3));
@@ -96,11 +96,17 @@ public class MainFrame extends JFrame {
 
         JButton search = new JButton("Search");
 
+        JButton trendButton = new JButton("Trend");
+        trendButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) { new TreandButton();}
+        });
+
         user_func.add(user_info);
         user_func.add(registerButton);
         user_func.add(projectButton);
         user_func.add(issueButton);
         user_func.add(search);
+        user_func.add(trendButton);
 
         issue_panel = new JPanel();
         pane.add(user_func, BorderLayout.EAST);

@@ -14,7 +14,7 @@ public class IssueButton {
         User user = MF.get_user();
         if(user.getType().equals(UserType.TESTER) || user.getType().equals(UserType.ADMIN)) {
             if (projects.isEmpty()) { //프로젝트 리스트가 비어 있는지 확인
-                JOptionPane.showMessageDialog(null, "No projects available. Please create a project first.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "No projects available. Please select a project first.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
