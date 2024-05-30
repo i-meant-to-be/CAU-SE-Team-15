@@ -36,28 +36,31 @@ public class CommentData {
             conn.setRequestProperty("Content-Type", "application/json"); // header Content-Type 정보
             conn.setDoOutput(true); // 서버로부터 받는 값이 있다면 true
 
-            // 서버로부터 데이터 읽어오기
-            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            StringBuilder sb = new StringBuilder();
-            String line = null;
+            int responseCode = conn.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                // 서버로부터 데이터 읽어오기
+                BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                StringBuilder sb = new StringBuilder();
+                String line = null;
 
-            while((line = br.readLine()) != null) { // 읽을 수 있을 때 까지 반복
-                sb.append(line);
-            }
+                while ((line = br.readLine()) != null) { // 읽을 수 있을 때 까지 반복
+                    sb.append(line);
+                }
 
-            JSONArray jsonArray = new JSONArray(sb.toString()); // json으로 변경 (역직렬화)
+                JSONArray jsonArray = new JSONArray(sb.toString()); // json으로 변경 (역직렬화)
 
-            commentCnt = jsonArray.length();
-            sd_comments = new Comment[commentCnt];
+                commentCnt = jsonArray.length();
+                sd_comments = new Comment[commentCnt];
 
-            for (int i = 0; i < commentCnt; i++) {// 여기부터
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                UUID id = UUID.fromString(jsonObject.getString("id"));
-                String text = jsonObject.getString("body");
-                UUID authorId = UUID.fromString(jsonObject.getString("authorId"));
-                String createdDate = jsonObject.getString("date");
-                LocalDateTime created = LocalDateTime.parse(createdDate);
-                sd_comments[i] = new Comment(id,text,created,authorId);
+                for (int i = 0; i < commentCnt; i++) {// 여기부터
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    UUID id = UUID.fromString(jsonObject.getString("id"));
+                    String text = jsonObject.getString("body");
+                    UUID authorId = UUID.fromString(jsonObject.getString("authorId"));
+                    String createdDate = jsonObject.getString("date");
+                    LocalDateTime created = LocalDateTime.parse(createdDate);
+                    sd_comments[i] = new Comment(id, text, created, authorId);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -128,26 +131,28 @@ public class CommentData {
             conn.setRequestProperty("Content-Type", "application/json"); // header Content-Type 정보
             conn.setDoOutput(true); // 서버로부터 받는 값이 있다면 true
 
-            // 서버로부터 데이터 읽어오기
-            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            StringBuilder sb = new StringBuilder();
-            String line = null;
+            int responseCode = conn.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                // 서버로부터 데이터 읽어오기
+                BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                StringBuilder sb = new StringBuilder();
+                String line = null;
 
-            while((line = br.readLine()) != null) { // 읽을 수 있을 때 까지 반복
-                sb.append(line);
+                while ((line = br.readLine()) != null) { // 읽을 수 있을 때 까지 반복
+                    sb.append(line);
+                }
+
+                JSONObject jsonObject = new JSONObject(sb.toString()); // json으로 변경 (역직렬화)
+                UUID id = UUID.fromString(jsonObject.getString("id"));
+                String text = jsonObject.getString("body");
+                UUID authorId = UUID.fromString(jsonObject.getString("authorId"));
+                String createdDate = jsonObject.getString("date");
+                LocalDateTime created = LocalDateTime.parse(createdDate);
+
+                sd_comment = new Comment(id, text, created, authorId);
+                return sd_comment;
+
             }
-
-            JSONObject jsonObject = new JSONObject(sb.toString()); // json으로 변경 (역직렬화)
-             UUID id = UUID.fromString(jsonObject.getString("id"));
-             String text = jsonObject.getString("body");
-             UUID authorId = UUID.fromString(jsonObject.getString("authorId"));
-             String createdDate = jsonObject.getString("date");
-             LocalDateTime created = LocalDateTime.parse(createdDate);
-
-             sd_comment = new Comment(id, text, created, authorId);
-             return sd_comment;
-
-
         } catch (Exception e) {
             e.printStackTrace();
         }

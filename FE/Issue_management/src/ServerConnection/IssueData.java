@@ -178,50 +178,53 @@ public class IssueData {
             conn.setRequestProperty("Content-Type", "application/json"); // header Content-Type 정보
             conn.setDoOutput(true); // 서버로부터 받는 값이 있다면 true
 
-            // 서버로부터 데이터 읽어오기
-            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            StringBuilder sb = new StringBuilder();
-            String line = null;
+            int responseCode = conn.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                // 서버로부터 데이터 읽어오기
+                BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                StringBuilder sb = new StringBuilder();
+                String line = null;
 
-            while((line = br.readLine()) != null) { // 읽을 수 있을 때 까지 반복
-                sb.append(line);
-            }
-
-            JSONObject jsonObject = new JSONObject(sb.toString()); // json으로 변경 (역직렬화)
-
-            UUID id = UUID.fromString(jsonObject.getString("id"));
-            String title = jsonObject.getString("title");
-            String description = jsonObject.getString("description");
-            IssueType type = IssueType.valueOf(jsonObject.getString("type"));
-            IssueState state = IssueState.valueOf(jsonObject.getString("state"));
-            String reportedDate = jsonObject.getString("reportedDate");
-            LocalDateTime reported = LocalDateTime.parse(reportedDate);
-
-            UUID reporterId = UUID.fromString(jsonObject.getString("reporterId"));
-            //UUID fixerId = UUID.fromString(jsonObject.getString("fixerId"));
-            //UUID assigneeId = UUID.fromString(jsonObject.getString("assigneeId"));
-
-            issue = new Issue(title, reporterId, reported, description, type, state);
-            issue.setId(id);
-
-            JSONArray commentArray = jsonObject.getJSONArray("commentIds");
-            if(commentArray!=null) {
-                UUID[] commentIds = new UUID[commentArray.length()];
-                for (int j = 0; j < commentArray.length(); j++) {
-                    commentIds[j] = UUID.fromString(commentArray.getString(j));
-                    CommentData commentData = new CommentData();
-                    issue.addComment(commentData.getComment(commentIds[j]));
+                while ((line = br.readLine()) != null) { // 읽을 수 있을 때 까지 반복
+                    sb.append(line);
                 }
-            }
-            JSONArray tagArray = jsonObject.getJSONArray("tags");
-            if(tagArray!=null) {
-                String[] tags = new String[tagArray.length()];
-                for (int j = 0; j < tagArray.length(); j++) {
-                    tags[j] = tagArray.getString(j);
 
+                JSONObject jsonObject = new JSONObject(sb.toString()); // json으로 변경 (역직렬화)
+
+                UUID id = UUID.fromString(jsonObject.getString("id"));
+                String title = jsonObject.getString("title");
+                String description = jsonObject.getString("description");
+                IssueType type = IssueType.valueOf(jsonObject.getString("type"));
+                IssueState state = IssueState.valueOf(jsonObject.getString("state"));
+                String reportedDate = jsonObject.getString("reportedDate");
+                LocalDateTime reported = LocalDateTime.parse(reportedDate);
+
+                UUID reporterId = UUID.fromString(jsonObject.getString("reporterId"));
+                //UUID fixerId = UUID.fromString(jsonObject.getString("fixerId"));
+                //UUID assigneeId = UUID.fromString(jsonObject.getString("assigneeId"));
+
+                issue = new Issue(title, reporterId, reported, description, type, state);
+                issue.setId(id);
+
+                JSONArray commentArray = jsonObject.getJSONArray("commentIds");
+                if (commentArray != null) {
+                    UUID[] commentIds = new UUID[commentArray.length()];
+                    for (int j = 0; j < commentArray.length(); j++) {
+                        commentIds[j] = UUID.fromString(commentArray.getString(j));
+                        CommentData commentData = new CommentData();
+                        issue.addComment(commentData.getComment(commentIds[j]));
+                    }
                 }
+                JSONArray tagArray = jsonObject.getJSONArray("tags");
+                if (tagArray != null) {
+                    String[] tags = new String[tagArray.length()];
+                    for (int j = 0; j < tagArray.length(); j++) {
+                        tags[j] = tagArray.getString(j);
+
+                    }
+                }
+                return issue;
             }
-            return issue;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -237,53 +240,56 @@ public class IssueData {
             conn.setRequestProperty("Content-Type", "application/json"); // header Content-Type 정보
             conn.setDoOutput(true); // 서버로부터 받는 값이 있다면 true
 
-            // 서버로부터 데이터 읽어오기
-            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            StringBuilder sb = new StringBuilder();
-            String line = null;
+            int responseCode = conn.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                // 서버로부터 데이터 읽어오기
+                BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                StringBuilder sb = new StringBuilder();
+                String line = null;
 
-            while((line = br.readLine()) != null) { // 읽을 수 있을 때 까지 반복
-                sb.append(line);
-            }
-
-            JSONArray jsonArray = new JSONArray(sb.toString()); // json으로 변경 (역직렬화)
-
-            issueCnt = jsonArray.length();
-            sd_issue = new Issue[issueCnt];
-
-            for (int i = 0; i < issueCnt; i++) {
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                UUID id = UUID.fromString(jsonObject.getString("id"));
-                String title = jsonObject.getString("title");
-                String description = jsonObject.getString("description");
-                IssueType type = IssueType.valueOf(jsonObject.getString("type"));
-                IssueState state = IssueState.valueOf(jsonObject.getString("state"));
-                String reportedDate = jsonObject.getString("reportedDate");
-                LocalDateTime reported = LocalDateTime.parse(reportedDate);
-
-
-                UUID reporterId = UUID.fromString(jsonObject.getString("reporterId"));
-                //UUID fixerId = UUID.fromString(jsonObject.getString("fixerId"));
-                //UUID assigneeId = UUID.fromString(jsonObject.getString("assigneeId"));
-
-                sd_issue[i] = new Issue(title, reporterId, reported, description, type, state);
-                sd_issue[i].setId(id);
-                //issue 에 assignee와 fixer 도 추가해야됨
-
-                JSONArray commentArray = jsonObject.getJSONArray("commentIds");
-                UUID[] commentIds = new UUID[commentArray.length()];
-                for(int j = 0; j < commentArray.length(); j++) {
-                    commentIds[j] = UUID.fromString(commentArray.getString(j));
-                    CommentData commentData = new CommentData();
-                    sd_issue[i].addComment(commentData.getComment(commentIds[j]));
+                while ((line = br.readLine()) != null) { // 읽을 수 있을 때 까지 반복
+                    sb.append(line);
                 }
 
-                JSONArray tagArray = jsonObject.getJSONArray("tags");
-                String [] tags = new String[tagArray.length()];
-                for(int j = 0; j < tagArray.length(); j++) {
-                    tags[j] = tagArray.getString(j);
-                }
+                JSONArray jsonArray = new JSONArray(sb.toString()); // json으로 변경 (역직렬화)
 
+                issueCnt = jsonArray.length();
+                sd_issue = new Issue[issueCnt];
+
+                for (int i = 0; i < issueCnt; i++) {
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    UUID id = UUID.fromString(jsonObject.getString("id"));
+                    String title = jsonObject.getString("title");
+                    String description = jsonObject.getString("description");
+                    IssueType type = IssueType.valueOf(jsonObject.getString("type"));
+                    IssueState state = IssueState.valueOf(jsonObject.getString("state"));
+                    String reportedDate = jsonObject.getString("reportedDate");
+                    LocalDateTime reported = LocalDateTime.parse(reportedDate);
+
+
+                    UUID reporterId = UUID.fromString(jsonObject.getString("reporterId"));
+                    //UUID fixerId = UUID.fromString(jsonObject.getString("fixerId"));
+                    //UUID assigneeId = UUID.fromString(jsonObject.getString("assigneeId"));
+
+                    sd_issue[i] = new Issue(title, reporterId, reported, description, type, state);
+                    sd_issue[i].setId(id);
+                    //issue 에 assignee와 fixer 도 추가해야됨
+
+                    JSONArray commentArray = jsonObject.getJSONArray("commentIds");
+                    UUID[] commentIds = new UUID[commentArray.length()];
+                    for (int j = 0; j < commentArray.length(); j++) {
+                        commentIds[j] = UUID.fromString(commentArray.getString(j));
+                        CommentData commentData = new CommentData();
+                        sd_issue[i].addComment(commentData.getComment(commentIds[j]));
+                    }
+
+                    JSONArray tagArray = jsonObject.getJSONArray("tags");
+                    String[] tags = new String[tagArray.length()];
+                    for (int j = 0; j < tagArray.length(); j++) {
+                        tags[j] = tagArray.getString(j);
+                    }
+
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -299,58 +305,65 @@ public class IssueData {
             conn.setRequestProperty("Content-Type", "application/json"); // header Content-Type 정보
             conn.setDoOutput(true); // 서버로부터 받는 값이 있다면 true
 
-            // 서버로부터 데이터 읽어오기
-            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            StringBuilder sb = new StringBuilder();
-            String line = null;
+            int responseCode = conn.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                // 서버로부터 데이터 읽어오기
+                BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                StringBuilder sb = new StringBuilder();
+                String line = null;
 
-            while((line = br.readLine()) != null) { // 읽을 수 있을 때 까지 반복
-                sb.append(line);
-            }
-
-            JSONArray jsonArray = new JSONArray(sb.toString()); // json으로 변경 (역직렬화)
-
-            issueCnt = jsonArray.length();
-            sd_issue = new Issue[issueCnt];
-
-            for (int i = 0; i < issueCnt; i++) {
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                UUID id = UUID.fromString(jsonObject.getString("id"));
-                String title = jsonObject.getString("title");
-                String description = jsonObject.getString("description");
-                IssueType type = IssueType.valueOf(jsonObject.getString("type"));
-                IssueState state = IssueState.valueOf(jsonObject.getString("state"));
-                String reportedDate = jsonObject.getString("reportedDate");
-                LocalDateTime reported = LocalDateTime.parse(reportedDate);
-
-                UUID reporterId = UUID.fromString(jsonObject.getString("reporterId"));
-                UUID fixerId;
-                try{
-                    fixerId = UUID.fromString(jsonObject.getString("fixerId"));
-                } catch (JSONException e) {fixerId =null;}
-
-                UUID assigneeId;
-                try {
-                    assigneeId = UUID.fromString(jsonObject.getString("assigneeId"));
-                } catch (JSONException e) {assigneeId=null;}
-
-                sd_issue[i] = new Issue(title, reporterId, reported, description, assigneeId, type, state);
-                sd_issue[i].setId(id);
-
-                JSONArray commentArray = jsonObject.getJSONArray("commentIds");
-                UUID[] commentIds = new UUID[commentArray.length()];
-                for(int j = 0; j < commentArray.length(); j++) {
-                    commentIds[j] = UUID.fromString(commentArray.getString(j));
-                    CommentData commentData = new CommentData();
-                    sd_issue[i].addComment(commentData.getComment(commentIds[j]));
+                while ((line = br.readLine()) != null) { // 읽을 수 있을 때 까지 반복
+                    sb.append(line);
                 }
 
-                JSONArray tagArray = jsonObject.getJSONArray("tags");
-                String [] tags = new String[tagArray.length()];
-                for(int j = 0; j < tagArray.length(); j++) {
-                    tags[j] = tagArray.getString(j);
-                }
+                JSONArray jsonArray = new JSONArray(sb.toString()); // json으로 변경 (역직렬화)
 
+                issueCnt = jsonArray.length();
+                sd_issue = new Issue[issueCnt];
+
+                for (int i = 0; i < issueCnt; i++) {
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    UUID id = UUID.fromString(jsonObject.getString("id"));
+                    String title = jsonObject.getString("title");
+                    String description = jsonObject.getString("description");
+                    IssueType type = IssueType.valueOf(jsonObject.getString("type"));
+                    IssueState state = IssueState.valueOf(jsonObject.getString("state"));
+                    String reportedDate = jsonObject.getString("reportedDate");
+                    LocalDateTime reported = LocalDateTime.parse(reportedDate);
+
+                    UUID reporterId = UUID.fromString(jsonObject.getString("reporterId"));
+                    UUID fixerId;
+                    try {
+                        fixerId = UUID.fromString(jsonObject.getString("fixerId"));
+                    } catch (JSONException e) {
+                        fixerId = null;
+                    }
+
+                    UUID assigneeId;
+                    try {
+                        assigneeId = UUID.fromString(jsonObject.getString("assigneeId"));
+                    } catch (JSONException e) {
+                        assigneeId = null;
+                    }
+
+                    sd_issue[i] = new Issue(title, reporterId, reported, description, assigneeId, type, state);
+                    sd_issue[i].setId(id);
+
+                    JSONArray commentArray = jsonObject.getJSONArray("commentIds");
+                    UUID[] commentIds = new UUID[commentArray.length()];
+                    for (int j = 0; j < commentArray.length(); j++) {
+                        commentIds[j] = UUID.fromString(commentArray.getString(j));
+                        CommentData commentData = new CommentData();
+                        sd_issue[i].addComment(commentData.getComment(commentIds[j]));
+                    }
+
+                    JSONArray tagArray = jsonObject.getJSONArray("tags");
+                    String[] tags = new String[tagArray.length()];
+                    for (int j = 0; j < tagArray.length(); j++) {
+                        tags[j] = tagArray.getString(j);
+                    }
+
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
