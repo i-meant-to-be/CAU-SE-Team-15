@@ -4,6 +4,7 @@ import Data.Project;
 import Data.User;
 import Data.UserType;
 import Button.ProjectButton;
+import ServerConnection.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -55,7 +56,7 @@ public class ProjectCreator extends JFrame {
         pane.setLayout(new BorderLayout(10, 10));
 
         // Example User data
-        User tempUser1 = new User();
+        /*User tempUser1 = new User();
         tempUser1.setUUID(UUID.randomUUID());
         tempUser1.setUser("hi", "1234", UserType.DEVELOPER);
         User tempUser2 = new User();
@@ -63,6 +64,12 @@ public class ProjectCreator extends JFrame {
         tempUser2.setUser("hello", "1234", UserType.TESTER);
         addUserToList(tempUser1);
         addUserToList(tempUser2);
+        */
+        UserData userData = new UserData();
+        User[] sd_users = userData.getAllUsers();
+        for (User user : sd_users) {
+            addUserToList(user);
+        }
 
         // Project Name panel
         JPanel projectNamePanel = new JPanel();
@@ -325,7 +332,9 @@ public class ProjectCreator extends JFrame {
                 JOptionPane.showMessageDialog(projectMemberPanel2_1, "Please enter the project name!");
             else {
                 Project project = new Project(projectNameField.getText(), projectDescription.getText(), users);
-                projects.add(project);
+                //projects.add(project);
+                ProjectData projectData = new ProjectData();
+                projectData.addProject(project);
                 JOptionPane.showMessageDialog(null, "Project Created", "Success", JOptionPane.PLAIN_MESSAGE);
                 dispose();
             }
