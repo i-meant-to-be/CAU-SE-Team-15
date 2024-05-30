@@ -1,20 +1,25 @@
 package Layout;
 
 import Data.*;
+import ServerConnection.CommentData;
+import ServerConnection.IssueData;
+import ServerConnection.UserData;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class IssueChanger extends JFrame {
     private ArrayList<JPanel> comments = new ArrayList<>();
     private Issue issue;
     private int index = -1;
 
-    public IssueChanger(MainFrame MF, Issue issue) {
+    public IssueChanger(MainFrame MF, UUID issueId) {
         super("Change Issue");
-        this.issue = issue;
+        IssueData issueData = new IssueData();
+        this.issue = issueData.getIssue(issueId);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setSize(600, 600);
         setLocationRelativeTo(null);
@@ -43,7 +48,8 @@ public class IssueChanger extends JFrame {
         reportLabel.setHorizontalAlignment(SwingConstants.CENTER);
         JLabel reportField = new JLabel();
         reportField.setHorizontalAlignment(SwingConstants.CENTER);
-        reportField.setText(issue.getReporterId().toString()); //나중에 리포터 이름이 나오도록 수정해주세요
+        UserData userData = new UserData();
+        reportField.setText(userData.getUser(issue.getReporterId()).getUsername()); //나중에 리포터 이름이 나오도록 수정해주세요
         upperPanel.add(reportLabel);
         upperPanel.add(reportField);
         pane.add(upperPanel);
@@ -142,8 +148,12 @@ public class IssueChanger extends JFrame {
                             ,issue.getComments().get(index).getId()+" Remove?","Warning"
                             ,JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
                     if(response == JOptionPane.OK_OPTION) {
-                        comments.remove(index);
-                        issue.removeComment(index);
+                        CommentData commentData = new CommentData();
+                        commentData.deleteComment(issue.getComment(index));
+                        //comments.remove(index);
+                        //issue.removeComment(index);
+                        IssueData issueData = new IssueData();
+                        issue = issueData.getIssue(issue.getId());
                         loadComment(commentsPanel, issue);
                         index = -1;
                     }
@@ -170,10 +180,12 @@ public class IssueChanger extends JFrame {
                 commentPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
                 comments.add(commentPanel);
                 JLabel commentAuthor = new JLabel();
-                if (comment.getAuthorId() != null)
-                    commentAuthor.setText("Author :" + comment.getAuthorId().toString());
-                JLabel commentText = new JLabel("Text :" + comment.getText());
-                JLabel commentDate = new JLabel("Date :" + comment.getTimestamp().toString());
+                if (comment.getAuthorId() != null) {
+                    UserData userData = new UserData();
+                    commentAuthor.setText("Author : " + userData.getUser(comment.getAuthorId()).getUsername());
+                }
+                JLabel commentText = new JLabel("Text : " + comment.getText());
+                JLabel commentDate = new JLabel("Date : " + comment.getTimestamp().toString());
                 commentPanel.add(commentAuthor);
                 commentPanel.add(commentText);
                 commentPanel.add(commentDate);

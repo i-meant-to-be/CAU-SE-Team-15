@@ -299,7 +299,7 @@ public class MainFrame extends JFrame {
                     index = i;
                     if(index != temp)
                     {
-                        IssueChanger issueChanger = new IssueChanger(MainFrame.this, sd_issues.get(index));
+                        IssueChanger issueChanger = new IssueChanger(MainFrame.this, sd_issues.get(index).getId());
                         issueChanger.addWindowListener(new WindowAdapter() {
                             public void windowClosing(WindowEvent e) {
                                 MainFrame.this.setEnabled(true);

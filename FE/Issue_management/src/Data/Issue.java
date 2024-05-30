@@ -78,6 +78,8 @@ public class Issue {
         return comments;
     }
 
+    public Comment getComment(int i){ return comments.get(i); }
+
     public UUID getProjectId() {
         return projectId;
     }

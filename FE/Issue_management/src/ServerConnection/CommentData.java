@@ -90,29 +90,31 @@ public class CommentData {
             StringBuilder sb = new StringBuilder();
             String line = null;
 
-            while((line = br.readLine()) != null) { // 읽을 수 있을 때 까지 반복
+            while ((line = br.readLine()) != null) { // 읽을 수 있을 때 까지 반복
                 sb.append(line);
             }
+
 
         } catch (Exception e) {
             e.printStackTrace();
         }
 
     }
-    public void deleteComment(UUID issueId, Comment comment){
+    public void deleteComment(Comment comment){
         try {
-            URL url = new URL("http://localhost:8080/api/issue/"+issueId.toString()+"/comment");
+            URL url = new URL("http://localhost:8080/api/comment/"+comment.getId());
             HttpURLConnection conn = (HttpURLConnection)url.openConnection();
 
             conn.setRequestMethod("DELETE"); // http 메서드
             conn.setDoInput(true); // 서버에 전달할 값이 있다면 true
 
-            // 서버로부터 데이터 읽어오기
+
+                // 서버로부터 데이터 읽어오기
             BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             StringBuilder sb = new StringBuilder();
             String line = null;
 
-            while((line = br.readLine()) != null) { // 읽을 수 있을 때 까지 반복
+            while ((line = br.readLine()) != null) { // 읽을 수 있을 때 까지 반복
                 sb.append(line);
             }
 
