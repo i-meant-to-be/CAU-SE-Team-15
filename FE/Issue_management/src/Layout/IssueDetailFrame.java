@@ -51,6 +51,7 @@ public class IssueDetailFrame extends JFrame {
 
         pane.add(commentPanel, BorderLayout.SOUTH);
 
+
         // 코멘트를 표시할 텍스트 에리어 추가
         commentsDisplayArea = new JTextArea();
         commentsDisplayArea.setEditable(false);

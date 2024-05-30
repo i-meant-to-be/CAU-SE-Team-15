@@ -175,6 +175,8 @@ public class MainFrame extends JFrame {
     public void showIssues() {
         AbstractBorder border = new LineBorder(Color.BLACK, 2);
 
+
+        sd_issues.clear();
 //        issues.clear();
 //        issues = selectedProject.getIssues();
 

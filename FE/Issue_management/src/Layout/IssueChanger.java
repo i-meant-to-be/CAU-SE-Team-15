@@ -114,6 +114,7 @@ public class IssueChanger extends JFrame {
         OKButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 MF.showIssues();
+                MF.setEnabled(true);
                 dispose();
             }
         });
