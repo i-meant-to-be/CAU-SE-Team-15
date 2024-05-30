@@ -3,6 +3,7 @@ package Layout;
 import Data.*;
 import Button.*;
 import ServerConnection.IssueData;
+import ServerConnection.ProjectData;
 import ServerConnection.UserData;
 
 import javax.swing.*;
@@ -90,6 +91,11 @@ public class MainFrame extends JFrame {
         JButton issueButton = new JButton("Issue");
         issueButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                ProjectData projectData = new ProjectData();
+                Project[] projects1 = projectData.getAllProjects();
+                for(Project project : projects1) {
+                    projects.add(project);
+                }
                 new IssueButton(MainFrame.this, projects);
             }
         });
