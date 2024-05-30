@@ -95,6 +95,12 @@ public class MainFrame extends JFrame {
         });
 
         JButton search = new JButton("Search");
+        search.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new SearchButton(projects).setVisible(true);
+            }
+        });
 
         JButton trendButton = new JButton("Trend");
         trendButton.addActionListener(new ActionListener() {
