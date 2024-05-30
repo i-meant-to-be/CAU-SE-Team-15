@@ -16,6 +16,12 @@ import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.net.http.HttpRequest.BodyPublishers;
+
 public class IssueData {
     private Issue [] sd_issue;
     private int issueCnt;
@@ -41,32 +47,24 @@ public class IssueData {
 
     public void modifyIssueState(Issue issue){
         try {
-            URL url = new URL("http://localhost:8080/api/issue/"+issue.getId().toString());
-            HttpURLConnection conn = (HttpURLConnection)url.openConnection();
-
-            conn.setRequestMethod("PUT"); // http 메서드
-            conn.setRequestProperty("Content-Type", "application/json"); // header Content-Type 정보
-            conn.setDoInput(true); // 서버에 전달할 값이 있다면 true
-            conn.setDoOutput(true); // 서버로부터 받는 값이 있다면 true
+            URI uri = new URI("http://localhost:8080/api/issue/"+issue.getId().toString());
 
             // 서버에 데이터 전달
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("state", issue.getState().toString());
             //issue fixer 데이터 추가하기
 
-            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(conn.getOutputStream()));
-            bw.write(jsonObject.toString()); // 버퍼에 담기
-            bw.flush(); // 버퍼에 담긴 데이터 전달
-            bw.close();
+            HttpClient client = HttpClient.newHttpClient();
 
-            // 서버로부터 데이터 읽어오기
-            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            StringBuilder sb = new StringBuilder();
-            String line = null;
+            // PATCH 요청 생성
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(uri)
+                    .header("Content-Type", "application/json")
+                    .method("PATCH", BodyPublishers.ofString(jsonObject.toString()))
+                    .build();
 
-            while((line = br.readLine()) != null) { // 읽을 수 있을 때 까지 반복
-                sb.append(line);
-            }
+            // 요청 보내고 응답 받기
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -75,37 +73,32 @@ public class IssueData {
 
     public void modifyIssue(Issue issue){
         try {
-            URL url = new URL("http://localhost:8080/api/issue/"+issue.getId().toString());
-            HttpURLConnection conn = (HttpURLConnection)url.openConnection();
-
-            conn.setRequestMethod("PUT"); // http 메서드
-            conn.setRequestProperty("Content-Type", "application/json"); // header Content-Type 정보
-            conn.setDoInput(true); // 서버에 전달할 값이 있다면 true
-            conn.setDoOutput(true); // 서버로부터 받는 값이 있다면 true
+            URI uri = new URI("http://localhost:8080/api/issue/"+issue.getId().toString());
 
             // 서버에 데이터 전달
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("title", issue.getTitle());
-            jsonObject.put("description", issue.getDescription());
+            if(issue.getDescription() != null)
+                jsonObject.put("description", issue.getDescription());
             jsonObject.put("type", issue.getType().toString());
             jsonObject.put("reporterId", issue.getReporterId().toString());
-            jsonObject.put("assigneeId", issue.getAssigneeId().toString());
+            if(issue.getAssigneeId()!=null)
+                jsonObject.put("assigneeId", issue.getAssigneeId().toString());
             jsonObject.put("state", issue.getState().toString());
             //issue fixer 데이터 추가하기
 
-            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(conn.getOutputStream()));
-            bw.write(jsonObject.toString()); // 버퍼에 담기
-            bw.flush(); // 버퍼에 담긴 데이터 전달
-            bw.close();
+            HttpClient client = HttpClient.newHttpClient();
 
-            // 서버로부터 데이터 읽어오기
-            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            StringBuilder sb = new StringBuilder();
-            String line = null;
+            // PATCH 요청 생성
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(uri)
+                    .header("Content-Type", "application/json")
+                    .method("PATCH", BodyPublishers.ofString(jsonObject.toString()))
+                    .build();
 
-            while((line = br.readLine()) != null) { // 읽을 수 있을 때 까지 반복
-                sb.append(line);
-            }
+            // 요청 보내고 응답 받기
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            //System.out.println(response.statusCode());
 
         } catch (Exception e) {
             e.printStackTrace();

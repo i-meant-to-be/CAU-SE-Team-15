@@ -80,7 +80,7 @@ public class IssueChanger extends JFrame {
         //issue description
         JPanel descriptionPanel = new JPanel();
         descriptionPanel.setLayout(new BorderLayout());
-        JLabel descriptionLabel = new JLabel(issue.getDescription());
+        JLabel descriptionLabel = new JLabel("Description");
         JTextArea descriptionField = new JTextArea();
         descriptionField.setEditable(true);
         descriptionField.setText(issue.getDescription());
@@ -119,6 +119,12 @@ public class IssueChanger extends JFrame {
         pane.add(OKButton);
         OKButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                IssueData issueD = new IssueData();
+                issue.setDescription(descriptionField.getText());
+                issue.setType((IssueType) type.getSelectedItem());
+                issue.setState((IssueState) state.getSelectedItem());
+                issueD.modifyIssue(issue);
+                issue = issueD.getIssue(issue.getId());
                 MF.showIssues();
                 MF.setEnabled(true);
                 dispose();

@@ -62,6 +62,10 @@ public class Issue {
         return description;
     }
 
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public UUID getAssigneeId() {
         return assignee_id;
     }
@@ -70,8 +74,17 @@ public class Issue {
         return type;
     }
 
+    public void setType(IssueType type) {
+        this.type = type;
+
+    }
+
     public IssueState getState() {
         return state;
+    }
+
+    public void setState(IssueState state) {
+        this.state = state;
     }
 
     public List<Comment> getComments() {
