@@ -59,24 +59,27 @@ public class IssueChanger extends JFrame {
         JPanel secondPanel = new JPanel();
         JLabel issueAssigneeLabel = new JLabel("Issue Assignee :");
         issueAssigneeLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
         ArrayList<User> dev = new ArrayList<>();
+        UserData userData1 = new UserData();
 
         //dev에 유저 리스트 추가
-        // for(User u:프로젝트내의 유저들)
-        //dev 리스트에 추가
+        for(int i = 0; i <MF.getProject().getUsers().size(); i++){
+            User u = userData1.getUser(MF.getProject().getUsers().get(i));
+            if(u.getType()==UserType.DEVELOPER){
+                dev.add(u);
+            }
+        }
+
 
         //콤보박스에 dev 추가
         JComboBox issueAssigneeCombo = new JComboBox();
         //프로젝트 유저들 불러오기
-        for(UUID u:MF.getProject().getUsers()){
+        for(User u:dev){
             //만약 UUID 주인이 dev 라면
             //issueAssigneeCombo에 아이템 add
             if(u!=null) {
-                UserData userData1 = new UserData();
-                User user1 = userData.getUser(u);
-                if (user1.getType() == UserType.DEVELOPER) {
-                    issueAssigneeCombo.addItem(user1.getUsername());
-                }
+                issueAssigneeCombo.addItem(u.getUsername());
             }
         }
         JButton recommendButton = new JButton("Recommend");
@@ -86,13 +89,12 @@ public class IssueChanger extends JFrame {
                 //Create Project List
                 JList<String> devList = new JList<>(new DefaultListModel<>());
                 DefaultListModel<String> listModel = (DefaultListModel<String>) devList.getModel();
-
                 //Add dev name
                 IssueData issueData = new IssueData();
                 List<User> recommendDev = issueData.recommendDev(issueId);
                 for (User user : recommendDev) {
                     if(dev.contains(user)) {
-                        listModel.addElement(user.getUsername()); // Add only Project name
+                        listModel.addElement(user.getUsername());
                     }
                 }
 

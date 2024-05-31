@@ -12,6 +12,7 @@ import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class MainFrame extends JFrame {
     boolean loggedIn = false;
@@ -31,6 +32,8 @@ public class MainFrame extends JFrame {
 
     public MainFrame() {
         super("Main page");
+        ProjectData pd = new ProjectData();
+        UserData user111 = new UserData();
         setSize(800, 600);
         JPanel pane = new JPanel();
         pane.setLayout(new BorderLayout(10, 10));
