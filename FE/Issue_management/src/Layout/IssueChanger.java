@@ -9,6 +9,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class IssueChanger extends JFrame {
@@ -70,6 +71,13 @@ public class IssueChanger extends JFrame {
         for(UUID u:MF.getProject().getUsers()){
             //만약 UUID 주인이 dev 라면
             //issueAssigneeCombo에 아이템 add
+            if(u!=null) {
+                UserData userData1 = new UserData();
+                User user1 = userData.getUser(u);
+                if (user1.getType() == UserType.DEVELOPER) {
+                    issueAssigneeCombo.addItem(user1.getUsername());
+                }
+            }
         }
         JButton recommendButton = new JButton("Recommend");
         recommendButton.addActionListener(new ActionListener() {
@@ -80,8 +88,12 @@ public class IssueChanger extends JFrame {
                 DefaultListModel<String> listModel = (DefaultListModel<String>) devList.getModel();
 
                 //Add dev name
-                for (User user : dev) {
-                    listModel.addElement(user.getUsername()); // Add only Project name
+                IssueData issueData = new IssueData();
+                List<User> recommendDev = issueData.recommendDev(issueId);
+                for (User user : recommendDev) {
+                    if(dev.contains(user)) {
+                        listModel.addElement(user.getUsername()); // Add only Project name
+                    }
                 }
 
                 devList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); // 하나의 프로젝트만 선택 가능
@@ -90,7 +102,7 @@ public class IssueChanger extends JFrame {
 
                 JScrollPane listScrollPane = new JScrollPane(devList);
 
-                JOptionPane.showMessageDialog(null, listScrollPane, "All developer", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, listScrollPane, "Recommended developer", JOptionPane.INFORMATION_MESSAGE);
 
             }
         });
