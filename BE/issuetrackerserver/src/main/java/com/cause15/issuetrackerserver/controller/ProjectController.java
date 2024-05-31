@@ -4,8 +4,12 @@ package com.cause15.issuetrackerserver.controller;
 import com.cause15.issuetrackerserver.dto.CreateProjectRequest;
 import com.cause15.issuetrackerserver.dto.CreateUserRequest;
 import com.cause15.issuetrackerserver.dto.PatchProjectRequest;
+import com.cause15.issuetrackerserver.model.Comment;
+import com.cause15.issuetrackerserver.model.Issue;
 import com.cause15.issuetrackerserver.model.Project;
 import com.cause15.issuetrackerserver.model.User;
+import com.cause15.issuetrackerserver.service.CommentService;
+import com.cause15.issuetrackerserver.service.IssueService;
 import com.cause15.issuetrackerserver.service.ProjectService;
 import com.cause15.issuetrackerserver.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,13 +31,19 @@ public class ProjectController {
     // Dependency injection
     private final ProjectService projectService;
     private final UserService userService;
+    private final IssueService issueService;
+    private final CommentService commentService;
 
     public ProjectController(
             ProjectService projectService,
-            UserService userService
+            UserService userService,
+            IssueService issueService,
+            CommentService commentService
     ) {
         this.projectService = projectService;
         this.userService = userService;
+        this.issueService = issueService;
+        this.commentService = commentService;
     }
 
     // APIs
@@ -46,8 +56,9 @@ public class ProjectController {
     public ResponseEntity<Project> createProject(@RequestBody CreateProjectRequest createProjectRequest) {
         Project body = projectService.createProject(
                 new Project(
-                    createProjectRequest.getTitle(),
-                    createProjectRequest.getDescription()
+                        createProjectRequest.getTitle(),
+                        createProjectRequest.getDescription(),
+                        createProjectRequest.getUserIds()
                 )
         );
         return ResponseEntity.ok(body);
@@ -83,7 +94,7 @@ public class ProjectController {
 
     @Operation(
             summary = "프로젝트 1건 삭제",
-            description = "특정 프로젝트를 DB에서 삭제합니다."
+            description = "특정 프로젝트를 DB에서 삭제합니다. 프로젝트에 포함된 모든 이슈와 각각의 이슈에 포함된 모든 댓글까지 다 삭제합니다."
     )
     @ApiResponse(responseCode = "200 OK", description = "성공적으로 프로젝트를 삭제했을 경우 반환")
     @RequestMapping(value = "/project/{id}", method = RequestMethod.DELETE)
@@ -95,8 +106,21 @@ public class ProjectController {
         Optional<Project> targetProject = projectService.getProjectById(id);
 
         if (targetProject.isPresent()) {
-            return projectService.deleteProject(id) ?
-                    ResponseEntity.ok(Boolean.TRUE) : ResponseEntity.internalServerError().build();
+            if (projectService.deleteProject(id)) {
+                targetProject.get().getIssueIds().forEach((UUID issueId) -> {
+                    Optional<Issue> garbageIssue = issueService.getIssueById(issueId);
+                    if (garbageIssue.isPresent()) {
+                        List<UUID> garbageCommentList = garbageIssue.get().getCommentIds();
+                        if (garbageCommentList != null && !garbageCommentList.isEmpty()) {
+                            garbageCommentList.forEach(commentService::deleteComment);
+                        }
+                    }
+                    issueService.deleteIssue(issueId);
+                });
+
+                return ResponseEntity.ok(Boolean.TRUE);
+            }
+            else return ResponseEntity.internalServerError().build();
         }
         else return ResponseEntity.notFound().build();
     }

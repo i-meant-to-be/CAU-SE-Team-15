@@ -3,10 +3,7 @@ package com.cause15.issuetrackerserver.controller;
 import com.cause15.issuetrackerserver.dto.CreateIssueRequest;
 import com.cause15.issuetrackerserver.dto.PatchIssueRequest;
 import com.cause15.issuetrackerserver.model.*;
-import com.cause15.issuetrackerserver.service.IssueService;
-import com.cause15.issuetrackerserver.service.OktService;
-import com.cause15.issuetrackerserver.service.ProjectService;
-import com.cause15.issuetrackerserver.service.UserService;
+import com.cause15.issuetrackerserver.service.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -29,17 +26,20 @@ public class IssueController {
     private final UserService userService;
     private final OktService oktService;
     private final ProjectService projectService;
+    private final CommentService commentService;
 
     public IssueController(
             IssueService issueService,
             UserService userService,
             OktService oktService,
-            ProjectService projectService
+            ProjectService projectService,
+            CommentService commentService
     ) {
         this.issueService = issueService;
         this.userService = userService;
         this.oktService= oktService;
         this.projectService = projectService;
+        this.commentService = commentService;
     }
 
     // APIs
@@ -84,29 +84,33 @@ public class IssueController {
     }
 
     @Operation(
-            summary = "프로젝트에서 이슈 삭제",
-            description = "프로젝트에서 특정한 이슈 1건을 제외한 후, 그 이슈를 삭제합니다."
+            summary = "이슈 1건 삭제",
+            description = "특정 이슈를 DB에서 삭제합니다. 삭제할 이슈가 프로젝트에 포함되어 있을 경우, 그 프로젝트에서 이슈의 UUID도 함께 삭제합니다."
     )
     @ApiResponse(responseCode = "200 OK", description = "성공적으로 이슈를 삭제했을 경우 반환")
-    @RequestMapping(value = "/project/{project_id}/issue/{issue_id}", method = RequestMethod.DELETE)
-    public ResponseEntity<Boolean> deleteIssueFromProject(
-            @Parameter(description = "이슈를 삭제할 프로젝트의 UUID")
-            @PathVariable(name = "project_id")
-            UUID projectId,
+    @RequestMapping(value = "/issue/{id}", method = RequestMethod.DELETE)
+    public ResponseEntity<Boolean> deleteIssue(
             @Parameter(description = "삭제할 이슈의 UUID")
-            @PathVariable(name = "issue_id")
-            UUID issueId
+            @PathVariable(name = "id")
+            UUID id
     ) {
-        Optional<Project> targetProject = projectService.getProjectById(projectId);
+        Optional<Issue> targetIssue = issueService.getIssueById(id);
 
-        if (targetProject.isPresent()) {
-            if (targetProject.get().getIssueIds().contains(issueId)) {
-                targetProject.get().getIssueIds().remove(issueId);
+        if (targetIssue.isPresent()) {
+            if (issueService.deleteIssue(id)) {
+                targetIssue.get().getCommentIds().forEach(commentService::deleteComment);
 
-                if (projectService.updateProject(projectId, targetProject.get()) != null) return ResponseEntity.ok(Boolean.TRUE);
-                else return ResponseEntity.internalServerError().build();
+                List<Project> projectList = projectService.getAllProjects();
+                projectList.forEach((Project project) -> {
+                    if (project.getIssueIds().contains(id)) {
+                        project.getIssueIds().remove(id);
+                        projectService.updateProject(project.getId(), project);
+                    }
+                });
+
+                return ResponseEntity.ok(Boolean.TRUE);
             }
-            else return ResponseEntity.notFound().build();
+            else return ResponseEntity.internalServerError().build();
         }
         else return ResponseEntity.notFound().build();
     }

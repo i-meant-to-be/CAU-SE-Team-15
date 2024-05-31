@@ -29,4 +29,13 @@ public class Project {
         this.issueIds = new ArrayList<>();
     }
 
+    public Project(String title, String description, List<UUID> userIds) {
+        this.title = title;
+        this.description = description;
+        this.id = UUID.randomUUID();
+        this.createdDate = LocalDateTime.now();
+        this.userIds = (userIds != null) ? userIds : new ArrayList<>();
+        this.issueIds = new ArrayList<>();
+    }
+
 }

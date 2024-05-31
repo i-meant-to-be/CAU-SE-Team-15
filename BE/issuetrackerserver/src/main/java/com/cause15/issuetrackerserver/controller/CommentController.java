@@ -96,7 +96,7 @@ public class CommentController {
     
     @Operation(
             summary = "댓글 1개 삭제",
-            description = "특정 댓글을 DB에서 삭제합니다."
+            description = "특정 댓글을 DB에서 삭제합니다. 삭제할 댓글이 이슈에 포함되어 있을 경우, 그 이슈에서 댓글의 UUID도 함께 삭제합니다."
     )
     @ApiResponse(responseCode = "200 OK", description = "성공적으로 댓글을 삭제한 경우 반환")
     @RequestMapping(value = "/comment/{id}", method = RequestMethod.DELETE)
@@ -107,9 +107,20 @@ public class CommentController {
     ) {
         Optional<Comment> targetComment = commentService.getCommentById(id);
 
+
         if (targetComment.isPresent()) {
-            return commentService.deleteComment(id) ?
-                    ResponseEntity.ok(Boolean.TRUE) : ResponseEntity.notFound().build();
+            if (commentService.deleteComment(id)) {
+                List<Issue> issueList = issueService.getAllIssues();
+                issueList.forEach((Issue issue) -> {
+                    if (issue.getCommentIds().contains(id)) {
+                        issue.getCommentIds().remove(id);
+                        issueService.updateIssue(issue.getId(), issue);
+                    }
+                });
+
+                return ResponseEntity.ok(Boolean.TRUE);
+            }
+            else return ResponseEntity.internalServerError().build();
         }
         else return ResponseEntity.notFound().build();
     }

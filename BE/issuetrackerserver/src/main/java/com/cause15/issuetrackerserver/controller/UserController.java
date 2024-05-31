@@ -106,7 +106,7 @@ public class UserController {
 
     @Operation(
             summary = "사용자 1명 삭제",
-            description = "특정 사용자를 DB에서 삭제합니다."
+            description = "특정 사용자를 DB에서 삭제합니다. 삭제할 사용자가 프로젝트에 포함되어 있을 경우, 그 프로젝트에서 사용자의 UUID도 함께 삭제합니다."
     )
     @ApiResponse(responseCode = "200 OK", description = "성공적으로 사용자를 삭제했을 경우 반환")
     @RequestMapping(value = "/user/{id}", method = RequestMethod.DELETE)
