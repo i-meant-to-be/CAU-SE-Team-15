@@ -111,6 +111,7 @@ public class RegisterButton extends JFrame {
                         "Successfully registered!",
                         "Success",
                         JOptionPane.PLAIN_MESSAGE);
+                dispose();
             }
         }
     }

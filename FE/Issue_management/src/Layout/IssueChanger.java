@@ -21,7 +21,7 @@ public class IssueChanger extends JFrame {
         IssueData issueData = new IssueData();
         this.issue = issueData.getIssue(issueId);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        setSize(600, 600);
+        setSize(700, 600);
         setLocationRelativeTo(null);
 
         MF.setEnabled(false);
@@ -54,16 +54,40 @@ public class IssueChanger extends JFrame {
         upperPanel.add(reportField);
         pane.add(upperPanel);
 
-        //issue 2nd panel
+        //2nd panel
         JPanel secondPanel = new JPanel();
-        secondPanel.setLayout(new FlowLayout());
+        JLabel issueAssigneeLabel = new JLabel("Issue Assignee :");
+        issueAssigneeLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        ArrayList<User> dev = new ArrayList<>();
+        //콤보박스에 dev 추가
+        JComboBox issueAssigneeCombo = new JComboBox();
+        //프로젝트 유저들 불러오기
+        for(UUID u:MF.getProject().getUsers()){
+            //만약 UUID 주인이 dev 라면
+            //issueAssigneeCombo에 아이템 add
+        }
+        JButton recommendButton = new JButton("Recommend");
+        recommendButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                //조그마한 창 하나 뜨고 목록 가져오기
+            }
+        });
+        secondPanel.add(issueAssigneeLabel);
+        secondPanel.add(issueAssigneeCombo);
+        secondPanel.add(recommendButton);
+        pane.add(secondPanel);
+
+
+        //issue 2nd panel
+        JPanel thirdPanel = new JPanel();
+        thirdPanel.setLayout(new FlowLayout());
         JLabel dateLabel = new JLabel("Date :");
         dateLabel.setHorizontalAlignment(SwingConstants.CENTER);
         JLabel dateField = new JLabel(issue.getReportedDate().toString());
         dateField.setHorizontalAlignment(SwingConstants.CENTER);
-        secondPanel.add(dateLabel);
-        secondPanel.add(dateField);
-        pane.add(secondPanel);
+        thirdPanel.add(dateLabel);
+        thirdPanel.add(dateField);
+        pane.add(thirdPanel);
 
         JLabel typeLabel = new JLabel("Issue Type :");
         JComboBox<IssueType> type = new JComboBox<>(IssueType.values());
@@ -71,11 +95,11 @@ public class IssueChanger extends JFrame {
         JLabel stateLabel = new JLabel("State :");
         JComboBox<IssueState> state = new JComboBox<>(IssueState.values());
         state.setSelectedItem(issue.getState());
-        secondPanel.add(typeLabel);
-        secondPanel.add(type);
-        secondPanel.add(stateLabel);
-        secondPanel.add(state);
-        pane.add(secondPanel);
+        thirdPanel.add(typeLabel);
+        thirdPanel.add(type);
+        thirdPanel.add(stateLabel);
+        thirdPanel.add(state);
+        pane.add(thirdPanel);
 
         //issue description
         JPanel descriptionPanel = new JPanel();

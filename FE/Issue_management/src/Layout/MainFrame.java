@@ -165,6 +165,8 @@ public class MainFrame extends JFrame {
         this.selectedProject = project;
     }
 
+    public Project getProject(){return this.selectedProject;}
+
     public JLabel getuserlabel() {
         return user_name;
     }
