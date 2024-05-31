@@ -108,7 +108,11 @@ public class SearchButton extends JFrame {
                 for (Issue issue : project.getIssues()) {
                     boolean matchesState = (state == null || issue.getState() == state);
                     boolean matchesAssignee = (assignee.equals("All Assignees") || assignee.equals(issue.getAssigneeId()));
-                    boolean matchesReporter = (reporter.equals("All Reporters") || reporter.equals(issue.getReporterId()));
+
+                    UserData userData = new UserData();
+                    User reporterUser = userData.getUser(issue.getReporterId());
+                    boolean matchesReporter = (reporter.equals("All Reporters") ||
+                            (reporterUser != null && reporter.equals(reporterUser.getUsername())));
 
                     if (matchesState && matchesAssignee && matchesReporter) {
                         filteredIssues.add(issue);
@@ -119,6 +123,7 @@ public class SearchButton extends JFrame {
 
         return filteredIssues;
     }
+
 
 
     private void displayIssues(List<Issue> issues) {
