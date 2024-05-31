@@ -10,6 +10,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class SearchButton extends JFrame {
     private List<Project> projects;
@@ -47,12 +49,24 @@ public class SearchButton extends JFrame {
 
         assignedComboBox.addItem("All Assignees");
         reporterComboBox.addItem("All Reporters");
+
+        Set<String> uniqueReporters = new HashSet<>(); //reporter 중복제거
         for (Project project : projects) {
             for (Issue issue : project.getIssues()) {
                 UserData userData = new UserData();
-                reporterComboBox.addItem(userData.getUser(issue.getReporterId()).getUsername());
+                User reporter = userData.getUser(issue.getReporterId());
+                if (reporter != null) {
+                    uniqueReporters.add(reporter.getUsername());
+                }
+
+                // reporterComboBox.addItem(userData.getUser(issue.getReporterId()).getUsername());
             }
         }
+
+        for (String reporter : uniqueReporters) {
+            reporterComboBox.addItem(reporter);
+        }
+
         filterPanel.add(new JLabel("Project:"));
         filterPanel.add(projectComboBox);
         filterPanel.add(new JLabel("State:"));
