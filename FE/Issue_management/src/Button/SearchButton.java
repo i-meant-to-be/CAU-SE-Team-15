@@ -2,14 +2,14 @@ package Button;
 
 import Data.*;
 import Layout.MainFrame;
+import Layout.IssueChanger;
 import ServerConnection.UserData;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
+import java.awt.event.*;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,16 +19,19 @@ public class SearchButton extends JFrame {
     private JComboBox<IssueState> stateComboBox;
     private JComboBox<String> assignedComboBox;
     private JComboBox<String> reporterComboBox;
-    private JTextArea resultArea;
+    private JList<String> resultList;
+    private DefaultListModel<String> listModel;
 
-    public SearchButton(List<Project> projects, UserData userdata) {
+    private MainFrame mainFrame;
+
+    public SearchButton(List<Project> projects, UserData userdata, MainFrame mainFrame) {
         this.projects = projects;
+        this.mainFrame = mainFrame;
         String[] projectNames = projects.stream().map(Project::getName).toArray(String[]::new);
         initializeUI(this.projects, projectNames, userdata);
     }
 
-
-    private void initializeUI(List<Project> projects, String[] projectNames,UserData userdata) {
+    private void initializeUI(List<Project> projects, String[] projectNames, UserData userdata) {
         setTitle("Search Issues");
         setSize(500, 400);
         setLayout(new BorderLayout(10, 10));
@@ -50,16 +53,13 @@ public class SearchButton extends JFrame {
         assignedComboBox.addItem("All Assignees");
         reporterComboBox.addItem("All Reporters");
 
-        Set<String> uniqueReporters = new HashSet<>(); //reporter 중복제거
+        Set<String> uniqueReporters = new HashSet<>(); // Remove duplicate reporters
         for (Project project : projects) {
             for (Issue issue : project.getIssues()) {
-                UserData userData = new UserData();
-                User reporter = userData.getUser(issue.getReporterId());
+                User reporter = userdata.getUser(issue.getReporterId());
                 if (reporter != null) {
                     uniqueReporters.add(reporter.getUsername());
                 }
-
-                // reporterComboBox.addItem(userData.getUser(issue.getReporterId()).getUsername());
             }
         }
 
@@ -76,12 +76,28 @@ public class SearchButton extends JFrame {
         filterPanel.add(new JLabel("Reporter:"));
         filterPanel.add(reporterComboBox);
 
-        resultArea = new JTextArea();
-        resultArea.setEditable(false);
-        JScrollPane scrollPane = new JScrollPane(resultArea);
+        listModel = new DefaultListModel<>();
+        resultList = new JList<>(listModel);
+        resultList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        resultList.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) {
+                    int index = resultList.locationToIndex(e.getPoint());
+                    if (index >= 0) {
+                        String selectedIssueTitle = listModel.getElementAt(index);
+                        Issue selectedIssue = findIssueByTitle(selectedIssueTitle);
+                        if (selectedIssue != null) {
+                            new IssueChanger(mainFrame, selectedIssue.getId());
+                        }
+
+                    }
+                }
+            }
+        });
+
+        JScrollPane scrollPane = new JScrollPane(resultList);
 
         JButton searchButton = new JButton("Search");
-
         searchButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -108,9 +124,7 @@ public class SearchButton extends JFrame {
                 for (Issue issue : project.getIssues()) {
                     boolean matchesState = (state == null || issue.getState() == state);
                     boolean matchesAssignee = (assignee.equals("All Assignees") || assignee.equals(issue.getAssigneeId()));
-
-                    UserData userData = new UserData();
-                    User reporterUser = userData.getUser(issue.getReporterId());
+                    User reporterUser = new UserData().getUser(issue.getReporterId());
                     boolean matchesReporter = (reporter.equals("All Reporters") ||
                             (reporterUser != null && reporter.equals(reporterUser.getUsername())));
 
@@ -124,13 +138,21 @@ public class SearchButton extends JFrame {
         return filteredIssues;
     }
 
-
-
     private void displayIssues(List<Issue> issues) {
-        StringBuilder sb = new StringBuilder();
+        listModel.clear();
         for (Issue issue : issues) {
-            sb.append(issue.getTitle()).append("\n");
+            listModel.addElement(issue.getTitle());
         }
-        resultArea.setText(sb.toString());
+    }
+
+    private Issue findIssueByTitle(String title) {
+        for (Project project : projects) {
+            for (Issue issue : project.getIssues()) {
+                if (issue.getTitle().equals(title)) {
+                    return issue;
+                }
+            }
+        }
+        return null;
     }
 }
