@@ -16,7 +16,6 @@ import java.util.ArrayList;
 public class MainFrame extends JFrame {
     boolean loggedIn = false;
 
-    private User admin = new User("admin", "1234", UserType.ADMIN);
     private User user = new User();
     private Log_in login;
     private JLabel user_name;
@@ -148,16 +147,6 @@ public class MainFrame extends JFrame {
             }
         });
         setDefaultCloseOperation(this.EXIT_ON_CLOSE);
-    }
-
-
-
-    public String getID() {
-        return admin.getUsername();
-    }
-
-    public String getPW() {
-        return admin.getPassword();
     }
 
     public User get_user() {

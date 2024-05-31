@@ -79,18 +79,18 @@ public class Log_in extends JFrame {
         public void actionPerformed(ActionEvent e) {
             String pw = new String(input_PW.getPassword());
             Server_Log_in serverLogIn = new Server_Log_in();
-            //어드민 로그인 + 유저타입 어드민으로 설정
-            if(input_ID.getText().equals(MF.getID()) && pw.equals(MF.getPW())){
-                user.setUser(input_ID.getText(), pw, UserType.ADMIN);
-                user.setUUID(UUID.randomUUID());
-                MF.getuserlabel().setText(MF.get_user().getUsername());
-                MF.repaint();
-                MF.loggedIn = true;
-                MF.setEnabled(true);
-                dispose();
-            }
+            //어드민 로그인 + 유저타입 어드민으로 설정   <<-- 나중에 지워야됨
+//            if(input_ID.getText().equals(MF.getID()) && pw.equals(MF.getPW())){
+//                user.setUser(input_ID.getText(), pw, UserType.ADMIN);
+//                user.setUUID(UUID.randomUUID());
+//                MF.getuserlabel().setText(MF.get_user().getUsername());
+//                MF.repaint();
+//                MF.loggedIn = true;
+//                MF.setEnabled(true);
+//                dispose();
+//            }
             //서버 통신으로 정보 받아와서 로그인
-            else if (serverLogIn.login_success(input_ID.getText(),pw)){
+            if (serverLogIn.login_success(input_ID.getText(),pw)){
                 UserData userData = new UserData();
                 User user1 = userData.getUser(input_ID.getText());
                 user.setUser(user1.getUsername(),user1.getPassword(),user1.getType());

@@ -22,10 +22,12 @@ public class ProjectButton {
     public ProjectButton(MainFrame MF) {
         this.MF = MF;
         ProjectData projectData = new ProjectData();
-        Project[] projects1 = projectData.getAllProjects();
-        for (Project project : projects1) {
-            if(project != null)
-                projects.add(project);
+        if(projectData.getAllProjects()!=null) {
+            Project[] projects1 = projectData.getAllProjects();
+            for (Project project : projects1) {
+                if (project != null)
+                    projects.add(project);
+            }
         }
         //projects = MF.get_projects();
         showProjectOptions();
