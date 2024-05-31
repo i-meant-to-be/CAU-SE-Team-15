@@ -166,15 +166,18 @@ public class UserController {
             @PathVariable(name = "user_id")
             UUID userId
     ) {
-        Optional<Project> targetProject = projectService.getProjectById(projectId);
+        if (projectService.isUserInAnyProject(userId)) {
+            Optional<Project> targetProject = projectService.getProjectById(projectId);
 
-        if (targetProject.isPresent()) {
-            targetProject.get().getUserIds().add(userId);
-            Project body = projectService.updateProject(projectId, targetProject.get());
-            return body != null ?
-                    ResponseEntity.ok(body) : ResponseEntity.internalServerError().build();
+            if (targetProject.isPresent()) {
+                targetProject.get().getUserIds().add(userId);
+                Project body = projectService.updateProject(projectId, targetProject.get());
+                return body != null ?
+                        ResponseEntity.ok(body) : ResponseEntity.internalServerError().build();
+            }
+            else return ResponseEntity.notFound().build();
         }
-        else return ResponseEntity.notFound().build();
+        else return ResponseEntity.badRequest().build();
     }
 
     @Operation(
@@ -203,5 +206,20 @@ public class UserController {
             else return ResponseEntity.notFound().build();
         }
         else return ResponseEntity.notFound().build();
+    }
+
+    @Operation(
+            summary = "사용자의 프로젝트 참여 여부 확인",
+            description = "사용자가 어떤 프로젝트에라도 참여하고 있으면 참을 반환합니다. 프로젝트에 참여하고 있지 않으면 거짓을 반환합니다."
+    )
+    @ApiResponse(responseCode = "200 OK", description = "참여 여부를 확인했을 경우 반환")
+    @RequestMapping(value = "/user/{id}/availability", method = RequestMethod.GET)
+    public ResponseEntity<Boolean> isUserInAnyProject(
+            @Parameter(description = "프로젝트 참여 여부를 확인할 사용자의 UUID")
+            @PathVariable(name = "id")
+            UUID id
+    ) {
+        if (projectService.isUserInAnyProject(id)) return ResponseEntity.ok(Boolean.TRUE);
+        else return ResponseEntity.ok(Boolean.FALSE);
     }
 }

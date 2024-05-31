@@ -257,33 +257,40 @@ public class IssueController {
      */
 
     @Operation(
-            summary="issue의 추천 Developer 검색",
-            description = "issue ID 를 keyWord로 developer를 검색"
+            summary = "이슈를 기준으로 추천 Developer 검색",
+            description = "'이슈 ID'를 키워드로 하여, 적절한 Developer를 검색합니다."
     )
-    @RequestMapping(value="/recommendDev/{id}",method=RequestMethod.GET)
-    public ResponseEntity<List<User>>findRecommendedDevByIssueId(
+    @RequestMapping(value = "/issue/{id}/recommended_dev", method = RequestMethod.GET)
+    public ResponseEntity<List<User>> findRecommendedDevByIssueId (
             @Parameter(description = "issue UUID")
-            @PathVariable(name="id")
+            @PathVariable(name = "id")
             UUID id
-    ){
-        UserType dev=UserType.DEVELOPER;
-        Optional<Issue> issue=issueService.getIssueById(id);
-        List<User>body=userService.getAllUserByType(dev);
-        body.sort((targetDev1,targetDev2) -> {
-            float jac1 = targetDev1.calculateJaccard(issue);
-            float jac2 = targetDev2.calculateJaccard(issue);
+    ) {
+        Optional<Issue> issue = issueService.getIssueById(id);
 
-            return Float.compare(jac2, jac1);
-        });
+        if (issue.isPresent()) {
+            List<User> body = userService.getAllUserByType(UserType.DEVELOPER);
 
-        return ResponseEntity.ok(body);
+            if (body != null) {
+                body.sort((targetDev1, targetDev2) -> {
+                    float jac1 = targetDev1.calculateJaccard(issue);
+                    float jac2 = targetDev2.calculateJaccard(issue);
+
+                    return Float.compare(jac1, jac2);
+                });
+
+                return ResponseEntity.ok(body);
+            }
+            else return ResponseEntity.noContent().build();
+        }
+        else return ResponseEntity.notFound().build();
     }
 
     @Operation(
-            summary = "Developer의 추천 이슈 검색",
+            summary = "Developer를 기준으로 추천 이슈 검색",
             description = "'Developer ID'를 키워드로 하여, 이슈를 검색합니다."
     )
-    @RequestMapping(value = "/user/{id}/recommanded_issue", method = RequestMethod.GET)
+    @RequestMapping(value = "/user/{id}/recommended_issue", method = RequestMethod.GET)
     public ResponseEntity<List<Issue>> findRecommendedIssueById(
             @Parameter(description = "추천 이슈를 검색할 개발자의 UUID")
             @PathVariable(name = "id")

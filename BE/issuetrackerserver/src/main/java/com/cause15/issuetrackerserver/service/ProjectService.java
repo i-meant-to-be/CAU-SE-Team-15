@@ -56,4 +56,16 @@ public class ProjectService {
         }
         else return false;
     }
+
+    public boolean isUserInAnyProject(UUID id) {
+        List<Project> projectList = projectRepository.findAll();
+
+        for (Project project : projectList) {
+            if (project.getUserIds().contains(id)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

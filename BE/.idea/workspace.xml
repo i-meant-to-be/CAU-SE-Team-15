@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="af8ccba6-603f-4ffd-942a-87c7a8ad582f" name="Changes" comment="" />
+    <list default="true" id="af8ccba6-603f-4ffd-942a-87c7a8ad582f" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/BE.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/BE.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -22,10 +25,11 @@
   "keyToString": {
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/정용희/Desktop/소공 과제/github/BE/issuetrackerserver",
+    "last_opened_file_path": "C:/Workspace/Git/CAU-SE-Team-15/BE/issuetrackerserver",
     "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Project",
+    "project.structure.last.edited": "모듈",
     "project.structure.proportion": "0.0",
     "project.structure.side.proportion": "0.2",
     "vue.rearranger.settings.migration": "true"
@@ -34,8 +38,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-9f38398b9061-39b83d9b5494-intellij.indexing.shared.core-IU-241.15989.150" />
-        <option value="bundled-js-predefined-1d06a55b98c1-91d5c284f522-JavaScript-IU-241.15989.150" />
+        <option value="bundled-jdk-9f38398b9061-39b83d9b5494-intellij.indexing.shared.core-IU-241.17011.79" />
+        <option value="bundled-js-predefined-1d06a55b98c1-0b3e54e931b4-JavaScript-IU-241.17011.79" />
       </set>
     </attachedChunks>
   </component>
@@ -50,6 +54,8 @@
       <workItem from="1716821328494" duration="5000" />
       <workItem from="1717052159662" duration="6000" />
       <workItem from="1717103706730" duration="20000" />
+      <workItem from="1717177486058" duration="199000" />
+      <workItem from="1717177692885" duration="141000" />
     </task>
     <servers />
   </component>
