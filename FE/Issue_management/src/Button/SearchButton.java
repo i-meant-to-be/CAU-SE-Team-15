@@ -15,6 +15,7 @@ import java.util.Set;
 
 public class SearchButton extends JFrame {
     private List<Project> projects;
+    private UserData userdata;
     private JComboBox<String> projectComboBox;
     private JComboBox<IssueState> stateComboBox;
     private JComboBox<String> assignedComboBox;
@@ -26,46 +27,35 @@ public class SearchButton extends JFrame {
 
     public SearchButton(List<Project> projects, UserData userdata, MainFrame mainFrame) {
         this.projects = projects;
+        this.userdata = userdata;
         this.mainFrame = mainFrame;
         String[] projectNames = projects.stream().map(Project::getName).toArray(String[]::new);
-        initializeUI(this.projects, projectNames, userdata);
+        initializeUI(projectNames);
     }
 
-    private void initializeUI(List<Project> projects, String[] projectNames, UserData userdata) {
+    private void initializeUI(String[] projectNames) {
         setTitle("Search Issues");
         setSize(500, 400);
         setLayout(new BorderLayout(10, 10));
         setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         JPanel filterPanel = new JPanel();
         filterPanel.setLayout(new GridLayout(2, 4, 5, 5));
 
-        projectComboBox = new JComboBox<>();
-        projectComboBox.addItem("All Projects");
-        for (Project project : this.projects) {
-            projectComboBox.addItem(project.getName());
-        }
+        projectComboBox = new JComboBox<>(projectNames);
+        projectComboBox.insertItemAt("All Projects", 0);
+        projectComboBox.setSelectedIndex(0);
 
         stateComboBox = new JComboBox<>(IssueState.values());
+
         assignedComboBox = new JComboBox<>();
-        reporterComboBox = new JComboBox<>();
-
         assignedComboBox.addItem("All Assignees");
+        populateAssignees();
+
+        reporterComboBox = new JComboBox<>();
         reporterComboBox.addItem("All Reporters");
-
-        Set<String> uniqueReporters = new HashSet<>(); // Remove duplicate reporters
-        for (Project project : projects) {
-            for (Issue issue : project.getIssues()) {
-                User reporter = userdata.getUser(issue.getReporterId());
-                if (reporter != null) {
-                    uniqueReporters.add(reporter.getUsername());
-                }
-            }
-        }
-
-        for (String reporter : uniqueReporters) {
-            reporterComboBox.addItem(reporter);
-        }
+        populateReporters();
 
         filterPanel.add(new JLabel("Project:"));
         filterPanel.add(projectComboBox);
@@ -89,7 +79,6 @@ public class SearchButton extends JFrame {
                         if (selectedIssue != null) {
                             new IssueChanger(mainFrame, selectedIssue.getId());
                         }
-
                     }
                 }
             }
@@ -116,16 +105,46 @@ public class SearchButton extends JFrame {
         add(searchButton, BorderLayout.SOUTH);
     }
 
+    private void populateAssignees() {
+        Set<String> uniqueAssignees = new HashSet<>();
+        for (Project project : projects) {
+            for (Issue issue : project.getIssues()) {
+                User assignee = userdata.getUser(issue.getAssigneeId());
+                if (assignee != null) {
+                    uniqueAssignees.add(assignee.getUsername());
+                }
+            }
+        }
+        for (String assignee : uniqueAssignees) {
+            assignedComboBox.addItem(assignee);
+        }
+    }
+
+    private void populateReporters() {
+        Set<String> uniqueReporters = new HashSet<>();
+        for (Project project : projects) {
+            for (Issue issue : project.getIssues()) {
+                User reporter = userdata.getUser(issue.getReporterId());
+                if (reporter != null) {
+                    uniqueReporters.add(reporter.getUsername());
+                }
+            }
+        }
+        for (String reporter : uniqueReporters) {
+            reporterComboBox.addItem(reporter);
+        }
+    }
+
     private List<Issue> filterIssues(String projectName, IssueState state, String assignee, String reporter) {
         List<Issue> filteredIssues = new ArrayList<>();
 
         for (Project project : projects) {
-            if (projectName.equals("All Projects") || project.getName().equals(projectName)) {
+            if ("All Projects".equals(projectName) || project.getName().equals(projectName)) {
                 for (Issue issue : project.getIssues()) {
                     boolean matchesState = (state == null || issue.getState() == state);
-                    boolean matchesAssignee = (assignee.equals("All Assignees") || assignee.equals(issue.getAssigneeId()));
-                    User reporterUser = new UserData().getUser(issue.getReporterId());
-                    boolean matchesReporter = (reporter.equals("All Reporters") ||
+                    boolean matchesAssignee = ("All Assignees".equals(assignee) || assignee.equals(issue.getAssigneeId()));
+                    User reporterUser = userdata.getUser(issue.getReporterId());
+                    boolean matchesReporter = ("All Reporters".equals(reporter) ||
                             (reporterUser != null && reporter.equals(reporterUser.getUsername())));
 
                     if (matchesState && matchesAssignee && matchesReporter) {

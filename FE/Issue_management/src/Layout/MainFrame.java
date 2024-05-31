@@ -112,7 +112,7 @@ public class MainFrame extends JFrame {
                     projects.add(project);
                 }
                 UserData userData = new UserData();
-                new SearchButton(projects, userData).setVisible(true);
+                new SearchButton(projects, userData, MainFrame.this).setVisible(true);
             }
         });
 
