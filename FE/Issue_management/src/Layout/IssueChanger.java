@@ -59,6 +59,11 @@ public class IssueChanger extends JFrame {
         JLabel issueAssigneeLabel = new JLabel("Issue Assignee :");
         issueAssigneeLabel.setHorizontalAlignment(SwingConstants.CENTER);
         ArrayList<User> dev = new ArrayList<>();
+
+        //dev에 유저 리스트 추가
+        // for(User u:프로젝트내의 유저들)
+        //dev 리스트에 추가
+
         //콤보박스에 dev 추가
         JComboBox issueAssigneeCombo = new JComboBox();
         //프로젝트 유저들 불러오기
@@ -70,6 +75,23 @@ public class IssueChanger extends JFrame {
         recommendButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //조그마한 창 하나 뜨고 목록 가져오기
+                //Create Project List
+                JList<String> devList = new JList<>(new DefaultListModel<>());
+                DefaultListModel<String> listModel = (DefaultListModel<String>) devList.getModel();
+
+                //Add dev name
+                for (User user : dev) {
+                    listModel.addElement(user.getUsername()); // Add only Project name
+                }
+
+                devList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); // 하나의 프로젝트만 선택 가능
+
+                devList.setVisibleRowCount(10);
+
+                JScrollPane listScrollPane = new JScrollPane(devList);
+
+                JOptionPane.showMessageDialog(null, listScrollPane, "All developer", JOptionPane.INFORMATION_MESSAGE);
+
             }
         });
         secondPanel.add(issueAssigneeLabel);
