@@ -122,9 +122,9 @@ public class IssueController {
     @ApiResponse(responseCode = "200 OK", description = "주어진 ID에 대응하는 이슈가 있을 경우 반환")
     @RequestMapping(value = "/issue/{id}", method = RequestMethod.GET)
     public ResponseEntity<Issue> getIssue(
-        @Parameter(description = "조회할 이슈의 UUID")
-        @PathVariable(name = "id")
-        UUID id
+            @Parameter(description = "조회할 이슈의 UUID")
+            @PathVariable(name = "id")
+            UUID id
     ) {
         Optional<Issue> body = issueService.getIssueById(id);
         return body.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
@@ -257,6 +257,29 @@ public class IssueController {
      */
 
     @Operation(
+            summary="issue의 추천 Developer 검색",
+            description = "issue ID 를 keyWord로 developer를 검색"
+    )
+    @RequestMapping(value="/recommendDev/{id}",method=RequestMethod.GET)
+    public ResponseEntity<List<User>>findRecommendedDevByIssueId(
+            @Parameter(description = "issue UUID")
+            @PathVariable(name="id")
+            UUID id
+    ){
+        UserType dev=UserType.DEVELOPER;
+        Optional<Issue> issue=issueService.getIssueById(id);
+        List<User>body=userService.getAllUserByType(dev);
+        body.sort((targetDev1,targetDev2) -> {
+            float jac1 = targetDev1.calculateJaccard(issue);
+            float jac2 = targetDev2.calculateJaccard(issue);
+
+            return Float.compare(jac2, jac1);
+        });
+
+        return ResponseEntity.ok(body);
+    }
+
+    @Operation(
             summary = "Developer의 추천 이슈 검색",
             description = "'Developer ID'를 키워드로 하여, 이슈를 검색합니다."
     )
@@ -274,8 +297,8 @@ public class IssueController {
 
                 if (!body.isEmpty()) {
                     body.sort((issue1, issue2) -> {
-                        float jac1 = targetDev.get().calculateJaccard(issue1);
-                        float jac2 = targetDev.get().calculateJaccard(issue2);
+                        float jac1 = targetDev.get().calculateJaccard(Optional.ofNullable(issue1));
+                        float jac2 = targetDev.get().calculateJaccard(Optional.ofNullable(issue2));
 
                         return Float.compare(jac2, jac1);
                     });

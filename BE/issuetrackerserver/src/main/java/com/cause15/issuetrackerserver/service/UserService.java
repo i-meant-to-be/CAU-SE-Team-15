@@ -1,6 +1,7 @@
 package com.cause15.issuetrackerserver.service;
 
 import com.cause15.issuetrackerserver.model.User;
+import com.cause15.issuetrackerserver.model.UserType;
 import com.cause15.issuetrackerserver.repository.UserRepository;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -56,5 +57,8 @@ public class UserService {
                 Query.query(Criteria.where("name").is(name)),
                 User.class
         );
+    }
+    public List<User> getAllUserByType(UserType type){
+        return userRepository.getAllByType(type);
     }
 }
