@@ -119,6 +119,13 @@ public class ProjectData {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("title", project.getName());
             jsonObject.put("description", project.getDescription());
+            JSONArray jsonArray = new JSONArray();
+            if(!project.getUsers().isEmpty()) {
+                for (int i = 0; i < project.getUsers().size(); i++) {
+                    jsonArray.put(project.getUsers().get(i));
+                }
+                jsonObject.put("userIds", jsonArray);
+            }
 
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(conn.getOutputStream()));
             bw.write(jsonObject.toString()); // 버퍼에 담기
