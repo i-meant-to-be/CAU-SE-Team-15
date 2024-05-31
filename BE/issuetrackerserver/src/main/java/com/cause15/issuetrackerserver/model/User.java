@@ -6,10 +6,7 @@ import nonapi.io.github.classgraph.json.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Getter
 @Setter
@@ -59,15 +56,16 @@ public class User {
         }
         this.tags.addAll(issueTags);
     }
-    public float calculateJaccard(Issue issue) {
+    public float calculateJaccard(Optional<Issue> issue) {
+
         Set<String> unionSet = new HashSet<>(this.getTags());
-        unionSet.addAll(issue.getTags());
+        unionSet.addAll(issue.get().getTags());
         int union = unionSet.size();
 
         Set<String> intersectionSet = new HashSet<>(this.getTags());
-        intersectionSet.retainAll(issue.getTags());
+        intersectionSet.retainAll(issue.get().getTags());
         int inter = intersectionSet.size();
-
         return (float) inter / union;
     }
+
 }
