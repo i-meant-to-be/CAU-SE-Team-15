@@ -20,6 +20,8 @@ public class Project {
     private String description;
     private LocalDateTime createdDate;
 
+    public Project() {}
+
     public Project(String title, String description) {
         this.title = title;
         this.description = description;
@@ -34,8 +36,7 @@ public class Project {
         this.description = description;
         this.id = UUID.randomUUID();
         this.createdDate = LocalDateTime.now();
-        this.userIds = (userIds != null) ? userIds : new ArrayList<>();
+        this.userIds = userIds != null ? userIds : new ArrayList<>();
         this.issueIds = new ArrayList<>();
     }
-
 }
