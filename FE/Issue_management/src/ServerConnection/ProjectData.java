@@ -19,7 +19,7 @@ import java.util.UUID;
 public class ProjectData {
     private Project[] sd_project;
     private int projectCnt = 0;
-    private List<UUID> userList = new ArrayList<>();
+    private List<UUID> userList;
 
     public Project[] getAllProjects(){
         this.getAllProject();
@@ -32,6 +32,7 @@ public class ProjectData {
     }
 
     public Project getProject(UUID projectId){
+        userList = new ArrayList<>();
         Project project;
         try {
             URL url = new URL("http://localhost:8080/api/project/"+projectId.toString());
@@ -194,6 +195,8 @@ public class ProjectData {
                 sd_project = new Project[projectCnt];
 
                 for (int i = 0; i < projectCnt; i++) {
+                    userList = new ArrayList<>();
+
                     JSONObject jsonObject = jsonArray.getJSONObject(i);
 
                     UUID id = UUID.fromString(jsonObject.getString("id"));

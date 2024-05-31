@@ -21,7 +21,9 @@ public class ProjectButton {
 
     public ProjectButton(MainFrame MF) {
         this.MF = MF;
+        //프로젝트 데이터 서버에서 받기
         ProjectData projectData = new ProjectData();
+        //서버에서 받은 프로젝트가 하나라도 있을 경우
         if(projectData.getAllProjects()!=null) {
             Project[] projects1 = projectData.getAllProjects();
             for (Project project : projects1) {
