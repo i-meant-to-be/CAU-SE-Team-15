@@ -5,6 +5,7 @@ import Data.Project;
 import Data.User;
 import Data.UserType;
 import Button.ProjectButton;
+import ServerConnection.ProjectData;
 
 import javax.swing.*;
 import java.awt.*;
@@ -69,6 +70,8 @@ public class ProjectDetailFrame extends JFrame {
                 int response = JOptionPane.showConfirmDialog(null, "do you want to delete this project?", "Warning", JOptionPane.WARNING_MESSAGE);
                 if(response == JOptionPane.YES_OPTION) {
                     //프로젝트 삭제 코드
+                    ProjectData projectData = new ProjectData();
+                    projectData.deleteProject(project);
                     dispose();
                 }
             }

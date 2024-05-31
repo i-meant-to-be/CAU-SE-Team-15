@@ -86,7 +86,7 @@ public class ProjectData {
 
     public void deleteProject(Project project){
         try {
-            URL url = new URL("http://localhost:8080/api/project"+project.getId());
+            URL url = new URL("http://localhost:8080/api/project/"+project.getId().toString());
             HttpURLConnection conn = (HttpURLConnection)url.openConnection();
 
             conn.setRequestMethod("DELETE"); // http 메서드
