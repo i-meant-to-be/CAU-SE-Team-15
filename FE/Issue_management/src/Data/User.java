@@ -18,6 +18,13 @@ public class User {
         this.type = type;
     }
 
+    public User(UUID id, String username, String password, UserType type) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.type = type;
+    }
+
     public void setUser(String username, String password, UserType type) {
         this.username = username;
         this.password = password;

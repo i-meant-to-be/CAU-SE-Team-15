@@ -1,8 +1,6 @@
 package ServerConnection;
 
-import Data.Issue;
-import Data.IssueState;
-import Data.IssueType;
+import Data.*;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -14,6 +12,8 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import java.net.URI;
@@ -43,6 +43,52 @@ public class IssueData {
 
     public int getIssueCnt(){
         return issueCnt;
+    }
+
+    public List<User> recommendDev(UUID issueId){
+        List<User> users = new ArrayList<>();
+        try {
+            URL url = new URL("http://localhost:8080/api/recommendDev/"+issueId.toString());
+            HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+
+            conn.setRequestMethod("GET"); // http 메서드
+            conn.setRequestProperty("Content-Type", "application/json"); // header Content-Type 정보
+            conn.setDoOutput(true); // 서버로부터 받는 값이 있다면 true
+
+            int responseCode = conn.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                // 서버로부터 데이터 읽어오기
+                BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                StringBuilder sb = new StringBuilder();
+                String line = null;
+
+                while ((line = br.readLine()) != null) { // 읽을 수 있을 때 까지 반복
+                    sb.append(line);
+                }
+
+                JSONArray ja = new JSONArray(sb.toString());
+
+                for(int i = 0; i < ja.length(); i++){
+                    JSONObject jsonObject = ja.getJSONObject(i);
+                    UUID id = UUID.fromString(jsonObject.getString("id"));
+                    String name = jsonObject.getString("name");
+                    String password = jsonObject.getString("password");
+                    UserType type = UserType.valueOf(jsonObject.getString("type"));
+                    /*JSONArray tagArray = jsonObject.getJSONArray("tags");
+                    if(tagArray!=null){
+                        String[] tags = new String[tagArray.length()];
+                        for (int j = 0; j < tagArray.length(); j++) {
+                            tags[j] = tagArray.getString(j);
+                        }
+                    }*/
+                    users.add(new User(id,name,password,type));
+                }
+                return users;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return users;
     }
 
     public void modifyIssueState(Issue issue){
