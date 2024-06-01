@@ -254,6 +254,7 @@ public class MainFrame extends JFrame {
                 new_Panel.setBorder(BorderFactory.createLineBorder(Color.black, 3));
                 new_Panel.add(new JLabel(issue.getTitle(), JLabel.CENTER));
                 UserData userData = new UserData();
+                User assignee = userData.getUser(issue.getAssigneeId());
                 User reporter = userData.getUser(issue.getReporterId());
                 String reporterName;
                 if(reporter==null)
@@ -264,7 +265,7 @@ public class MainFrame extends JFrame {
                 new_Panel.add(new JLabel(reporterName, JLabel.CENTER));
                 new_Panel.add(new JLabel(issue.getReportedDate().toString(), JLabel.CENTER));
                 new_Panel.add(new JLabel(issue.getType().toString(), JLabel.CENTER));
-                if (issue.getAssigneeId() == null) {
+                if (assignee == null) {
                     new_Panel.add(new JLabel("Not assigned yet", JLabel.CENTER));
                 } else {
                     new_Panel.add(new JLabel(userData.getUser(issue.getAssigneeId()).getUsername(), JLabel.CENTER));
