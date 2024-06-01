@@ -239,11 +239,25 @@ public class IssueData {
                 LocalDateTime reported = LocalDateTime.parse(reportedDate);
 
                 UUID reporterId = UUID.fromString(jsonObject.getString("reporterId"));
-                //UUID fixerId = UUID.fromString(jsonObject.getString("fixerId"));
-                //UUID assigneeId = UUID.fromString(jsonObject.getString("assigneeId"));
+                UUID fixerId,assigneeId;
+                try {
+                    fixerId = UUID.fromString(jsonObject.getString("fixerId"));
+                }catch(Exception e) {
+                    fixerId = null;
+                }
+                try{
+                    assigneeId = UUID.fromString(jsonObject.getString("assigneeId"));
+                }catch(Exception e) {
+                    assigneeId = null;
+                }
 
                 issue = new Issue(title, reporterId, reported, description, type, state);
                 issue.setId(id);
+
+                if(assigneeId!=null)
+                    issue.setAssigneeId(assigneeId);
+                if(fixerId!=null)
+                    issue.setFixerId(fixerId);
 
                 JSONArray commentArray = jsonObject.getJSONArray("commentIds");
                 if (commentArray != null) {
@@ -307,12 +321,25 @@ public class IssueData {
 
 
                     UUID reporterId = UUID.fromString(jsonObject.getString("reporterId"));
-                    //UUID fixerId = UUID.fromString(jsonObject.getString("fixerId"));
-                    //UUID assigneeId = UUID.fromString(jsonObject.getString("assigneeId"));
+                    UUID fixerId,assigneeId;
+                    try {
+                        fixerId = UUID.fromString(jsonObject.getString("fixerId"));
+                    }catch(Exception e) {
+                        fixerId = null;
+                    }
+                    try{
+                        assigneeId = UUID.fromString(jsonObject.getString("assigneeId"));
+                    }catch(Exception e) {
+                        assigneeId = null;
+                    }
 
                     sd_issue[i] = new Issue(title, reporterId, reported, description, type, state);
                     sd_issue[i].setId(id);
-                    //issue 에 assignee와 fixer 도 추가해야됨
+
+                    if(assigneeId!=null)
+                        sd_issue[i].setAssigneeId(assigneeId);
+                    if(fixerId!=null)
+                        sd_issue[i].setFixerId(fixerId);
 
                     JSONArray commentArray = jsonObject.getJSONArray("commentIds");
                     UUID[] commentIds = new UUID[commentArray.length()];
@@ -327,7 +354,6 @@ public class IssueData {
                     for (int j = 0; j < tagArray.length(); j++) {
                         tags[j] = tagArray.getString(j);
                     }
-
                 }
             }
         } catch (Exception e) {

@@ -245,14 +245,20 @@ public class MainFrame extends JFrame {
                 new_Panel.setBorder(BorderFactory.createLineBorder(Color.black, 3));
                 new_Panel.add(new JLabel(issue.getTitle(), JLabel.CENTER));
                 UserData userData = new UserData();
-                String reporter = userData.getUser(issue.getReporterId()).getUsername();
-                new_Panel.add(new JLabel(reporter, JLabel.CENTER));
+                User reporter = userData.getUser(issue.getReporterId());
+                String reporterName;
+                if(reporter==null)
+                    reporterName = "Unknown User";
+                else{
+                    reporterName = reporter.getUsername();
+                }
+                new_Panel.add(new JLabel(reporterName, JLabel.CENTER));
                 new_Panel.add(new JLabel(issue.getReportedDate().toString(), JLabel.CENTER));
                 new_Panel.add(new JLabel(issue.getType().toString(), JLabel.CENTER));
                 if (issue.getAssigneeId() == null) {
                     new_Panel.add(new JLabel("Not assigned yet", JLabel.CENTER));
                 } else {
-                    new_Panel.add(new JLabel(issue.getAssigneeId().toString(), JLabel.CENTER));
+                    new_Panel.add(new JLabel(userData.getUser(issue.getAssigneeId()).getUsername(), JLabel.CENTER));
                 }
                 new_Panel.add(new JLabel(issue.getState().toString(), JLabel.CENTER));
                 // "Detail" 버튼 추가

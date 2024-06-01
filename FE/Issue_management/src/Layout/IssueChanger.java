@@ -180,9 +180,14 @@ public class IssueChanger extends JFrame {
         OKButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 IssueData issueD = new IssueData();
+                UserData userData2 = new UserData();
                 issue.setDescription(descriptionField.getText());
                 issue.setType((IssueType) type.getSelectedItem());
+                IssueState issueState = issue.getState();
                 issue.setState((IssueState) state.getSelectedItem());
+                if((IssueState) state.getSelectedItem()==IssueState.FIXED && issueState!=IssueState.FIXED)
+                    issue.setFixerId(MF.get_user().getUUID());
+                issue.setAssigneeId((userData2.getUser((String) issueAssigneeCombo.getSelectedItem()).getUUID()));
                 issueD.modifyIssue(issue);
                 issue = issueD.getIssue(issue.getId());
                 MF.showIssues();

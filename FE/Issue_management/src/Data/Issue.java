@@ -16,6 +16,7 @@ public class Issue {
     private IssueState state;
     private List<Comment> comments;
     private UUID projectId;
+    private UUID fixerId;
 
     public Issue(String title, UUID reporter_id, LocalDateTime reported_date, String description, UUID assignee_id, IssueType type, IssueState state) {
         this.id = UUID.randomUUID();
@@ -41,6 +42,14 @@ public class Issue {
     }
 
     // Getter 및 setter 메서드
+
+    public UUID getFixerId(){
+        return fixerId;
+    }
+
+    public void setFixerId(UUID fixerId) {
+        this.fixerId = fixerId;
+    }
 
     public UUID getId() {
         return id;
@@ -68,6 +77,10 @@ public class Issue {
 
     public UUID getAssigneeId() {
         return assignee_id;
+    }
+
+    public void setAssigneeId(UUID assigneeId) {
+        this.assignee_id = assigneeId;
     }
 
     public IssueType getType() {
