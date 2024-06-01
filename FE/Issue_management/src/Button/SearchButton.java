@@ -3,6 +3,7 @@ package Button;
 import Data.*;
 import Layout.MainFrame;
 import Layout.IssueChanger;
+import ServerConnection.ProjectData;
 import ServerConnection.UserData;
 
 import javax.swing.*;
@@ -77,6 +78,20 @@ public class SearchButton extends JFrame {
                         String selectedIssueTitle = listModel.getElementAt(index);
                         Issue selectedIssue = findIssueByTitle(selectedIssueTitle);
                         if (selectedIssue != null) {
+                            ProjectData projectData = new ProjectData();
+                            Project[] projects0 = projectData.getAllProjects();
+                            for(Project p : projects0) {
+                                boolean found = false;
+                                for(Issue i : p.getIssues()) {
+                                    if(selectedIssue.getId().equals(i.getId())) {
+                                        mainFrame.setProject(p);
+                                        found = true;
+                                        break;
+                                    }
+                                }
+                                if(found)
+                                    break;
+                            }
                             new IssueChanger(mainFrame, selectedIssue.getId());
                         }
                     }
