@@ -242,6 +242,8 @@ public class MainFrame extends JFrame {
 //        }
 
         //이슈 패널들 목록 초기화
+        issue_panels.clear();
+        panel.removeAll();
         index = -1;
 
         //panel은 이슈 목록
