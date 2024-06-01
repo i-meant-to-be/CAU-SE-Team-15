@@ -54,6 +54,7 @@ public class MainFrame extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 user = new User();
                 user_name.setText(user.getUsername());
+                issue_panel.removeAll();
                 repaint();
                 loggedIn = false;
                 login = new Log_in(MainFrame.this);

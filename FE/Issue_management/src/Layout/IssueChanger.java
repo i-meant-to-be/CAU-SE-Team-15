@@ -45,12 +45,17 @@ public class IssueChanger extends JFrame {
         pane.add(upperPanel);
 
         //issue reporter
-        JLabel reportLabel = new JLabel("Report :");
+        JLabel reportLabel = new JLabel("Reporter :");
         reportLabel.setHorizontalAlignment(SwingConstants.CENTER);
         JLabel reportField = new JLabel();
         reportField.setHorizontalAlignment(SwingConstants.CENTER);
         UserData userData = new UserData();
-        reportField.setText(userData.getUser(issue.getReporterId()).getUsername()); //나중에 리포터 이름이 나오도록 수정해주세요
+        try {
+            reportField.setText(userData.getUser(issue.getReporterId()).getUsername()); //나중에 리포터 이름이 나오도록 수정해주세요
+        }
+        catch (Exception e) {
+            reportField.setText("missing No.");
+        }
         upperPanel.add(reportLabel);
         upperPanel.add(reportField);
         pane.add(upperPanel);
@@ -63,25 +68,41 @@ public class IssueChanger extends JFrame {
         ArrayList<User> dev = new ArrayList<>();
         UserData userData1 = new UserData();
 
+        JLabel fixer = new JLabel("Fixer :");
+        fixer.setHorizontalAlignment(SwingConstants.CENTER);
+        JLabel fixerField = new JLabel();
+        fixerField.setHorizontalAlignment(SwingConstants.CENTER);
+        fixerField.setEnabled(false);
+
         //dev에 유저 리스트 추가
         for(int i = 0; i <MF.getProject().getUsers().size(); i++){
             User u = userData1.getUser(MF.getProject().getUsers().get(i));
+            if(u==null)
+                continue;
             if(u.getType()==UserType.DEVELOPER){
                 dev.add(u);
             }
         }
 
-
         //콤보박스에 dev 추가
         JComboBox issueAssigneeCombo = new JComboBox();
         //프로젝트 유저들 불러오기
         for(User u:dev){
-            //만약 UUID 주인이 dev 라면
             //issueAssigneeCombo에 아이템 add
             if(u!=null) {
                 issueAssigneeCombo.addItem(u.getUsername());
             }
         }
+        User assignee = userData1.getUser(issue.getAssigneeId());
+        if(assignee==null) {
+            issueAssigneeCombo.insertItemAt("", 0);
+            issueAssigneeCombo.setSelectedIndex(0);
+        }
+        else {
+            issueAssigneeCombo.setSelectedItem(assignee.getUsername());
+            fixerField.setText(assignee.getUsername());
+        }
+
         JButton recommendButton = new JButton("Recommend");
         recommendButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -111,6 +132,8 @@ public class IssueChanger extends JFrame {
         secondPanel.add(issueAssigneeLabel);
         secondPanel.add(issueAssigneeCombo);
         secondPanel.add(recommendButton);
+        secondPanel.add(fixer);
+        secondPanel.add(fixerField);
         pane.add(secondPanel);
 
 
@@ -187,7 +210,8 @@ public class IssueChanger extends JFrame {
                 issue.setState((IssueState) state.getSelectedItem());
                 if((IssueState) state.getSelectedItem()==IssueState.FIXED && issueState!=IssueState.FIXED)
                     issue.setFixerId(MF.get_user().getUUID());
-                issue.setAssigneeId((userData2.getUser((String) issueAssigneeCombo.getSelectedItem()).getUUID()));
+                if(!issueAssigneeCombo.getSelectedItem().equals(""))
+                    issue.setAssigneeId((userData2.getUser((String) issueAssigneeCombo.getSelectedItem()).getUUID()));
                 issueD.modifyIssue(issue);
                 issue = issueD.getIssue(issue.getId());
                 MF.showIssues();
