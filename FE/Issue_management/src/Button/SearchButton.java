@@ -151,15 +151,16 @@ public class SearchButton extends JFrame {
     }
 
     private List<Issue> filterIssues(String projectName, IssueState state, String assignee, String reporter) {
-        List<Issue> filteredIssues = new ArrayList<>();
+        List<Issue> filteredIssues = new ArrayList<>(); //issue 서치 탭 project, assignee, state,reporter
 
         for (Project project : projects) {
             if ("All Projects".equals(projectName) || project.getName().equals(projectName)) {
                 for (Issue issue : project.getIssues()) {
                     boolean matchesState = (state == null || issue.getState() == state);
-                    boolean matchesAssignee = ("All Assignees".equals(assignee) || assignee.equals(issue.getAssigneeId()));
+                    User assigneeUser = userdata.getUser(issue.getAssigneeId());
+                    boolean matchesAssignee = ("All Assignees".equals(assignee) || (assigneeUser != null && assignee.equals(assigneeUser.getUsername())));
                     User reporterUser = userdata.getUser(issue.getReporterId());
-                    boolean matchesReporter = ("All Reporters".equals(reporter) ||
+                    boolean matchesReporter = ("All Reporters".equals(reporter) || //reporter 이름 불러오기
                             (reporterUser != null && reporter.equals(reporterUser.getUsername())));
 
                     if (matchesState && matchesAssignee && matchesReporter) {
