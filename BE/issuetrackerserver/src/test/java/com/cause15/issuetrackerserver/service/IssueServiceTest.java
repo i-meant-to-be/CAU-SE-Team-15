@@ -40,9 +40,9 @@ class IssueServiceTest {
         issue.setId(issueId);
         when(issueRepository.findById(issueId)).thenReturn(Optional.of(issue));
 
-        Issue foundIssue = issueService.getIssueById(issueId);
+        Optional<Issue> foundIssue = issueService.getIssueById(issueId);
         assertNotNull(foundIssue);
-        assertEquals(issueId, foundIssue.getId());
+        assertEquals(issueId, foundIssue.get().getId());
     }
 
     @Test

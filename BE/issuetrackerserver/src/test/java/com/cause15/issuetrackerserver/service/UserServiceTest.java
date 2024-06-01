@@ -40,9 +40,9 @@ class UserServiceTest {
         user.setId(userId);
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
-        User foundUser = userService.getUserById(userId);
+        Optional<User> foundUser = userService.getUserById(userId);
         assertNotNull(foundUser);
-        assertEquals(userId, foundUser.getId());
+        assertEquals(userId, foundUser.get().getId());
     }
 
     @Test

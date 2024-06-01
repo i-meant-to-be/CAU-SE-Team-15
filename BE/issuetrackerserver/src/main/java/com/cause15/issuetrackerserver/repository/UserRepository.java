@@ -9,6 +9,6 @@ import java.util.UUID;
 
 @Repository
 public interface UserRepository extends MongoRepository<User, UUID> {
-    List<User> getByName(String name);
+    User getByName(String name);
     List<User> getAllByType(UserType type);
 }
