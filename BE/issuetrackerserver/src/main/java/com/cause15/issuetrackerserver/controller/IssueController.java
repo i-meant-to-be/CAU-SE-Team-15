@@ -276,7 +276,7 @@ public class IssueController {
                     float jac1 = targetDev1.calculateJaccard(issue);
                     float jac2 = targetDev2.calculateJaccard(issue);
 
-                    return Float.compare(jac1, jac2);
+                    return Float.compare(jac2, jac1);
                 });
 
                 return ResponseEntity.ok(body);
