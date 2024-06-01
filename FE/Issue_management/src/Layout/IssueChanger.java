@@ -202,21 +202,85 @@ public class IssueChanger extends JFrame {
         pane.add(OKButton);
         OKButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                int ok = 0;
                 IssueData issueD = new IssueData();
                 UserData userData2 = new UserData();
+                Issue originalI = issue;
                 issue.setDescription(descriptionField.getText());
-                issue.setType((IssueType) type.getSelectedItem());
-                IssueState issueState = issue.getState();
-                issue.setState((IssueState) state.getSelectedItem());
-                if((IssueState) state.getSelectedItem()==IssueState.FIXED && issueState!=IssueState.FIXED)
-                    issue.setFixerId(MF.get_user().getUUID());
-                if(!issueAssigneeCombo.getSelectedItem().equals(""))
-                    issue.setAssigneeId((userData2.getUser((String) issueAssigneeCombo.getSelectedItem()).getUUID()));
-                issueD.modifyIssue(issue);
-                issue = issueD.getIssue(issue.getId());
-                MF.showIssues();
-                MF.setEnabled(true);
-                dispose();
+                if(type.getSelectedItem() != originalI.getType()){
+                    if(MF.get_user().getType()==UserType.ADMIN || MF.get_user().getType()==UserType.MANAGER){
+                        issue.setType((IssueType) type.getSelectedItem());
+                    }
+                    else ok = 1;
+                }
+
+                if(MF.get_user().getType()==UserType.TESTER){
+                    if((!originalI.getState().equals(state.getSelectedItem())) && originalI.getState()==IssueState.FIXED) {
+                        if (state.getSelectedItem() == IssueState.REOPENED || state.getSelectedItem() == IssueState.RESOLVED) {
+                            if(originalI.getReporterId().equals(MF.get_user().getUUID()))
+                                issue.setState((IssueState) state.getSelectedItem());
+                            else ok = 5;
+                        } else {
+                            ok = 2;
+                        }
+                    } else{
+                        ok = 7;
+                    }
+                }
+                else if(MF.get_user().getType()==UserType.DEVELOPER){
+                    if((!originalI.getState().equals(state.getSelectedItem())) && (originalI.getState()==IssueState.ASSIGNED || originalI.getState()==IssueState.REOPENED)) {
+                        if(state.getSelectedItem()==IssueState.FIXED) {
+                            if(originalI.getAssigneeId().equals(MF.get_user().getUUID())) {
+                                issue.setState((IssueState) state.getSelectedItem());
+                                issue.setFixerId(MF.get_user().getUUID());
+                            }
+                            else ok = 6;
+                        }
+                        else ok = 3;
+                    }
+                    else ok = 8;
+                }
+                else {issue.setState((IssueState) state.getSelectedItem());}
+
+                if((!(userData2.getUser((String)issueAssigneeCombo.getSelectedItem()).getUUID().equals(originalI.getAssigneeId())))){
+                    if(MF.get_user().getType()==UserType.ADMIN || MF.get_user().getType()==UserType.MANAGER) {
+                        if (!issueAssigneeCombo.getSelectedItem().equals(""))
+                            issue.setAssigneeId((userData2.getUser((String) issueAssigneeCombo.getSelectedItem()).getUUID()));
+                    }
+                    else {ok = 4;}
+                }
+
+                if(ok==0) {
+                    issueD.modifyIssue(issue);
+                    issue = issueD.getIssue(issue.getId());
+                    MF.showIssues();
+                    MF.setEnabled(true);
+                    dispose();
+                }
+                else if(ok==1) {
+                    JOptionPane.showMessageDialog(null, "You don't have permission to change type", "Change failed", JOptionPane.WARNING_MESSAGE);
+                }
+                else if(ok==2) {
+                    JOptionPane.showMessageDialog(null, "You only have permission to change state REOPENED/RESOLVED", "Change failed", JOptionPane.WARNING_MESSAGE);
+                }
+                else if(ok==3) {
+                    JOptionPane.showMessageDialog(null, "You only have permission to change state FIXED", "Change failed", JOptionPane.WARNING_MESSAGE);
+                }
+                else if(ok==4) {
+                    JOptionPane.showMessageDialog(null, "You don't have permission to change Assignee", "Change failed", JOptionPane.WARNING_MESSAGE);
+                }
+                else if(ok==5) {
+                    JOptionPane.showMessageDialog(null, "You are not Reporter of this issue", "Change failed", JOptionPane.WARNING_MESSAGE);
+                }
+                else if(ok==6) {
+                    JOptionPane.showMessageDialog(null, "You are not Assignee of this issue", "Change failed", JOptionPane.WARNING_MESSAGE);
+                }
+                else if(ok==7) {
+                    JOptionPane.showMessageDialog(null, "Issue has not been fixed yet", "Change failed", JOptionPane.WARNING_MESSAGE);
+                }
+                else if(ok==8) {
+                    JOptionPane.showMessageDialog(null, "Issue has not been assigned yet", "Change failed", JOptionPane.WARNING_MESSAGE);
+                }
             }
         });
         addComment.addActionListener(new ActionListener() {
