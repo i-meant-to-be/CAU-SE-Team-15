@@ -131,7 +131,8 @@ public class IssueData {
             if(issue.getAssigneeId()!=null)
                 jsonObject.put("assigneeId", issue.getAssigneeId().toString());
             jsonObject.put("state", issue.getState().toString());
-            //issue fixer 데이터 추가하기
+            if(issue.getFixerId()!=null)
+                jsonObject.put("fixerId", issue.getFixerId().toString());
 
             HttpClient client = HttpClient.newHttpClient();
 

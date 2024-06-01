@@ -26,12 +26,17 @@ public class MainFrame extends JFrame {
 
     private Project selectedProject;
 
-    private JPanel issue_panel;
+    private JPanel issue_panel = new JPanel(new BorderLayout(10, 10));
+    private JScrollPane jScrollPane;
+    private JPanel panel = new JPanel(new GridLayout(0, 1));
     private ArrayList<JPanel> issue_panels = new ArrayList<>();
     private int index = -1;
 
+    private int width;
+
     public MainFrame() {
         super("Main page");
+        AbstractBorder border = new LineBorder(Color.BLACK, 2);
         ProjectData pd = new ProjectData();
         UserData user111 = new UserData();
         setSize(800, 600);
@@ -132,7 +137,40 @@ public class MainFrame extends JFrame {
         user_func.add(search);
         user_func.add(trendButton);
 
-        issue_panel = new JPanel();
+
+        JPanel detail_panel = new JPanel();
+
+        detail_panel.setLayout(new GridLayout(1, 7));
+        JLabel issue_title = new JLabel("Issue_title", JLabel.CENTER);
+        issue_title.setBorder(border);
+        JLabel issue_reporter = new JLabel("Issue_reporter", JLabel.CENTER);
+        issue_reporter.setBorder(border);
+        JLabel issue_date = new JLabel("Issue_date", JLabel.CENTER);
+        issue_date.setBorder(border);
+        JLabel issue_type = new JLabel("Issue_type", JLabel.CENTER);
+        issue_type.setBorder(border);
+        JLabel issue_assignee = new JLabel("Issue_assignee", JLabel.CENTER);
+        issue_assignee.setBorder(border);
+        JLabel issue_state = new JLabel("Issue_state", JLabel.CENTER);
+        issue_state.setBorder(border);
+        JLabel issue_detail = new JLabel("Issue_detail", JLabel.CENTER);
+        issue_detail.setBorder(border);
+
+        detail_panel.add(issue_title);
+        detail_panel.add(issue_reporter);
+        detail_panel.add(issue_date);
+        detail_panel.add(issue_type);
+        detail_panel.add(issue_assignee);
+        detail_panel.add(issue_state);
+        detail_panel.add(issue_detail);
+
+        width = detail_panel.getWidth();
+
+        issue_panel.add(detail_panel, BorderLayout.NORTH);
+        jScrollPane = new JScrollPane(panel);
+        jScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        issue_panel.add(jScrollPane, BorderLayout.CENTER);
+
         pane.add(user_func, BorderLayout.EAST);
         pane.add(issue_panel, BorderLayout.CENTER);
 
@@ -152,6 +190,10 @@ public class MainFrame extends JFrame {
         });
         setDefaultCloseOperation(this.EXIT_ON_CLOSE);
     }
+
+
+
+
 
     public User get_user() {
         return user;
@@ -181,7 +223,6 @@ public class MainFrame extends JFrame {
             JOptionPane.showMessageDialog(null, "there's no issue", "Warning", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        AbstractBorder border = new LineBorder(Color.BLACK, 2);
 
 
         sd_issues.clear();
@@ -200,43 +241,10 @@ public class MainFrame extends JFrame {
 //            }
 //        }
 
-        //현재 이슈 패널 초기화
-        issue_panel.removeAll();
-        issue_panel.setLayout(new BorderLayout(10, 10));
-
         //이슈 패널들 목록 초기화
-        issue_panels.clear();
         index = -1;
 
-        JPanel detail_panel = new JPanel();
-        detail_panel.setLayout(new GridLayout(1, 7));
-        JLabel issue_title = new JLabel("Issue_title", JLabel.CENTER);
-        issue_title.setBorder(border);
-        JLabel issue_reporter = new JLabel("Issue_reporter", JLabel.CENTER);
-        issue_reporter.setBorder(border);
-        JLabel issue_date = new JLabel("Issue_date", JLabel.CENTER);
-        issue_date.setBorder(border);
-        JLabel issue_type = new JLabel("Issue_type", JLabel.CENTER);
-        issue_type.setBorder(border);
-        JLabel issue_assignee = new JLabel("Issue_assignee", JLabel.CENTER);
-        issue_assignee.setBorder(border);
-        JLabel issue_state = new JLabel("Issue_state", JLabel.CENTER);
-        issue_state.setBorder(border);
-        JLabel issue_detail = new JLabel("Issue_detail", JLabel.CENTER);
-        issue_detail.setBorder(border);
-
-        detail_panel.add(issue_title);
-        detail_panel.add(issue_reporter);
-        detail_panel.add(issue_date);
-        detail_panel.add(issue_type);
-        detail_panel.add(issue_assignee);
-        detail_panel.add(issue_state);
-        detail_panel.add(issue_detail);
-
-
         //panel은 이슈 목록
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         clickPanelListener c = new clickPanelListener();
         for (Issue issue : sd_issues) {
             if (issue != null) {
@@ -246,6 +254,7 @@ public class MainFrame extends JFrame {
                 new_Panel.setBorder(BorderFactory.createLineBorder(Color.black, 3));
                 new_Panel.add(new JLabel(issue.getTitle(), JLabel.CENTER));
                 UserData userData = new UserData();
+                User assignee = userData.getUser(issue.getAssigneeId());
                 User reporter = userData.getUser(issue.getReporterId());
                 String reporterName;
                 if(reporter==null)
@@ -256,7 +265,7 @@ public class MainFrame extends JFrame {
                 new_Panel.add(new JLabel(reporterName, JLabel.CENTER));
                 new_Panel.add(new JLabel(issue.getReportedDate().toString(), JLabel.CENTER));
                 new_Panel.add(new JLabel(issue.getType().toString(), JLabel.CENTER));
-                if (issue.getAssigneeId() == null) {
+                if (assignee == null) {
                     new_Panel.add(new JLabel("Not assigned yet", JLabel.CENTER));
                 } else {
                     new_Panel.add(new JLabel(userData.getUser(issue.getAssigneeId()).getUsername(), JLabel.CENTER));
@@ -275,6 +284,9 @@ public class MainFrame extends JFrame {
                     }
                 });
                 new_Panel.add(detailButton);
+                new_Panel.setMaximumSize(new Dimension(width, 100));
+                new_Panel.setMinimumSize(new Dimension(width, 100));
+                new_Panel.setPreferredSize(new Dimension(width, 100));
                 issue_panels.add(new_Panel);
             }
             else {
@@ -285,10 +297,12 @@ public class MainFrame extends JFrame {
         for (int i = 0; i < issue_panels.size(); i++) {
             panel.add(issue_panels.get(i));
         }
-        issue_panel.add(detail_panel, BorderLayout.NORTH);
-        issue_panel.add(panel, BorderLayout.CENTER);
+        jScrollPane.setViewportView(panel);
         issue_panel.updateUI();
     }
+
+
+
 
     public void stop_main() {
         MainFrame.this.setVisible(false);
