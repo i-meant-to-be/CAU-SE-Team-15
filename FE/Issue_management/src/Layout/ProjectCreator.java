@@ -334,11 +334,10 @@ public class ProjectCreator extends JFrame {
             else {
                 UserData userData = new UserData();
                 List<UUID> userIds = new ArrayList<>();
-                for(int i =0;i<userComboBoxList.size();i++){
-                    for(int j=i+1;j<userComboBoxList.size();j++){
-                        if(userComboBoxList.get(i).getSelectedItem().equals(userComboBoxList.get(j).getSelectedItem())) {}
-                        {
-                            JOptionPane.showMessageDialog(null, "there's same user in members", "Error", JOptionPane.ERROR_MESSAGE);
+                for (int i = 0; i < userComboBoxList.size()-1; i++) {
+                    for (int j = i + 1; j < userComboBoxList.size(); j++) {
+                        if (userComboBoxList.get(i).getSelectedItem() != null && userComboBoxList.get(i).getSelectedItem().equals(userComboBoxList.get(j).getSelectedItem())) {
+                            JOptionPane.showMessageDialog(null, "There's the same user in members", "Error", JOptionPane.ERROR_MESSAGE);
                             return;
                         }
                     }
