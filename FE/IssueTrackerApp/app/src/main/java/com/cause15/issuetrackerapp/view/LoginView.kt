@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -27,19 +29,23 @@ fun LoginView(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            TextField(
+            OutlinedTextField(
                 value = viewModel.username.value,
                 label = { Text("Username") },
                 singleLine = true,
                 onValueChange = { newValue -> viewModel.setUsername(newValue) }
             )
-            TextField(
+            OutlinedTextField(
                 value = viewModel.password.value,
                 label = { Text("Password") },
                 singleLine = true,
                 visualTransformation = if (viewModel.isPasswordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
                 onValueChange = { newValue -> viewModel.setPassword(newValue) }
             )
+            Button(onClick = { viewModel.login() }) {
+                Text("Login")
+            }
+            Text(text = viewModel.loginResult.value.toString())
         }
     }
 }

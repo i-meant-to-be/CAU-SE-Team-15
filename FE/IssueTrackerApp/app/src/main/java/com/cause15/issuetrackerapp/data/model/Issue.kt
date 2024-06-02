@@ -1,11 +1,14 @@
 package com.cause15.issuetrackerapp.data.model
 
+import android.os.Parcelable
 import com.cause15.issuetrackerapp.util.enums.IssueState
 import com.cause15.issuetrackerapp.util.enums.IssueType
+import kotlinx.parcelize.Parcelize
 import java.time.LocalDateTime
 import java.util.UUID
 
-class Issue(
+@Parcelize
+data class Issue(
     var id: UUID,
     var title: String,
     var description: String,
@@ -17,7 +20,7 @@ class Issue(
     var fixerId: UUID?,
     var assigneeId: UUID?,
     var tags: List<String>
-) {
+) : Parcelable {
     constructor(
         title: String,
         description: String,
@@ -37,32 +40,4 @@ class Issue(
         assigneeId = null,
         tags = mutableListOf()
     )
-
-    fun copy(
-        id: UUID?,
-        title: String?,
-        description: String?,
-        type: IssueType?,
-        state: IssueState?,
-        reportedDate: LocalDateTime?,
-        commendIds: List<UUID>?,
-        reporterId: UUID?,
-        fixerId: UUID?,
-        assigneeId: UUID?,
-        tags: List<String>?
-    ): Issue {
-        return Issue(
-            id = id ?: this.id,
-            title = title ?: this.title,
-            description = description ?: this.description,
-            type = type ?: this.type,
-            state = state ?: this.state,
-            reportedDate = reportedDate ?: this.reportedDate,
-            commendIds = commendIds ?: this.commendIds,
-            reporterId = reporterId ?: this.reporterId,
-            fixerId = fixerId ?: this.fixerId,
-            assigneeId = assigneeId ?: this.assigneeId,
-            tags = tags ?: this.tags
-        )
-    }
 }

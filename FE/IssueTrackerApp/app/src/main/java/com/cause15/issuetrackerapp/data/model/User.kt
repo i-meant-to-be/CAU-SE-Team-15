@@ -1,15 +1,19 @@
 package com.cause15.issuetrackerapp.data.model
 
+import android.os.Parcelable
 import com.cause15.issuetrackerapp.util.enums.UserType
+import com.google.gson.annotations.SerializedName
+import kotlinx.parcelize.Parcelize
 import java.util.UUID
 
-class User(
-    private var id: UUID,
-    private var name: String,
-    private var password: String,
-    private var userType: UserType,
-    private var tags: MutableSet<String>
-) {
+@Parcelize
+data class User(
+    @SerializedName("id") private var id: UUID,
+    @SerializedName("name") private var name: String,
+    @SerializedName("password") private var password: String,
+    @SerializedName("type") private var userType: UserType,
+    @SerializedName("tags") private var tags: MutableSet<String>
+) : Parcelable {
     constructor(
         name: String,
         password: String,
@@ -21,22 +25,6 @@ class User(
         userType,
         mutableSetOf()
     )
-
-    fun copy(
-        id: UUID?,
-        name: String?,
-        password: String?,
-        userType: UserType?,
-        tags: MutableSet<String>?
-    ): User {
-        return User(
-            id = id ?: this.id,
-            name = name ?: this.name,
-            password = password ?: this.password,
-            userType = userType ?: this.userType,
-            tags = tags ?: this.tags
-        )
-    }
 
     fun updateTag(issueTags: MutableList<String>) {
         this.tags.addAll(issueTags)
