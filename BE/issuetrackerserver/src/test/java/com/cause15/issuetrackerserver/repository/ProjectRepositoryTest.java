@@ -36,6 +36,13 @@ public class ProjectRepositoryTest {
             project1 = projectRepository.getByTitle("testProject1");
         }
     }
+    @Test
+    public void testGetbyTitle(){
+        Project project = projectRepository.getByTitle("testProject1");
+        assertThat(project).isEqualTo(project1);
+
+        projectRepository.delete(project);
+    }
     //title이름으로 project를 찾아오고, description을 업데이트함
     //업데이트한 project와 동일한지 체크
     //READ, UPDATE
