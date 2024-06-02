@@ -50,6 +50,15 @@ public class User {
                 type != null ? type : this.type
         );
     }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equals(id, user.id) &&
+                Objects.equals(name, user.name) &&
+                type == user.type;
+    }
     public void updateTag(List<String>issueTags){
         if (this.tags == null) {
             this.tags = new HashSet<>();
