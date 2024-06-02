@@ -319,8 +319,10 @@ public class IssueChanger extends JFrame {
                 loadComment(commentsPanel, issue);
                 issueDetailFrame.addWindowListener(new WindowAdapter() {
                     public void windowClosed(WindowEvent e) {
-                        pane.revalidate();
-                        pane.repaint();
+                        IssueData issueData = new IssueData();
+                        IssueChanger.this.issue = issueData.getIssue(issueId);
+                        loadComment(commentsPanel, issue);
+                        IssueChanger.this.repaint();
                     }
                 });
             }
