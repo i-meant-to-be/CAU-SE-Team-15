@@ -272,7 +272,11 @@ public class MainFrame extends JFrame {
                 } else {
                     new_Panel.add(new JLabel(userData.getUser(issue.getAssigneeId()).getUsername(), JLabel.CENTER));
                 }
-                new_Panel.add(new JLabel(issue.getState().toString(), JLabel.CENTER));
+                JLabel issue_state = new JLabel(issue.getState().toString(), JLabel.CENTER);
+                if (issue.getState().toString().equals("NEW")) { //issue state가 new이면 빨간색으로 표시
+                    issue_state.setForeground(Color.red);
+                }
+                new_Panel.add(issue_state);
                 // "Detail" 버튼 추가
                 JButton detailButton = new JButton("Detail");
                 detailButton.setMinimumSize(new Dimension(30, 30));
