@@ -17,6 +17,7 @@ public class ProjectServiceTest {
 
     @BeforeEach
     void setUp() {
+
         MockitoAnnotations.openMocks(this);
     }
 
