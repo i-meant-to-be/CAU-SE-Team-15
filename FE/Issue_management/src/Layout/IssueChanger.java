@@ -254,6 +254,12 @@ public class IssueChanger extends JFrame {
                 }
                 else {issue.setState((IssueState) state.getSelectedItem());}
 
+                if(userData2.getUser((String) issueAssigneeCombo.getSelectedItem())==null){
+                    MF.setEnabled(true);
+                    dispose();
+                    return;
+                }
+
                 if((!(userData2.getUser((String)issueAssigneeCombo.getSelectedItem()).getUUID().equals(originalI.getAssigneeId())))){
                     if(MF.get_user().getType()==UserType.ADMIN || MF.get_user().getType()==UserType.MANAGER) {
                         if (!issueAssigneeCombo.getSelectedItem().equals(""))
