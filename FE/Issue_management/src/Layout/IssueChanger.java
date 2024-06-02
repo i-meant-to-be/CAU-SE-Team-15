@@ -197,9 +197,19 @@ public class IssueChanger extends JFrame {
         commentPanel.add(commentsScrollPane, BorderLayout.CENTER);
         pane.add(commentPanel);
 
+        JPanel buttonPanel = new JPanel(); //버튼 크기 설정
+        buttonPanel.setLayout(new GridLayout(1, 2, 4, 4));
+
         JButton OKButton = new JButton("OK");
+        JButton CANCELButton = new JButton("CANCEL");
+
         OKButton.setHorizontalAlignment(SwingConstants.CENTER);
-        pane.add(OKButton);
+        CANCELButton.setHorizontalAlignment(SwingConstants.CENTER);
+
+        buttonPanel.add(OKButton);
+        buttonPanel.add(CANCELButton);
+        pane.add(buttonPanel);
+
         OKButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 int ok = 0;
@@ -283,6 +293,17 @@ public class IssueChanger extends JFrame {
                 }
             }
         });
+
+        CANCELButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                MF.setEnabled(true);  // MainFrame을 다시 활성화
+                dispose();  // 현재 창을 닫기
+            }
+        });
+
+
+
         addComment.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
