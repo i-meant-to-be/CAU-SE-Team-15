@@ -114,8 +114,10 @@ public class IssueChanger extends JFrame {
                 IssueData issueData = new IssueData();
                 List<User> recommendDev = issueData.recommendDev(issueId);
                 for (User user : recommendDev) {
-                    if(dev.contains(user)) {
-                        listModel.addElement(user.getUsername());
+                    for(User u : dev){
+                        if(u.getUsername().equals(user.getUsername())){
+                            listModel.addElement(user.getUsername());
+                        }
                     }
                 }
 
