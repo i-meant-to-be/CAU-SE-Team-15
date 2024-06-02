@@ -1,15 +1,17 @@
 package com.cause15.issuetrackerserver.service;
 
 import org.junit.jupiter.api.Test;
-
+import static org.assertj.core.api.Assertions.assertThat;
+import java.util.Arrays;
 import java.util.List;
 
 public class OktServiceTest {
     @Test
     void testTokenizer() {
-        String text="프롬프트의 임베딩이 잘못되었어요. 요청 바디형식이 잘못되어 500에러가 발생하네요";
+        String text="프롬프트의 임베딩이 잘못되었어요.";
         OktService oktService = new OktService();
         List<String> ret=oktService.ExtractKoreanTokens(text);
-        System.out.println(ret);
+        List<String> temp = Arrays.asList("프롬프트", "프롬프트의 임베딩", "잘못", "임베딩");
+        assertThat(ret).isEqualTo(temp);
     }
 }
