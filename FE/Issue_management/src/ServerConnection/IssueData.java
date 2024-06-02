@@ -48,7 +48,7 @@ public class IssueData {
     public List<User> recommendDev(UUID issueId){
         List<User> users = new ArrayList<>();
         try {
-            URL url = new URL("http://localhost:8080/api/recommendDev/"+issueId.toString());
+            URL url = new URL("http://localhost:8080/api/issue/"+issueId.toString()+"/recommended_dev");
             HttpURLConnection conn = (HttpURLConnection)url.openConnection();
 
             conn.setRequestMethod("GET"); // http 메서드
