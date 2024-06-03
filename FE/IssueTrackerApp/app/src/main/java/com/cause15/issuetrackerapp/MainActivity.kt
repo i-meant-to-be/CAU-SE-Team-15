@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import com.cause15.issuetrackerapp.ui.theme.IssueTrackerAppTheme
-import com.cause15.issuetrackerapp.view.LoginView
+import com.cause15.issuetrackerapp.view.NavigationRoot
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.HiltAndroidApp
 
@@ -25,7 +25,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             IssueTrackerAppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    LoginView(modifier = Modifier.padding(innerPadding))
+                    NavigationRoot(modifier = Modifier.padding(innerPadding))
                 }
             }
         }

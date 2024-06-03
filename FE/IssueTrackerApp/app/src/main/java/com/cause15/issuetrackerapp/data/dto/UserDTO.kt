@@ -7,8 +7,13 @@ class LoginDTO(
     var password: String
 )
 
-class CreateUserDTO (
+class CreateUserDTO(
     var username: String,
     var password: String,
     var type: UserType
+)
+
+class PatchUserDTO(
+    var username: String,
+    var password: String
 )

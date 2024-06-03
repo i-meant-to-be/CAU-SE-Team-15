@@ -3,23 +3,24 @@ package com.cause15.issuetrackerapp.data.model
 import android.os.Parcelable
 import com.cause15.issuetrackerapp.util.enums.IssueState
 import com.cause15.issuetrackerapp.util.enums.IssueType
+import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 import java.time.LocalDateTime
 import java.util.UUID
 
 @Parcelize
 data class Issue(
-    var id: UUID,
-    var title: String,
-    var description: String,
-    var type: IssueType,
-    var state: IssueState,
-    var reportedDate: LocalDateTime,
-    var commendIds: List<UUID>,
-    var reporterId: UUID,
-    var fixerId: UUID?,
-    var assigneeId: UUID?,
-    var tags: List<String>
+    @SerializedName("id") var id: UUID,
+    @SerializedName("title") var title: String,
+    @SerializedName("description") var description: String,
+    @SerializedName("type") var type: IssueType,
+    @SerializedName("state") var state: IssueState,
+    @SerializedName("reportedDate") var reportedDate: LocalDateTime,
+    @SerializedName("commentIds") var commendIds: List<UUID>,
+    @SerializedName("reporterId") var reporterId: UUID,
+    @SerializedName("fixerId") var fixerId: UUID?,
+    @SerializedName("assigneeId") var assigneeId: UUID?,
+    @SerializedName("tags") var tags: List<String>
 ) : Parcelable {
     constructor(
         title: String,
@@ -38,6 +39,6 @@ data class Issue(
         reporterId = reporterId,
         fixerId = null,
         assigneeId = null,
-        tags = mutableListOf()
+        tags = tags
     )
 }

@@ -1,6 +1,7 @@
 package com.cause15.issuetrackerapp.viewmodel
 
 import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -18,12 +19,13 @@ class LoginViewModel @Inject constructor(
     private val _username = mutableStateOf("")
     private val _password = mutableStateOf("")
     private val _isPasswordVisible = mutableStateOf(false)
+    private val _loginResult = mutableStateOf<User?>(null)
+    private val _errorCode = mutableIntStateOf(-1)
     val username: State<String> = _username
     val password: State<String> = _password
     val isPasswordVisible: State<Boolean> = _isPasswordVisible
-
-    private val _loginResult = mutableStateOf<User?>(null)
     val loginResult: State<User?> = _loginResult
+    val errorCode: State<Int> = _errorCode
 
     fun setUsername(value: String) {
         _username.value = value
@@ -36,13 +38,12 @@ class LoginViewModel @Inject constructor(
     fun login() {
         viewModelScope.launch {
             val response = userAPIService.login(LoginDTO(username.value, password.value))
+
             if (response.isSuccessful) {
                 val body = response.body()
-                if (body != null) {
-                    _loginResult.value = body
-                }
+                if (body != null) _loginResult.value = body
             } else {
-                val error = response.errorBody()
+                _errorCode.intValue = response.code()
             }
         }
     }
