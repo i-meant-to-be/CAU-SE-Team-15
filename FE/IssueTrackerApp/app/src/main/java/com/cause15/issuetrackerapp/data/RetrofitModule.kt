@@ -1,5 +1,7 @@
 package com.cause15.issuetrackerapp.data
 
+import com.cause15.issuetrackerapp.data.controller.CommentAPIService
+import com.cause15.issuetrackerapp.data.controller.IssueAPIService
 import com.cause15.issuetrackerapp.data.controller.ProjectAPIService
 import com.cause15.issuetrackerapp.data.controller.UserAPIService
 import com.cause15.issuetrackerapp.util.Constant
@@ -29,4 +31,20 @@ object RetrofitModule {
         .addConverterFactory(GsonConverterFactory.create())
         .build()
         .create(ProjectAPIService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideCommentAPIService(): CommentAPIService = Retrofit.Builder()
+        .baseUrl(Constant.API.URL)
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+        .create(CommentAPIService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideIssueAPIService(): IssueAPIService = Retrofit.Builder()
+        .baseUrl(Constant.API.URL)
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+        .create(IssueAPIService::class.java)
 }

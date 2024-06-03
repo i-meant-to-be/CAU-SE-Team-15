@@ -4,13 +4,10 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.cause15.issuetrackerapp.data.LoginDTO
+import com.cause15.issuetrackerapp.data.dto.LoginDTO
 import com.cause15.issuetrackerapp.data.controller.UserAPIService
 import com.cause15.issuetrackerapp.data.model.User
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
