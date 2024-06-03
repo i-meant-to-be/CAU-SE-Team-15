@@ -238,7 +238,6 @@ public class IssueChanger extends JFrame {
                     }
                     else if(originalI.getState().equals(state.getSelectedItem())&&originalI.getType().equals(type.getSelectedItem())&&originalI.getReporterId().equals(MF.get_user().getUUID())){
                         ok = 0;
-                        System.out.println(issue.getDescription());
                     }else{
                         ok = 7;
                     }
