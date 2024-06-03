@@ -11,12 +11,12 @@ data class Comment(
     @SerializedName("id") private var id: UUID,
     @SerializedName("body") private var body: String,
     @SerializedName("authorId") private var authorId: UUID,
-    @SerializedName("date") private var date: LocalDateTime
+    @SerializedName("date") private var date: String
 ) : Parcelable {
     constructor(body: String, authorId: UUID) : this(
         UUID.randomUUID(),
         body,
         authorId,
-        LocalDateTime.now()
+        ""
     )
 }

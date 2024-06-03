@@ -13,7 +13,7 @@ data class Project(
     @SerializedName("userIds") private var userIds: List<UUID>,
     @SerializedName("title") private var title: String,
     @SerializedName("description") private var description: String,
-    @SerializedName("createdDate") private var createdDate: LocalDateTime
+    @SerializedName("createdDate") private var createdDate: String
 ) : Parcelable {
     constructor(
         issueIds: List<UUID>,
@@ -26,6 +26,6 @@ data class Project(
         userIds,
         title,
         description,
-        LocalDateTime.now()
+        ""
     )
 }

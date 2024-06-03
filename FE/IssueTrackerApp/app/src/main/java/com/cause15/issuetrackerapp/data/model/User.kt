@@ -8,11 +8,11 @@ import java.util.UUID
 
 @Parcelize
 data class User(
-    @SerializedName("id") private var id: UUID,
-    @SerializedName("name") private var name: String,
-    @SerializedName("password") private var password: String,
-    @SerializedName("type") private var userType: UserType,
-    @SerializedName("tags") private var tags: MutableSet<String>
+    @SerializedName("id") var id: UUID,
+    @SerializedName("name") var name: String,
+    @SerializedName("password") var password: String,
+    @SerializedName("type") var userType: UserType,
+    @SerializedName("tags") var tags: MutableSet<String>
 ) : Parcelable {
     constructor(
         name: String,
@@ -26,17 +26,11 @@ data class User(
         mutableSetOf()
     )
 
-    fun updateTag(issueTags: MutableList<String>) {
-        this.tags.addAll(issueTags)
-    }
-
-    fun calculateJaccard(issue: Issue): Float {
-        val unionSet = this.tags.toHashSet()
-        unionSet.addAll(issue.tags.toHashSet())
-
-        val interactionSet = this.tags.toHashSet()
-        interactionSet.retainAll(issue.tags.toHashSet())
-
-        return unionSet.size.toFloat() / interactionSet.size.toFloat()
-    }
+    constructor() : this(
+        UUID.randomUUID(),
+        "",
+        "",
+        UserType.USER,
+        mutableSetOf()
+    )
 }

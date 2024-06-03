@@ -31,7 +31,7 @@ interface UserAPIService {
 
     @GET("user/{id}")
     suspend fun getUser(
-        @Path("id") id: UUID
+        @Path(value = "id") id: UUID
     ): Response<User>
 
     @PATCH("user/{id}")

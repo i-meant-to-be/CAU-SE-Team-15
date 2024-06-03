@@ -12,4 +12,7 @@ interface ProjectAPIService {
 
     @GET("user/{id}/included_project")
     suspend fun getProjectsUserIncluded(@Path("id") id: UUID): Response<Project>
+
+    @GET("user/{id}/availability")
+    suspend fun isUserAvailable(@Path("id") id: UUID): Response<Boolean>
 }

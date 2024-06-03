@@ -15,8 +15,8 @@ data class Issue(
     @SerializedName("description") var description: String,
     @SerializedName("type") var type: IssueType,
     @SerializedName("state") var state: IssueState,
-    @SerializedName("reportedDate") var reportedDate: LocalDateTime,
-    @SerializedName("commentIds") var commendIds: List<UUID>,
+    @SerializedName("reportedDate") var reportedDate: String,
+    @SerializedName("commentIds") var commentIds: List<UUID>,
     @SerializedName("reporterId") var reporterId: UUID,
     @SerializedName("fixerId") var fixerId: UUID?,
     @SerializedName("assigneeId") var assigneeId: UUID?,
@@ -34,11 +34,25 @@ data class Issue(
         description = description,
         type = type,
         state = IssueState.NEW,
-        reportedDate = LocalDateTime.now(),
-        commendIds = mutableListOf(),
+        reportedDate = "",
+        commentIds = mutableListOf(),
         reporterId = reporterId,
         fixerId = null,
         assigneeId = null,
         tags = tags
+    )
+
+    constructor() : this(
+        UUID.randomUUID(),
+        "",
+        "",
+        IssueType.MAJOR,
+        IssueState.NEW,
+        "",
+        mutableListOf(),
+        UUID.randomUUID(),
+        null,
+        null,
+        mutableListOf()
     )
 }
