@@ -235,7 +235,11 @@ public class IssueChanger extends JFrame {
                         } else {
                             ok = 2;
                         }
-                    } else{
+                    }
+                    else if(originalI.getState().equals(state.getSelectedItem())&&originalI.getType().equals(type.getSelectedItem())&&originalI.getReporterId().equals(MF.get_user().getUUID())){
+                        ok = 0;
+                        System.out.println(issue.getDescription());
+                    }else{
                         ok = 7;
                     }
                 }
@@ -254,19 +258,23 @@ public class IssueChanger extends JFrame {
                 }
                 else {issue.setState((IssueState) state.getSelectedItem());}
 
-                if(userData2.getUser((String) issueAssigneeCombo.getSelectedItem())==null){
+                /*if(userData2.getUser((String) issueAssigneeCombo.getSelectedItem())==null){
                     MF.setEnabled(true);
                     dispose();
                     return;
+                }*/
+
+                if(userData2.getUser((String) issueAssigneeCombo.getSelectedItem())!=null) {
+                    if ((!(userData2.getUser((String) issueAssigneeCombo.getSelectedItem()).getUUID().equals(originalI.getAssigneeId())))) {
+                        if (MF.get_user().getType() == UserType.ADMIN || MF.get_user().getType() == UserType.MANAGER) {
+                            if (!issueAssigneeCombo.getSelectedItem().equals(""))
+                                issue.setAssigneeId((userData2.getUser((String) issueAssigneeCombo.getSelectedItem()).getUUID()));
+                        } else {
+                            ok = 4;
+                        }
+                    }
                 }
 
-                if((!(userData2.getUser((String)issueAssigneeCombo.getSelectedItem()).getUUID().equals(originalI.getAssigneeId())))){
-                    if(MF.get_user().getType()==UserType.ADMIN || MF.get_user().getType()==UserType.MANAGER) {
-                        if (!issueAssigneeCombo.getSelectedItem().equals(""))
-                            issue.setAssigneeId((userData2.getUser((String) issueAssigneeCombo.getSelectedItem()).getUUID()));
-                    }
-                    else {ok = 4;}
-                }
 
                 if(ok==0) {
                     issueD.modifyIssue(issue);
